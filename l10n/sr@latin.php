@@ -1,4 +1,4 @@
 <?php $TRANSLATIONS = array(
-"Download" => "Preuzimanje",
+"Download" => "Preuzmi",
 "Delete" => "Obriši"
 );
