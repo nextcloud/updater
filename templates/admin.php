@@ -13,6 +13,6 @@
 ?>
 
 <div class="section">
-	<h2>Updater</h2>
+	<h2><?php p($l->t('Updater')) ?></h2>
 	<a target="_blank" href="<?php p(\OCP\Util::linkTo('updater', 'update.php')) ?>"><?php p($l->t('Update Center')) ?></a>
 </div>
