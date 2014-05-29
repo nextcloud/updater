@@ -15,6 +15,7 @@ $TRANSLATIONS = array(
 "Update failed" => "Update failed",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "The update was unsuccessful. Please check the logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>.",
 "Proceed" => "Proceed",
+"Updater" => "Updater",
 "Update Center" => "Update Center",
 "Backup Management" => "Backup Management",
 "Update" => "Update",

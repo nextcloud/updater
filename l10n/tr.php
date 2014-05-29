@@ -15,6 +15,7 @@ $TRANSLATIONS = array(
 "Update failed" => "Güncelleme başarısız",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Güncelleme başarısız oldu. Lütfen yönetici sayfasındaki günlüğü denetleyin ve bu durumu <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud topluluğuna</a> bildirin.",
 "Proceed" => "Devam et",
+"Updater" => "Güncelleyici",
 "Update Center" => "Güncelleme Merkezi",
 "Backup Management" => "Yedekleme Yönetimi",
 "Update" => "Güncelleme",

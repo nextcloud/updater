@@ -15,6 +15,7 @@ $TRANSLATIONS = array(
 "Update failed" => "Päivitys epäonnistui",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Päivitys epäonnistui. Tarkista lokit ylläpitosivulta ja ilmoita ongelmasta <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud-yhteisölle</a>.",
 "Proceed" => "Jatka",
+"Updater" => "Päivitysohjelma",
 "Update Center" => "Päivityskeskus",
 "Backup Management" => "Varmuuskopioiden hallinta",
 "Update" => "Päivitä",
