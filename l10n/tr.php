@@ -1,6 +1,6 @@
 <?php
 $TRANSLATIONS = array(
-"Checking your installation..." => "Kurulumunuz kontrol ediliyor...",
+"Checking your installation..." => "Kurulumunuz denetleniyor...",
 "Upgrade is not possible. Make sure that your webserver has write access to the following files and directories:" => "Güncelleme mümkün değil. Web sunucunuzun aşağıdaki dosya ve dizinlere yazma izni olduğundan emin olun:",
 "Version not found" => "Sürüm bulunamadı",
 "Upgrade is not possible. Your webserver has not enough permissions to remove the following directory:" => "Güncelleme mümkün değil. Web sunucunuz aşağıdaki dizini silmek için yeterli yetkiye sahip değil:",
