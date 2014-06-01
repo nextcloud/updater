@@ -86,8 +86,6 @@ class Location_Apps extends Location {
 				} else {
 					$this->appsToDisable[$appId] = $appId;
 				}
-			} else {
-				$this->appsToDisable[$appId] = $appId;
 			}
 		}
 	}
