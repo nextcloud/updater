@@ -15,6 +15,7 @@ $TRANSLATIONS = array(
 "Update failed" => "Η ενημέρωση απέτυχε",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Η ενημέρωση απέτυχε. Παρακαλώ ελέγξτε το αρχείο καταγραφών στη σελίδα του διαχειριστή και αναφέρετε αυτό το ζήτημα στην <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">κοινότητα ownCloud </a>.",
 "Proceed" => "Συνέχιση",
+"Updater" => "Εφαρμογή Ενημέρωσης",
 "Update Center" => "Κέντρο Ενημερώσεων",
 "Backup Management" => "Διαχείριση αντιγράφων ασφαλείας",
 "Update" => "Ενημέρωση",
