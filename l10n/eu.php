@@ -15,6 +15,7 @@ $TRANSLATIONS = array(
 "Update failed" => "Eguneraketak huts egin du",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Eguneraketak ez du arrakastarik izan. Mesedez aztertu egunerakoak administrazio orria eta eman abisua  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud komunitateari</a>.",
 "Proceed" => "Jarraitu",
+"Updater" => "Eguneratzailea",
 "Update Center" => "Eguneraketa zentroa",
 "Backup Management" => "Segurtasun kopien kudeaketa",
 "Update" => "Eguneratu",

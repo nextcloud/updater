@@ -15,6 +15,7 @@ $TRANSLATIONS = array(
 "Update failed" => "Opdatering fejlede",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Opdateringen lykkedes ikke. Kontroller venligst loggen på administratorsiden og rapporter dette problem til <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud fællesskabet</a>.",
 "Proceed" => "Fortsæt",
+"Updater" => "Updater",
 "Update Center" => "Update Center",
 "Backup Management" => "Backup Administration",
 "Update" => "Opdater",
