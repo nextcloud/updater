@@ -15,6 +15,7 @@ $TRANSLATIONS = array(
 "Update failed" => "Fallu al anovar",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "L'anovamientu falló. Por favor, revisa la razón del fallu nel log de la páxina d'almin y reporta esti problema a la <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">Comunidá de ownCloud</ a>.",
 "Proceed" => "Proceder",
+"Updater" => "Anovador",
 "Update Center" => "Centru d'anovamientos",
 "Backup Management" => "Xestión de copies de seguridá",
 "Update" => "Anovar",
