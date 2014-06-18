@@ -15,6 +15,7 @@ $TRANSLATIONS = array(
 "Update failed" => "L'actualització ha fallat",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "L'actualització no ha tingut èxit. Comproveu els registres a la pàgina d'administració i informeu d'aquesta incidència a la <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunitat ownCloud</a>.",
 "Proceed" => "Procedeix",
+"Updater" => "Actualitzador",
 "Update Center" => "Centre d'actualitzacions",
 "Backup Management" => "Gestió de còpies de seguretat",
 "Update" => "Actualitza",
