@@ -13,7 +13,7 @@ $TRANSLATIONS = array(
 "Moving files..." => "Movendo arquivos...",
 "All done. Click to the link below to start database upgrade." => "Tudo concluido. Clique no link abaixo para iniciar a atualização do banco de dados.",
 "Update failed" => "A atualização falhou",
-"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "A atualização não foi bem sucedida. Por favor, verifique os logs na página de administração e relatar essa questão para a comunidade <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\"> ownCloud </a>.",
+"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "A atualização não foi bem sucedida. Por favor, verifique os logs na página de administração e relate essa acontecimento para a  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\"> comunidade ownCloud </a>.",
 "Proceed" => "Proceder",
 "Updater" => "Atualizador",
 "Update Center" => "Central de Atalização",
@@ -21,7 +21,7 @@ $TRANSLATIONS = array(
 "Update" => "Atualizar",
 "Backup directory" => "Diretório de Cópias de Segurança",
 "Backup" => "Cópia de Segurança",
-"Done on" => "Pronto.",
+"Done on" => "Finalizada.",
 "Download" => "Baixar",
 "Delete" => "Excluir",
 "No backups found" => "Nenhuma Cópia de Segurança encontrada"
