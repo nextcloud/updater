@@ -15,6 +15,7 @@ $TRANSLATIONS = array(
 "Update failed" => "Posodobitev je spodletela",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Posodobitev ni uspešno končana. Preveriti je treba dnevniški zapis na skrbniških straneh in poslati poročilo na razvijalcem sistema<a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud</a>.",
 "Proceed" => "Nadaljuj",
+"Updater" => "Posodabljalnik",
 "Update Center" => "Središče za posodobitve",
 "Backup Management" => "Upravljanje varnostnih kopij",
 "Update" => "Posodobi",
