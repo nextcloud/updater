@@ -3,11 +3,12 @@
 	<id>updater</id>
 	<name>Updater</name>
 	<description>ownCloud updater plugin. Check README for details.</description>
-	<version>0.3</version>
+	<version>0.4</version>
 	<licence>AGPL</licence>
 	<author>Victor Dubiniuk</author>
 	<shipped>true</shipped>
 	<default_enable/>
 	<require>4.93</require>
 		<types></types>
+	<ocsid>166059</ocsid>
 </info>
