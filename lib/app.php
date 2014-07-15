@@ -40,7 +40,7 @@ class App {
 		return \OC::$SERVERROOT . "/_oc-upgrade/";
 	}
 	
-	public static function log($message, $level= \OC_Log::ERROR) {
+	public static function log($message, $level= \OCP\Util::ERROR) {
 		\OCP\Util::writeLog(self::APP_ID, $message, $level);
 	}
 }
