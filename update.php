@@ -25,4 +25,6 @@ if (!@file_exists(App::getBackupBase())){
 }
 
 $tmpl = new \OCP\Template(App::APP_ID, 'update', 'guest');
+$lastCheck = \OC_Appconfig::getValue('core', 'lastupdatedat');
+$tmpl->assign('checkedAt', \OCP\Util::formatDate($lastCheck));
 $tmpl->printPage();

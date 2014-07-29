@@ -43,6 +43,9 @@
 		<button ng-click="update()" ng-show="<?php p($isNewVersionAvailable) ?>" id="updater-start">
 			<?php p($l->t('Update')) ?>
 		</button>
+		<p ng-show="<?php p(!$isNewVersionAvailable) ?>">
+			<?php p($l->t('Up to date. Checked on %s', array('checkedAt' => $_['checkedAt']))) ?>
+		</p>
 		<div id="upd-progress" style="display:none;"><div></div></div>
 	</fieldset>
 </div>
