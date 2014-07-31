@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "Извършено върху",
 "Download" => "Изтегли",
 "Delete" => "Изтрий",
-"No backups found" => "Не са открити архиви"
+"No backups found" => "Не са открити архиви",
+"Up to date. Checked on %s" => "Най-нова версия. Проверен на %s"
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n != 1);";

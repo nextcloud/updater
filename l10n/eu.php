@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "Noiz egina",
 "Download" => "Deskargatu",
 "Delete" => "Ezabatu",
-"No backups found" => "Ez da segurtasun kopiarik aurkitu"
+"No backups found" => "Ez da segurtasun kopiarik aurkitu",
+"Up to date. Checked on %s" => "Eguneratuta. %s egiaztatuta."
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n != 1);";

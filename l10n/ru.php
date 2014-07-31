@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "Готово на",
 "Download" => "Скачать",
 "Delete" => "Удалить",
-"No backups found" => "Резервных копий не найдено"
+"No backups found" => "Резервных копий не найдено",
+"Up to date. Checked on %s" => "Актуально. Проверено на %s"
 );
 $PLURAL_FORMS = "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);";

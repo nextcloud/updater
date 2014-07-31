@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "Luontiaika",
 "Download" => "Lataa",
 "Delete" => "Poista",
-"No backups found" => "Varmuuskopioita ei löytynyt"
+"No backups found" => "Varmuuskopioita ei löytynyt",
+"Up to date. Checked on %s" => "Ajan tasalla. Tarkistettu %s"
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n != 1);";
