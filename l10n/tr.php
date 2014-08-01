@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "Yapılma",
 "Download" => "İndir",
 "Delete" => "Sil",
-"No backups found" => "Yedek bulunamadı"
+"No backups found" => "Yedek bulunamadı",
+"Up to date. Checked on %s" => "Güncel. Denetlenme %s"
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n > 1);";
