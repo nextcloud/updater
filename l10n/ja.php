@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "完了:",
 "Download" => "ダウンロード",
 "Delete" => "削除",
-"No backups found" => "バックアップが見つかりません"
+"No backups found" => "バックアップが見つかりません",
+"Up to date. Checked on %s" => "最新版です。%s に確認。"
 );
 $PLURAL_FORMS = "nplurals=1; plural=0;";

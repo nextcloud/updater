@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "Concluido em",
 "Download" => "Transferir",
 "Delete" => "Eliminar",
-"No backups found" => "Nenhuma cópia de segurança encontrada"
+"No backups found" => "Nenhuma cópia de segurança encontrada",
+"Up to date. Checked on %s" => "Actualizado. Verificado em %s"
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n != 1);";

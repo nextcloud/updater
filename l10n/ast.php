@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "Fecho en",
 "Download" => "Descargar",
 "Delete" => "Desaniciar",
-"No backups found" => "Nun s'atoparon copies de seguridá"
+"No backups found" => "Nun s'atoparon copies de seguridá",
+"Up to date. Checked on %s" => "Tienes la versión actual. Revisáu en %s"
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n != 1);";
