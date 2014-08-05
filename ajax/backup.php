@@ -25,14 +25,20 @@ try {
 	));
 	
 } catch (PermissionException $e){
-	//Path is not writable
+	//Something is not writable|readable
 	\OCP\JSON::error(array(
 		'message' => $e->getExtendedMessage()
 	));
 } catch (FsException $e){
 	//Backup failed
+	App::log($e->getMessage());
+	\OCP\JSON::error(array(
+		'message' => $e->getMessage()
+	));
 } catch (\Exception $e){
 	//Something went wrong. We don't know what
 	App::log($e->getMessage());
-	//$watcher->failure((string) App::$l10n->t('Failed to create backup'));
+	\OCP\JSON::error(array(
+		'message' => $e->getMessage()
+	));
 }

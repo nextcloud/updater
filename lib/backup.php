@@ -53,9 +53,9 @@ class Backup {
 				}
 			}
 		} catch (\Exception $e){
-			App::log('Backup creation failed. Check permissions.');
+			App::log('Backup creation failed. Disk full?');
 			self::cleanUp();
-			throw $e;
+			throw new FsException($e->getMessage());
 		}
 
 		return self::getPath();
