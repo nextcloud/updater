@@ -30,6 +30,28 @@ class Helper {
 	}
 	
 	/**
+	 * Check permissions recoursive 
+	 * @param string $src  - path to check
+	 * @param string $src  - path to check
+	 */
+	public static function checkr($src, $collection) {
+		if (!is_writable($src)){
+			$collection->addNotWritable($src);
+		}
+		if (!is_readable($src)){
+			$collection->addNotReadable($src);
+		}
+		if(is_dir($src)) {
+			$files = scandir($src);
+			foreach ($files as $file) {
+				if ($file != "." && $file != "..") {
+					self::checkr("$src/$file", $collection);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Copy recoursive 
 	 * @param string $src  - source path
 	 * @param string $dest - destination path

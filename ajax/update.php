@@ -22,23 +22,6 @@ $watcher = new UpdateWatcher($updateEventSource);
 \OCP\Util::connectHook('update', 'success', $watcher, 'success');
 \OCP\Util::connectHook('update', 'failure', $watcher, 'failure');
 
-$watcher->success((string) App::$l10n->t('Checking your installation...'));
-// Check if we have enough permissions
-$installed = Helper::getDirectories();
-$thirdPartyUpdater = new Location_3rdparty($installed[Helper::THIRDPARTY_DIRNAME], '');
-$coreUpdater = new Location_Core($installed[Helper::CORE_DIRNAME], '');
-$appsUpdater = new Location_Apps('', '');
-
-$errors = array_merge(
-	$thirdPartyUpdater->check(), $coreUpdater->check(), $appsUpdater->check()
-);
-
-if (count($errors)) {
-	$message = App::$l10n->t('Upgrade is not possible. Make sure that your webserver has write access to the following files and directories:');
-	$message .= '<br /><br />' . implode('<br />', $errors);
-	$watcher->failure($message);
-}
-
 // Download package
 // Url to download package e.g. http://download.owncloud.org/releases/owncloud-4.0.5.tar.bz2
 $packageUrl = '';
@@ -83,16 +66,6 @@ try {
 } catch (\Exception $e) {
 	App::log($e->getMessage());
 	$watcher->failure((string) App::$l10n->t('Unable to fetch package'));
-}
-
-// Create Backup 
-try {
-	$watcher->success((string) App::$l10n->t('Creating backup...'));
-	$backupPath = Backup::create();
-	$watcher->success((string) App::$l10n->t('Here is your backup: ') . $backupPath . '.zip');
-} catch (\Exception $e){
-	App::log($e->getMessage());
-	$watcher->failure((string) App::$l10n->t('Failed to create backup'));
 }
 
 try {

@@ -19,19 +19,35 @@ class Backup {
 	 * @var string
 	 */
 	protected static $path = '';
-
+	
 	/**
 	 * Perform backup
 	 * @return string
 	 */
 	public static function create() {
+		$collection = new Collection();
+		$locations = Helper::getPreparedLocations();
+		foreach ($locations as $type => $dirs) {
+			foreach ($dirs as $name => $path) {
+				Helper::checkr($path, $collection);
+			}
+		}
+		
+		if (
+				count($collection->getNotReadable())
+				|| count($collection->getNotWritable())
+		) {
+			$e = new PermissionException();
+			$e->setCollection($collection);
+			throw $e;
+		}
+		
 		try {
-			$locations = Helper::getPreparedLocations();
 			Helper::mkdir(self::getPath(), true);
 			foreach ($locations as $type => $dirs) {
 				$backupFullPath = self::getPath() . '/' . $type . '/';
-				Helper::mkdir($backupFullPath, true);
 				
+				Helper::mkdir($backupFullPath, true);
 				foreach ($dirs as $name => $path) {
 					Helper::copyr($path, $backupFullPath . $name);
 				}
