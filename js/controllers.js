@@ -8,7 +8,7 @@ function updateCtrl($scope, $http) {
 	$scope.backup = '';
 	$scope.update = function() {
 		if ($scope.step == 0){
-			$('#upd-progress').show();
+			$('#upd-progress').empty().show();
 			$('#updater-start').hide();
 			$http.get(OC.filePath('updater', 'ajax', 'backup.php'), {headers: {'requesttoken': oc_requesttoken}})
 			.success(function(data) {
@@ -23,6 +23,7 @@ function updateCtrl($scope, $http) {
 					}
 					$('<span></span>').addClass('error').append(message).append('<br />').appendTo($('#upd-progress'));
 				}
+				$('#updater-start').text(t('updater', 'Retry')).show();
 			});
 		} else {
 
