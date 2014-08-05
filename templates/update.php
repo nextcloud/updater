@@ -40,6 +40,7 @@
 		</table>
 	</fieldset>
 	<fieldset ng-controller="updateCtrl" ng-show="navigation=='update'">
+		<div id="upd-step-title" style="display:none;"><div></div></div>
 		<div id="upd-progress" style="display:none;"><div></div></div>
 		<button ng-click="update()" ng-show="<?php p($isNewVersionAvailable) ?>" id="updater-start">
 			<?php p($l->t('Update')) ?>

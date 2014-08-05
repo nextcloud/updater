@@ -27,7 +27,7 @@ class Downloader {
 		} elseif (preg_match('/\.tar\.bz2$/i', $url)) {
 			$type = '.tar.bz2';
 		} else {
-			throw new \Exception('Unable to extract package: unknown format');
+			throw new \Exception('Unable to extract package ' . $url . ': unknown format');
 		}
 		
 		self::$package = self::$package . $type;
