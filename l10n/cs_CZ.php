@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "Dokončeno",
 "Download" => "Stáhnout",
 "Delete" => "Smazat",
-"No backups found" => "Žádné zálohy nebyly nalezeny"
+"No backups found" => "Žádné zálohy nebyly nalezeny",
+"Up to date. Checked on %s" => "Je v poslední verzi. Ověřeno na %s"
 );
 $PLURAL_FORMS = "nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;";
