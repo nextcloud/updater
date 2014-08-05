@@ -24,6 +24,10 @@ function updateCtrl($scope, $http) {
 					$('<span></span>').addClass('error').append(message).append('<br />').appendTo($('#upd-progress'));
 				}
 				$('#updater-start').text(t('updater', 'Retry')).show();
+			})
+			.error(function(){
+				var message = t('updater', 'Server error. Please check webserver log file for details');
+				$('<span></span>').addClass('error').append(message).append('<br />').appendTo($('#upd-progress'));
 			});
 		} else {
 
