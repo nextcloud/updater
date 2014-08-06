@@ -28,23 +28,6 @@ abstract class Location {
 		$this->newBase = $newBase;
 	}
 
-	public function check() {
-		$errors = array();
-
-		if ($this->oldBase && !is_writable($this->oldBase)) {
-			$errors[] = $this->oldBase;
-		}
-
-		$collected = $this->collect(true);
-		foreach ($collected['old'] as $item) {
-			if (!is_writable($item)) {
-				$errors[] = $item;
-			}
-		}
-		
-		return $errors;
-	}
-
 	// Move sources 
 	public function update($tmpDir = '') {
 		Helper::mkdir($tmpDir, true);
