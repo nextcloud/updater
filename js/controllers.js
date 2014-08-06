@@ -45,6 +45,7 @@ function updateCtrl($scope, $http) {
 
 		} else if ($scope.step == 1) {
 			$('#upd-step-title').text(t('updater', 'Downloading package...'));
+			$('<span></span>').append(t('updater', 'Here is your backup: ') + $scope.backup).append('<br />').appendTo($('#upd-progress'));
 			$http.post(
 					OC.filePath('updater', 'ajax', 'download.php'),
 					{ 
@@ -76,11 +77,11 @@ function updateCtrl($scope, $http) {
 				if (data && data.status && data.status == 'success'){
 					$scope.step = 3;
 					var href = '/',
-					title = t('Updater', 'Proceed');
+					title = t('updater', 'Proceed');
 					if (OC.webroot!=''){
 						href = OC.webroot;
 					}
-					$('<span></span>').append(t('Updater', 'All done. Click to the link below to start database upgrade.')).append('<br />').appendTo($('#upd-progress'));
+					$('<span></span>').append(t('updater', 'All done. Click to the link below to start database upgrade.')).append('<br />').appendTo($('#upd-progress'));
 					$('<span></span>').addClass('bold').append('<br />').append('<a href="' + href + '">' + title + '</a>').appendTo($('#upd-progress'));
 				} else {
 					$scope.fail(data);
