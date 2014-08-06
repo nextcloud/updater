@@ -7,11 +7,11 @@ background: #FFF .8em .8em no-repeat;border: 1px solid #CCC;
 cursor: default;
 }
 
-#updater-content ul {height:33px;margin-bottom: 12px;border-bottom: 3px solid #e2e2e2;}
-#updater-content li {float:left;margin:5px 10px 5px 5px;padding:5px 15px 5px 15px;
+#updater-content ul.tabs {height:33px;margin-bottom: 12px;border-bottom: 3px solid #e2e2e2;}
+#updater-content .tabs li {float:left;margin:5px 10px 5px 5px;padding:5px 15px 5px 15px;
 -moz-border-radius: 4px 4px 0 0;-webkit-border-radius: 4px 4px 0 0;border-radius: 4px 4px 0 0;
 background-color:#e2e2e2;border: 1px solid #cce;border-bottom:0 none;}
-#updater-content li.current, #updater-content li:hover{background-color:#f2f2ff}
+#updater-content .tabs li.current, #updater-content .tabs li:hover{background-color:#f2f2ff}
 
 #updater-content table{width:100%;margin:20px 0;border:1px solid #aaa;}
 #updater-content table th{padding:5px 10px;border-bottom:1px solid #999;}
@@ -19,3 +19,17 @@ background-color:#e2e2e2;border: 1px solid #cce;border-bottom:0 none;}
 
 #updater-content fieldset input, 
 #updater-content fieldset input[type="text"]{font-size:1em;width:360px;}
+
+.track-progress {margin: 10px 0 20px 0; padding: 0; overflow: hidden;}
+.track-progress li {list-style-type: none; display: inline-block; position: relative; margin: 0; padding: 0; text-align: center; line-height: 30px; height: 30px; min-width:150px; background-color: #f0f0f0;}
+.track-progress li.current{background-color:#f2f2ff}
+
+.track-progress li > span { display: block; padding: 0 30px; color: #999; font-weight: bold; }
+.track-progress li.done > span { color: #666; background-color: #ddd;}
+.track-progress li.current > span { display: block; padding: 0 30px; color: #333; font-weight: bold; }
+
+.track-progress li > span:after,
+.track-progress li > span:before { content: ""; display: block; width: 0px; height: 0px; position: absolute; top: 0; left: 0; border: solid transparent; border-left-color: #f0f0f0; border-width: 15px;}
+
+.track-progress li > span:after { top: -5px; z-index: 1; border-left-color: white; border-width: 20px;}
+.track-progress li > span:before { z-index: 2;}

@@ -25,7 +25,8 @@ function updateCtrl($scope, $http) {
 	$scope.update = function() {
 		if ($scope.step == 0){
 			$('#upd-progress').empty().show();
-			$('#upd-step-title').text(t('updater', 'Creating backup...')).show();
+			$('#upd-step-title').show();
+			$('.track-progress li').first().addClass('current');
 			$('#updater-start').hide();
 			
 			$http.get(OC.filePath('updater', 'ajax', 'backup.php'), {headers: {'requesttoken': oc_requesttoken}})
@@ -44,7 +45,9 @@ function updateCtrl($scope, $http) {
 			.error($scope.crash);
 
 		} else if ($scope.step == 1) {
-			$('#upd-step-title').text(t('updater', 'Downloading package...'));
+			$('.track-progress li.current').addClass('done');
+			$('.track-progress li.current').next().addClass('current');
+			$('.track-progress li.done').removeClass('current');
 			$('<span></span>').append(t('updater', 'Here is your backup: ') + $scope.backup).append('<br />').appendTo($('#upd-progress'));
 			$http.post(
 					OC.filePath('updater', 'ajax', 'download.php'),
@@ -64,7 +67,9 @@ function updateCtrl($scope, $http) {
 			.error($scope.crash);
 		
 		} else if ($scope.step == 2) {
-			$('#upd-step-title').text(t('updater', 'Moving files...'));
+			$('.track-progress li.current').addClass('done');
+			$('.track-progress li.current').next().addClass('current');
+			$('.track-progress li.done').removeClass('current');
 			$http.post(
 					OC.filePath('updater', 'ajax', 'update.php'),
 					{ 
@@ -76,6 +81,8 @@ function updateCtrl($scope, $http) {
 			).success(function(data) {
 				if (data && data.status && data.status == 'success'){
 					$scope.step = 3;
+					$('.track-progress li.current').addClass('done');
+					$('.track-progress li.done').removeClass('current');
 					var href = '/',
 					title = t('updater', 'Proceed');
 					if (OC.webroot!=''){
