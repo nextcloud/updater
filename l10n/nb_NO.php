@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "Utført",
 "Download" => "Last ned",
 "Delete" => "Slett",
-"No backups found" => "Ingen sikkerhetskopier funnet"
+"No backups found" => "Ingen sikkerhetskopier funnet",
+"Up to date. Checked on %s" => "Oppdatert. Sjekket %s"
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n != 1);";
