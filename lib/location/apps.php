@@ -22,23 +22,6 @@ class Location_Apps extends Location {
 		return $pathArray;
 	}
 	
-	public function check() {
-		$errors = array();
-		if ($this->oldBase && !is_writable($this->oldBase)) {
-			$errors[] = $this->oldBase;
-		}
-		
-		$this->collect(true);
-		foreach ($this->appsToUpdate as $item) {
-			$path = \OC_App::getAppPath($item);
-			if (!is_writable($path)) {
-				$errors[] = $path;
-			}
-		}
-
-		return $errors;
-	}
-
 	public function update($tmpDir = '') {
 		Helper::mkdir($tmpDir, true);
 		$this->collect(true);
