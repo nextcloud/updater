@@ -13,6 +13,9 @@ $TRANSLATIONS = array(
 "Moving files..." => "انتقال فایل ها ...",
 "All done. Click to the link below to start database upgrade." => "همه انجام شده. لینک زیر را برای شروع ارتقاء پایگاه داده کلیک کنید.",
 "Update failed" => "بروز رسانی ناموفق بود.",
+"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "به روز رسانی با شکست روبرو شد. لطفا لاگ های موجود در صفحه ادمین را بررسی کرده و مشکل را به href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a> گزا رش دهید.",
+"Proceed" => "انجام گرفته",
+"Updater" => "به روز رساننده",
 "Update Center" => "مرکز به روز رسانی ",
 "Backup Management" => "مدیریت پشتیبان گیری",
 "Update" => "به روز رسانی",
@@ -21,6 +24,7 @@ $TRANSLATIONS = array(
 "Done on" => "انجام شده در",
 "Download" => "دانلود",
 "Delete" => "حذف",
-"No backups found" => "هیچ پشتیبانی یافت نشد"
+"No backups found" => "هیچ پشتیبانی یافت نشد",
+"Up to date. Checked on %s" => "به روز، در تاریخ %s چک شد"
 );
 $PLURAL_FORMS = "nplurals=1; plural=0;";
