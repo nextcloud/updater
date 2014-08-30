@@ -5,6 +5,7 @@ $TRANSLATIONS = array(
 "Update permissions on this directory and its content or remove it manually first." => "Uuenda selle kataloogi ja sisu õigusi või eemalda see käsitsi.",
 "Update failed." => "Uuendamine ebaõnnestus.",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Uuendus ebaõnnestus. Palun vaata admin lehelt logisid ning teavita probleemidest  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud kogukonda</a>.",
+"Server error. Please check webserver log file for details" => "Serveri tõrge. Palun vaata üksikasju veebiserveri logifailist",
 "Retry" => "Proovi uuesti",
 "Here is your backup: " => "Siin on su varukoopia:",
 "Proceed" => "Jätka",
