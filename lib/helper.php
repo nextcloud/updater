@@ -16,7 +16,25 @@ class Helper {
 	const APP_DIRNAME = 'apps';
 	const THIRDPARTY_DIRNAME = '3rdparty';
 	const CORE_DIRNAME = 'core';
-	
+
+	public static function checkVersion($newVersionArray, $newVersionString){
+		$currentVersionArray = \OC_Util::getVersion();
+		$currentVersion = \OC_Util::getVersionString();
+
+		$difference = intval($newVersionArray[0]) - intval($currentVersionArray[0]);
+		if ($difference>1 || $difference<0 || version_compare($currentVersion, $newVersionString) > 0) {
+			$message = (string) App::$l10n->t(
+				'Not possible to update %s to %s. Downgrading or skipping major releases is not supported.', 
+				array(
+					$currentVersion,
+					implode('.', $newVersionArray)
+				)
+			); 
+			App::log($message);
+			throw new \Exception($message);
+		}
+	}
+
 	/**
 	 * Moves file/directory
 	 * @param string $src  - source path

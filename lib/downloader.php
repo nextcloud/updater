@@ -69,6 +69,9 @@ class Downloader {
 			throw new \Exception(self::$package . " extraction error. " . $hint);
 		}
 
+		include $baseDir . '/version.php';
+		Helper::checkVersion($OC_Version, $OC_VersionString);
+
 		$sources = Helper::getSources($version);
 		rename($baseDir . '/' . Helper::THIRDPARTY_DIRNAME, $sources[Helper::THIRDPARTY_DIRNAME]);
 		rename($baseDir . '/' . Helper::APP_DIRNAME, $sources[Helper::APP_DIRNAME]);
