@@ -38,6 +38,23 @@ try {
 		throw new \Exception((string) App::$l10n->t('Version not found'));
 	}
 	
+	$packageVersionArray = explode('.', $packageVersion);
+	$currentVersionArray = \OC_Util::getVersion();
+	$currentVersion = \OC_Util::getVersionString();
+	$difference = intval($packageVersionArray[0]) - intval($currentVersionArray[0]);
+	if ($difference>1 || $difference<0 || version_compare($currentVersion, $packageVersion) > 0) {
+		$message = (string) App::$l10n->t(
+			'Not possible to update %s to %s. Downgrading or skipping major releases is not supported.', 
+			array(
+				$currentVersion,
+				implode('.', $packageVersionArray)
+			)
+		); 
+		App::log($message);
+		throw new \Exception($message);
+	}
+	
+	
 	//Some cleanup first
 	Downloader::cleanUp($packageVersion);
 	if (!Downloader::isClean($packageVersion)){
