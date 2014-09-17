@@ -63,7 +63,10 @@ class Downloader {
 		if (!file_exists($baseDir)){
 			App::log('Expected fresh sources in ' . $baseDir . '. Nothing is found. Something is wrong with OC_Archive.');
 			App::log($extractDir  . ' content: ' . implode(' ', scandir($extractDir)));
-			throw new \Exception(self::$package . " extraction error");
+			if ($type === '.zip' && !extension_loaded('zip')){
+				$hint = App::$l10n->t('Please ask your server administrator to enable PHP zip extension.');
+			}
+			throw new \Exception(self::$package . " extraction error. " . $hint);
 		}
 
 		$sources = Helper::getSources($version);
