@@ -3,7 +3,7 @@ $TRANSLATIONS = array(
 "Version not found" => "Δεν βρέθηκε η έκδοση",
 "Upgrade is not possible. Your webserver has not enough permissions to remove the following directory:" => "Δεν ήταν δυνατή η αναβάθμιση. Ο διακομιστής ιστοσελίδων σας δεν έχει επαρκή δικαιώματα να αφαιρέσει τον παρακάτω κατάλογο:",
 "Update permissions on this directory and its content or remove it manually first." => "Ενημερώστε τις άδειες σε αυτόν τον κατάλογο και τα περιεχόμενά του ή αφαιρέστε τον πρώτα χειροκίνητα.",
-"Update failed." => "Αποτυχημένη ενημέρωση.",
+"Update failed." => "Η ενημέρωση απέτυχε.",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Η ενημέρωση απέτυχε. Παρακαλώ ελέγξτε το αρχείο καταγραφών στη σελίδα του διαχειριστή και αναφέρετε αυτό το ζήτημα στην <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">κοινότητα ownCloud </a>.",
 "Server error. Please check webserver log file for details" => "Σφάλμα διακομιστή. Παρακαλώ ελέξτε το αρχείο ιστορικού του διακομιστή για λεπτομέρειες",
 "Retry" => "Επανάληψη",
