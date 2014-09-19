@@ -10,6 +10,7 @@ $TRANSLATIONS = array(
 "Here is your backup: " => "Tässä on varmuuskopiosi:",
 "Proceed" => "Jatka",
 "All done. Click to the link below to start database upgrade." => "Kaikki valmista. Napsauta alla olevaa linkkiä aloittaaksesi tietokannan päivityksen.",
+"Please ask your server administrator to enable PHP zip extension." => "Pyydä palvelimen ylläpitäjää ottamaan käyttöön PHP:n zip-laajennuksen.",
 "Make sure that your webserver has read access to the following files and directories:" => "Varmista, että http-palvelimella on lukuoikeus seuraaviin tiedostoihin ja hakemistoihin:",
 "Make sure that your webserver has write access to the following files and directories:" => "Varmista, että http-palvelimella on kirjoitusoikeus seuraaviin tiedostoihin ja hakemistoihin:",
 "Updater" => "Päivitysohjelma",

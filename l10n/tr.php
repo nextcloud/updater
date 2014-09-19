@@ -10,6 +10,7 @@ $TRANSLATIONS = array(
 "Here is your backup: " => "İşte yedeğiniz:",
 "Proceed" => "Devam et",
 "All done. Click to the link below to start database upgrade." => "Her şey tamam. Veritabanı güncellemesi için aşağıdaki bağlantıya tıklayın.",
+"Please ask your server administrator to enable PHP zip extension." => "Lütfen PHP zip uzantısını etkinleştirmesi için sunucu yöneticinize danışın.",
 "Make sure that your webserver has read access to the following files and directories:" => "Aşağıdaki dosya ve dizinlere web sunucunuzun okuma izni olduğundan emin olun:",
 "Make sure that your webserver has write access to the following files and directories:" => "Aşağıdaki dosya ve dizinlere web sunucunuzun yazma izni olduğundan emin olun:",
 "Updater" => "Güncelleyici",
