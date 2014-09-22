@@ -37,7 +37,10 @@ try {
 		App::log('Invalid response from update feed.');
 		throw new \Exception((string) App::$l10n->t('Version not found'));
 	}
-	
+
+	$packageVersionArray = explode('.', $packageVersion);
+	Helper::checkVersion($packageVersionArray, $packageVersion);
+
 	//Some cleanup first
 	Downloader::cleanUp($packageVersion);
 	if (!Downloader::isClean($packageVersion)){
