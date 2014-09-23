@@ -10,6 +10,7 @@ $TRANSLATIONS = array(
 "Here is your backup: " => "Voici votre copie de sauvegarde :",
 "Proceed" => "Exécuter",
 "All done. Click to the link below to start database upgrade." => "Terminé. Cliquez sur le lien ci-dessous pour démarrer la mise à niveau de la base de données.",
+"Please ask your server administrator to enable PHP zip extension." => "Veuillez demander à votre administrateur système d'activer l'extension zip de PHP.",
 "Make sure that your webserver has read access to the following files and directories:" => "Veuillez vérifier que votre serveur web a les droits en lecture des fichiers et dossiers suivants :",
 "Make sure that your webserver has write access to the following files and directories:" => "Veuillez vérifier que votre serveur web a les droits en écriture des fichiers et dossiers suivants :",
 "Updater" => "Mises à jour",
@@ -21,6 +22,7 @@ $TRANSLATIONS = array(
 "Done on" => "Terminé le",
 "Download" => "Télécharger",
 "Delete" => "Supprimer",
-"No backups found" => "Aucune copie de sauvegarde n'a été trouvée."
+"No backups found" => "Aucune copie de sauvegarde n'a été trouvée.",
+"Up to date. Checked on %s" => "A jour. Vérifié le %s"
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n > 1);";
