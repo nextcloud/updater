@@ -11,6 +11,7 @@ $TRANSLATIONS = array(
 "Proceed" => "Proceder",
 "All done. Click to the link below to start database upgrade." => "Tudo concluido. Clique no link abaixo para iniciar a atualização do banco de dados.",
 "Please ask your server administrator to enable PHP zip extension." => "Por favor, solicite ao seu administrador do servidor para permitir a extensão zip PHP.",
+"Not possible to update %s to %s. Downgrading or skipping major releases is not supported." => "Não é possível atualizar %s para %s. Não é suportado desatualização ou pular grandes lançamentos.",
 "Make sure that your webserver has read access to the following files and directories:" => "Certifique-se que o servidor web tem permissão de leitura para os seguintes arquivos e diretórios:",
 "Make sure that your webserver has write access to the following files and directories:" => "Certifique-se que o servidor web tem permissão de escrita para os seguintes arquivos e diretórios:",
 "Updater" => "Atualizador",

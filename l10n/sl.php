@@ -11,6 +11,7 @@ $TRANSLATIONS = array(
 "Proceed" => "Nadaljuj",
 "All done. Click to the link below to start database upgrade." => "Končano. Kliknite na spodnjo povezavo za začetek posodabljanja podatkovne zbirke.",
 "Please ask your server administrator to enable PHP zip extension." => "Obvestite skrbnika strežnika, da je treba omogočiti razširitev PHP za podporo datotekam zip.",
+"Not possible to update %s to %s. Downgrading or skipping major releases is not supported." => "Ni mogoče posodobiti %s na %s. Ponižanje različice in izpuščanje večjih objav ni podprto.",
 "Make sure that your webserver has read access to the following files and directories:" => "Prepričajte se, da so ustrezno nastavljena dovoljenja spletnega strežnika za branje in dostop do navedenih datotek in map:",
 "Make sure that your webserver has write access to the following files and directories:" => "Prepričajte se, da so ustrezno nastavljena dovoljenja spletnega strežnika za zapisovanje in dostop do navedenih datotek in map:",
 "Updater" => "Posodabljalnik",

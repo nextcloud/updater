@@ -11,6 +11,7 @@ $TRANSLATIONS = array(
 "Proceed" => "Jatka",
 "All done. Click to the link below to start database upgrade." => "Kaikki valmista. Napsauta alla olevaa linkkiä aloittaaksesi tietokannan päivityksen.",
 "Please ask your server administrator to enable PHP zip extension." => "Pyydä palvelimen ylläpitäjää ottamaan käyttöön PHP:n zip-laajennuksen.",
+"Not possible to update %s to %s. Downgrading or skipping major releases is not supported." => "Päivitys versiosta %s versioon %s ei ole mahdollista. Suurversioiden päivittäminen alaspäin tai niiden ohittaminen ei ole tuettu.",
 "Make sure that your webserver has read access to the following files and directories:" => "Varmista, että http-palvelimella on lukuoikeus seuraaviin tiedostoihin ja hakemistoihin:",
 "Make sure that your webserver has write access to the following files and directories:" => "Varmista, että http-palvelimella on kirjoitusoikeus seuraaviin tiedostoihin ja hakemistoihin:",
 "Updater" => "Päivitysohjelma",
