@@ -11,6 +11,7 @@ $TRANSLATIONS = array(
 "Proceed" => "Продължи",
 "All done. Click to the link below to start database upgrade." => "Готово. Натисни връзката по-долу за обновяване на базата от данни.",
 "Please ask your server administrator to enable PHP zip extension." => "Моля, поискай твоят администратор да разреши PHP zip разширения.",
+"Not possible to update %s to %s. Downgrading or skipping major releases is not supported." => "Не е възможна да се обнови %s до %s. Обновяване до по-стара версия или прескачането на главна версия не се поддържа.",
 "Make sure that your webserver has read access to the following files and directories:" => "Увери се, че твоят уеб сървър има достъп за четене до следните файлове и директории:",
 "Make sure that your webserver has write access to the following files and directories:" => "Увери се, че твоят уеб сървър има права за запис до следните файлове и директории:",
 "Updater" => "Обновяване",
