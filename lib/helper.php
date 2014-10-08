@@ -48,7 +48,7 @@ class Helper {
 	}
 	
 	/**
-	 * Check permissions recoursive 
+	 * Check permissions recursive
 	 * @param string $src  - path to check
 	 * @param string $src  - path to check
 	 */
@@ -70,7 +70,7 @@ class Helper {
 	}
 	
 	/**
-	 * Copy recoursive 
+	 * Copy recursive
 	 * @param string $src  - source path
 	 * @param string $dest - destination path
 	 * @throws \Exception on error
@@ -102,11 +102,11 @@ class Helper {
 	/**
 	 * Wrapper for mkdir
 	 * @param string $path
-	 * @param bool $isRecoursive
+	 * @param bool $isRecursive
 	 * @throws \Exception on error
 	 */
-	public static function mkdir($path, $isRecoursive = false) {
-		if (!mkdir($path, 0755, $isRecoursive)) {
+	public static function mkdir($path, $isRecursive = false) {
+		if (!mkdir($path, 0755, $isRecursive)) {
 			throw new \Exception("Unable to create $path");
 		}
 	}
