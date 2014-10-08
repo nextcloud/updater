@@ -14,17 +14,21 @@
 namespace OCA\Updater;
 
 class PermissionException extends \Exception{
+
+	/**
+	 * @var \OCA\Updater\Collection
+	 */
 	private $collection;
 	
 	public function getExtendedMessage(){
 		$message = '';
 		if (count($this->collection->getNotReadable())) {
-			$message .= App::$l10n->t('Make sure that your webserver has read access to the following files and directories:');
+			$message .= App::$l10n->t('Make sure that your web server has read access to the following files and directories:');
 			$message .= '<br />' . implode('<br />', $this->collection->getNotReadable());
 			$message .= '<br /><br />';
 		}
 		if (count($this->collection->getNotWritable())) {
-			$message .= App::$l10n->t('Make sure that your webserver has write access to the following files and directories:');
+			$message .= App::$l10n->t('Make sure that your web server has write access to the following files and directories:');
 			$message .= '<br />' . implode('<br />', $this->collection->getNotWritable());
 		}
 		return $message;

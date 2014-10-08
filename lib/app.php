@@ -16,6 +16,9 @@ class App {
 
 	const APP_ID = 'updater';
 
+	/**
+	 * @var \OC_L10N
+	 */
 	public static $l10n;
 	
 	public static function init() {

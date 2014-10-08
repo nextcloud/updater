@@ -33,5 +33,3 @@ foreach ($list as $item){
 }
 
 \OCP\JSON::success(array('data' => $result));
-
-exit();

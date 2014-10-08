@@ -11,18 +11,37 @@
  */
 
 ?>
-<?php $data = OC_Updater::check(); ?>
-<?php $isNewVersionAvailable = isset($data['version'])  && $data['version'] != '' && $data['version'] !== Array() ?>
+<?php $isNewVersionAvailable = $_['isNewVersionAvailable']?>
 <div id="updater-content" ng-app="updater" ng-init="navigation='backup'">
-	<ul class="tabs" ng-model="navigation">
-		<li ng-click="navigation='backup'" ng-class="{current : navigation=='backup'}"><?php p($l->t('Backup Management')) ?></li>
-		<li ng-click="navigation='update'" ng-class="{current : navigation=='update'}"><?php p($l->t('Update')) ?></li>
-	</ul>
-	<fieldset ng-controller="backupCtrl" ng-show="navigation=='backup'">
-		<label for="backupbase"><?php p($l->t('Backup directory')) ?></label>
-		<input readonly="readonly" type="text" id="backupbase" value="<?php p(\OCA\Updater\App::getBackupBase()); ?>" />
-		<table ng-controller="backupCtrl">
-			<thead ng-hide="!entries.length">
+	<div class="section" ng-controller="updateCtrl">
+		<h2><?php p($l->t('Updates')) ?></h2>
+		<p id="update-info" ng-show="<?php p($isNewVersionAvailable) ?>">
+			<?php p($l->t('A new version is available: %s', array($_['version']))) ?>
+		</p>
+		<p ng-show="<?php p(!$isNewVersionAvailable) ?>">
+			<?php p($l->t('Up to date. Checked on %s', array('checkedAt' => $_['checkedAt']))) ?>
+		</p>
+		<div id="upd-step-title" style="display:none;">
+			<ul class="track-progress" data-steps="3">
+				<li class="icon-breadcrumb"><?php p($l->t('1. Check & Backup')) ?></li>
+				<li class="icon-breadcrumb"><?php p($l->t('2. Download & Extract')) ?></li>
+				<li><?php p($l->t('3. Replace')) ?></li>
+			</ul>
+		</div>
+		<div id="upd-progress" style="display:none;"><div></div></div>
+		<button ng-click="update()" ng-show="<?php p($isNewVersionAvailable) ?>" id="updater-start">
+			<?php p($l->t('Update')) ?>
+		</button>
+	</div>
+	<div class="section" ng-controller="backupCtrl">
+		<h2><?php p($l->t('Backups')) ?></h2>
+		<p>
+			<?php p($l->t('Backup directory')) ?>:
+			<?php p(\OCA\Updater\App::getBackupBase()); ?>
+		</p>
+		<p ng-show="!entries.length"><?php p($l->t('No backups found')) ?></p>
+		<table ng-hide="!entries.length">
+			<thead>
 				<tr>
 					<th><?php p($l->t('Backup')) ?></th>
 					<th><?php p($l->t('Done on')) ?></th>
@@ -33,26 +52,9 @@
 				<tr ng-repeat="entry in entries">
 					<td title="<?php p($l->t('Download')) ?>" class="item" ng-click="doDownload(entry.title)">{{entry.title}}</td>
 					<td title="<?php p($l->t('Download')) ?>" class="item" ng-click="doDownload(entry.title)">{{entry.date}}</td>
-					<td title="<?php p($l->t('Delete')) ?>" class="item" ng-click="doDelete(entry.title)"><?php p($l->t('Delete')) ?></td>
+					<td title="<?php p($l->t('Delete')) ?>" class="item icon-delete" ng-click="doDelete(entry.title)"></td>
 				</tr>
-				<tr ng-show="!entries.length"><td colspan="3"><?php p($l->t('No backups found')) ?></td></tr>
 			</tbody>
 		</table>
-	</fieldset>
-	<fieldset ng-controller="updateCtrl" ng-show="navigation=='update'">
-		<div id="upd-step-title" style="display:none;">
-			<ul class="track-progress" data-steps="3">
-				<li><span>Check & Backup</span></li>
-				<li><span>Download & Extract</span></li>
-				<li><span>Replace</span></li>
-			</ul>
-		</div>
-		<div id="upd-progress" style="display:none;"><div></div></div>
-		<button ng-click="update()" ng-show="<?php p($isNewVersionAvailable) ?>" id="updater-start">
-			<?php p($l->t('Update')) ?>
-		</button>
-		<p ng-show="<?php p(!$isNewVersionAvailable) ?>">
-			<?php p($l->t('Up to date. Checked on %s', array('checkedAt' => $_['checkedAt']))) ?>
-		</p>
-	</fieldset>
+	</div>
 </div>
