@@ -44,7 +44,7 @@ try {
 	//Some cleanup first
 	Downloader::cleanUp($packageVersion);
 	if (!Downloader::isClean($packageVersion)){
-		$message = App::$l10n->t('Upgrade is not possible. Your web server has not enough permissions to remove the following directory:');
+		$message = App::$l10n->t('Upgrade is not possible. Your web server does not have permission to remove the following directory:');
 		$message .= '<br />' . Downloader::getPackageDir($packageVersion);
 		$message .= '<br />' . App::$l10n->t('Update permissions on this directory and its content or remove it manually first.');
 		throw new \Exception($message);
@@ -52,7 +52,7 @@ try {
 
 	Updater::cleanUp();
 	if (!Updater::isClean()){
-		$message = App::$l10n->t('Upgrade is not possible. Your web server has not enough permissions to remove the following directory:');
+		$message = App::$l10n->t('Upgrade is not possible. Your web server does not have permission to remove the following directory:');
 		$message .= '<br />' . Updater::getTempDir();
 		$message .= '<br />' . App::$l10n->t('Update permissions on this directory and its content or remove it manually first.');
 		throw new \Exception($message);
