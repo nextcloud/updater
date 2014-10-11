@@ -1,6 +1,7 @@
 <?php
 $TRANSLATIONS = array(
 "Version not found" => "Version nicht gefunden",
+"Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Hochrüstung nicht möglich. Dein Webserver hat keine ausreichende Berechtigung zum Löschen des folgenden Verzeichnisses:",
 "Update permissions on this directory and its content or remove it manually first." => "Aktualisiere die Berechtigungen für dieses Verzeichnis und den Inhalt oder lösche es vorher manuell.",
 "Update failed." => "Aktualisierung fehlgeschlagen",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Die Aktualisierung ist fehlgeschlagen. Bitte überprüfe die Protokolle auf der Administratorseite und melde dieses Problem an die <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud-Gemeinschaft</a>.",

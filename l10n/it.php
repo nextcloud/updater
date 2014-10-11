@@ -1,6 +1,7 @@
 <?php
 $TRANSLATIONS = array(
 "Version not found" => "Versione non trovata",
+"Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Impossibile aggiornare. Il tuo server web non ha i permessi per rimuovere la seguente cartella:",
 "Update permissions on this directory and its content or remove it manually first." => "Aggiorna i permessi su questa cartella e il suo contenuto oppure rimuovila manualmente.",
 "Update failed." => "Aggiornamento non riuscito",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "L'aggiornamento non è riuscito. Controlla i log nella pagina di amministrazione e segnala il problema alla <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunità di ownCloud</ a>.",
@@ -18,8 +19,11 @@ $TRANSLATIONS = array(
 "Updates" => "Aggiornamenti",
 "A new version is available: %s" => "Una nuova versione è disponibile: %s",
 "Up to date. Checked on %s" => "Aggiornato. Controllato il %s",
+"1. Check & Backup" => "1. Controlla ed crea copie di sicurezza",
 "2. Download & Extract" => "2. Scarica ed estrai",
+"3. Replace" => "3. Sostituisci",
 "Update" => "Aggiorna",
+"Backups" => "Copie di sicurezza",
 "Backup directory" => "Cartella backup",
 "No backups found" => "Nessun backup trovato",
 "Backup" => "Backup",

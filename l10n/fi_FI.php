@@ -1,6 +1,7 @@
 <?php
 $TRANSLATIONS = array(
 "Version not found" => "Versiota ei löytynyt",
+"Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Päivitys ei ole mahdollinen. HTTP-palvelimella ei ole oikeutta poistaa seuraavaa hakemistoa:",
 "Update permissions on this directory and its content or remove it manually first." => "Päivitä tämän hakemiston ja sen sisällön oikeudet tai poista se ensin käsin.",
 "Update failed." => "Päivitys epäonnistui.",
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Päivitys epäonnistui. Tarkista lokit ylläpitosivulta ja ilmoita ongelmasta <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud-yhteisölle</a>.",
