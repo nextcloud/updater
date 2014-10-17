@@ -12,6 +12,7 @@ $TRANSLATIONS = array(
 "Open Update Center" => "Öppna Uppdateringscentret.",
 "Updates" => "Uppdateringar",
 "A new version is available: %s" => "En ny version är tillgänglig: %s",
+"Up to date. Checked on %s" => "Uppdaterad. Senaste kontroll: %s",
 "1. Check & Backup" => "1. Kontrollera och gör Backup",
 "2. Download & Extract" => "2. Ladda ner och Packa upp",
 "3. Replace" => "3. Ersätt",
