@@ -25,7 +25,8 @@ try {
 
 	//Package version e.g. 4.0.4
 	$packageVersion = '';
-	$updateData = \OC_Updater::check();
+	$updater = new \OC\Updater();
+	$updateData = $updater->check('http://apps.owncloud.com/updater.php');
 
 	if (isset($updateData['version']) && $updateData['version'] !== Array()){
 		$packageVersion = $updateData['version'];
