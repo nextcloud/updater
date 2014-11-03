@@ -27,21 +27,24 @@ class Location_Apps extends Location {
 		$this->collect(true);
 		try {
 			foreach ($this->appsToUpdate as $appId) {
+				if (!@file_exists($this->newBase . '/' . $appId)){
+					continue;
+				}
 				$path = \OC_App::getAppPath($appId);
 				if ($path) {
-					if (!@file_exists($this->newBase . '/' . $appId)){
-						$this->appsToDisable[$appId] = $appId;
-					} else {
-						Helper::move($path, $tmpDir . '/' . $appId);
+					Helper::move($path, $tmpDir . '/' . $appId);
 					
-						// ! reverted intentionally
-						$this->done [] = array(
-							'dst' => $path,
-							'src' => $tmpDir . '/' . $appId
-						);
+					// ! reverted intentionally
+					$this->done [] = array(
+						'dst' => $path,
+						'src' => $tmpDir . '/' . $appId
+					);
 					
-						Helper::move($this->newBase . '/' . $appId, $path);
-					}
+					Helper::move($this->newBase . '/' . $appId, $path);
+				} else { 
+					// The app is new and doesn't exist in the current instance
+					$pathData = first(\OC::$APPSROOTS);
+					Helper::move($this->newBase . '/' . $appId, $pathData['path'] . '/' . $appId);
 				}
 			}
 			$this->finalize();
