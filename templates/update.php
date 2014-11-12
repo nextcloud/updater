@@ -19,7 +19,7 @@
 			<?php p($l->t('A new version is available: %s', array($_['version']))) ?>
 		</p>
 		<p ng-show="<?php p(!$isNewVersionAvailable) ?>">
-			<?php p($l->t('Up to date. Checked on %s', array('checkedAt' => $_['checkedAt']))) ?>
+			<?php p($l->t('Up to date. Checked on %s', array($_['checkedAt']))) ?>
 		</p>
 		<div id="upd-step-title" style="display:none;">
 			<ul class="track-progress" data-steps="3">
