@@ -7,7 +7,6 @@ $TRANSLATIONS = array(
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Päivitys epäonnistui. Tarkista lokit ylläpitosivulta ja ilmoita ongelmasta <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud-yhteisölle</a>.",
 "Server error. Please check web server log file for details" => "Palvelinvirhe. Tarkista http-palvelimen lokitiedosto",
 "Retry" => "Yritä uudelleen",
-"Here is your backup: " => "Tässä on varmuuskopiosi:",
 "Proceed" => "Jatka",
 "All done. Click to the link below to start database upgrade." => "Kaikki valmista. Napsauta alla olevaa linkkiä aloittaaksesi tietokannan päivityksen.",
 "Please ask your server administrator to enable PHP zip extension." => "Pyydä palvelimen ylläpitäjää ottamaan käyttöön PHP:n zip-laajennuksen.",

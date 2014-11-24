@@ -7,7 +7,6 @@ $TRANSLATIONS = array(
 "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Die Aktualisierung ist fehlgeschlagen. Bitte überprüfen Sie die Protokolle auf der Administratorseite und melden Sie dieses Problem an die <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud-Gemeinschaft</a>.",
 "Server error. Please check web server log file for details" => "Serverfehler. Bitte die Protokolldatei des Servers für mehr Details überprüfen",
 "Retry" => "Wiederholen",
-"Here is your backup: " => "Hier befindet sich Ihre Sicherung:",
 "Proceed" => "Fortfahren",
 "All done. Click to the link below to start database upgrade." => "Alles erledigt. Klicken Sie auf den unteren Link, um die Aktualisierung der Datenbank zu starten.",
 "Please ask your server administrator to enable PHP zip extension." => "Bitte bei Ihrem Server-Administrator die Aktivierung der PHP-Zip-Erweiterung erfragen.",

@@ -8,7 +8,6 @@ OC.L10N.register(
     "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Aktualizacja nie powiodła się. Prosimy sprawdzić logi i zgłosić ten problem na <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>.",
     "Server error. Please check web server log file for details" : "Błąd serwera. Proszę sprawdzić log serwera www, aby uzyskać więcej informacji",
     "Retry" : "Powtórz",
-    "Here is your backup: " : "Twoja kopia:",
     "Proceed" : "Wykonaj",
     "All done. Click to the link below to start database upgrade." : "Wszystko zrobione. Kliknij na link poniżej, aby rozpocząć uaktualnienie bazy danych.",
     "Please ask your server administrator to enable PHP zip extension." : "Poproś administratora Twojego serwera, aby włączył rozszerzenie PHP zip.",

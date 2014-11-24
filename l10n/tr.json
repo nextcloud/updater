@@ -6,7 +6,6 @@
     "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Güncelleme başarısız oldu. Lütfen yönetici sayfasındaki günlüğü denetleyin ve bu durumu <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud topluluğuna</a> bildirin.",
     "Server error. Please check web server log file for details" : "Sunucu hatası. Lütfen ayrıntılar için web sunucunuzun günlük dosyasına bakın",
     "Retry" : "Yeniden Dene",
-    "Here is your backup: " : "İşte yedeğiniz: ",
     "Proceed" : "Devam et",
     "All done. Click to the link below to start database upgrade." : "Her şey tamam. Veritabanı güncellemesi için aşağıdaki bağlantıya tıklayın.",
     "Please ask your server administrator to enable PHP zip extension." : "Lütfen PHP zip uzantısını etkinleştirmesi için sunucu yöneticinize danışın.",

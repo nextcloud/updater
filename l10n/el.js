@@ -8,7 +8,6 @@ OC.L10N.register(
     "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Η ενημέρωση απέτυχε. Παρακαλώ ελέγξτε το αρχείο καταγραφών στη σελίδα του διαχειριστή και αναφέρετε αυτό το ζήτημα στην <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">κοινότητα ownCloud </a>.",
     "Server error. Please check web server log file for details" : "Σφάλμα διακομιστή. Παρακαλώ ελέξτε το αρχείο καταγραφής του διακομιστή δικτύου για λεπτομέρειες",
     "Retry" : "Επανάληψη",
-    "Here is your backup: " : "Αντίγραφο ασφαλείας:",
     "Proceed" : "Συνέχιση",
     "All done. Click to the link below to start database upgrade." : "Όλα έτοιμα. Κάντε κλικ στον παρακάτω σύνδεσμο για να εκκινήσετε την αναβάθμιση της βάσης δεδομένων.",
     "Please ask your server administrator to enable PHP zip extension." : "Παρακαλώ ζητείστε από τον διαχειριστή του διακομιστή να ενεργοποιήσει την επέκταση PHP zip",

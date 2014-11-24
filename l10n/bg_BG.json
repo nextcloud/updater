@@ -6,7 +6,6 @@
     "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Обновяването е неуспешно. Моля, провери записите в доклада в страницата за управление и докладвайте проблема в <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud общността</a>.",
     "Server error. Please check web server log file for details" : "Сървърна грешка. Моля, провери лог файловете за повече информация",
     "Retry" : "Опитай Отново",
-    "Here is your backup: " : "Това е твоят архив:",
     "Proceed" : "Продължи",
     "All done. Click to the link below to start database upgrade." : "Готово. Натисни връзката по-долу за обновяване на базата от данни.",
     "Please ask your server administrator to enable PHP zip extension." : "Моля, поискай твоят администратор да разреши PHP zip разширения.",

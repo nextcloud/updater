@@ -6,7 +6,6 @@
     "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Aktualizácia nebola úspešná. Skontrolujte logy v administračnom rozhraní a oznámte túto udalosť <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud komunite</a>.",
     "Server error. Please check web server log file for details" : "Chyba servera. Pre získanie viac informácií pozrite logy servera",
     "Retry" : "Skúsiť znova",
-    "Here is your backup: " : "Tu je vaša záloha:",
     "Proceed" : "Vykonať",
     "All done. Click to the link below to start database upgrade." : "Hotovo. Kliknite na nasledovný odkaz pre začatie aktualizácie databázy.",
     "Please ask your server administrator to enable PHP zip extension." : "Požiadajte správcu servera o zapnutie PHP zip rozšírenia.",

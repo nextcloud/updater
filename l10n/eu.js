@@ -8,7 +8,6 @@ OC.L10N.register(
     "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Eguneraketak ez du arrakastarik izan. Mesedez aztertu egunerakoak administrazio orria eta eman abisua  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud komunitateari</a>.",
     "Server error. Please check web server log file for details" : "Zerbitzariko errorea. Begiratu web zerbitzariaren log fitxategia zehaztasunetarako.",
     "Retry" : "Saiatu berriro.",
-    "Here is your backup: " : "Hemen duzu segurtasun kopia:",
     "Proceed" : "Jarraitu",
     "All done. Click to the link below to start database upgrade." : "Dena egina. Sakatu beheko lotura datu basearen eguneraketa egiteko.",
     "Please ask your server administrator to enable PHP zip extension." : "Mesedez eskatu zure zerbitzariaren kudeatzaileari PHP zip extensioa gaitu dezan.",

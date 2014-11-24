@@ -6,7 +6,6 @@
     "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "A atualização falhou. Por favor verifique os registos na página de administração e relate este assunto à <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunidade ownCloud</a>.",
     "Server error. Please check web server log file for details" : "Erro de servidor. Verifique os logs do seu servidor para mais detalhes.",
     "Retry" : "Tentar novamente",
-    "Here is your backup: " : "Aqui está a sua cópia de segurança:",
     "Proceed" : "Continuar",
     "All done. Click to the link below to start database upgrade." : "Tudo feito. Clique no atalho abaixo para iniciar a atualização da base de dados.",
     "Please ask your server administrator to enable PHP zip extension." : "Peça ao administrador do servidor para activar a extensão PHP zip.",

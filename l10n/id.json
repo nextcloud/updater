@@ -6,7 +6,6 @@
     "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Pembaruan tidak berhasil. Mohon periksa log di halaman admin dan laporkan masalah ini ke <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">komunitas ownCloud</a>.",
     "Server error. Please check web server log file for details" : "Kesalahan server. Mohon periksa berkas log server web untuk rinciannya",
     "Retry" : "Ulangi",
-    "Here is your backup: " : "Ini cadangan Anda:",
     "Proceed" : "Melanjutkan",
     "All done. Click to the link below to start database upgrade." : "Selesai. Klik pada tautan berikut untuk memulai peningkatan versi basis data.",
     "Please ask your server administrator to enable PHP zip extension." : "Mohon tanyakan ke administrator server Anda untuk mengaktifkan ekstensi PHP zip.",
