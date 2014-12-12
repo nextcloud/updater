@@ -10,18 +10,12 @@
  * later.
  */
 
-namespace OCA\Updater;
+namespace OCA\Updater\Location;
 
-class Location_3rdparty extends Location {
+use OCA\Updater\Location as Location;
+
+class Thirdparty extends Location {
 	
 	protected $type = '3rdparty';
-	
-	protected function filterOld($pathArray) {
-		return $pathArray;
-	}
-
-	protected function filterNew($pathArray) {
-		return $pathArray;
-	}
 	
 }

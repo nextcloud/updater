@@ -105,8 +105,12 @@ abstract class Location {
 	}
 
 	// Filter input 
-	abstract protected function filterOld($pathArray);
+	protected function filterOld($pathArray) {
+		return $pathArray;
+	}
 
 	// Filter input 
-	abstract protected function filterNew($pathArray);
+	protected function filterNew($pathArray) {
+		return $pathArray;
+	}
 }

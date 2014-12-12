@@ -23,10 +23,6 @@ class App {
 	
 	public static function init() {
 		self::$l10n = \OCP\Util::getL10N(self::APP_ID);
-		\OC::$CLASSPATH['OCA\Updater\Location_3rdparty'] = self::APP_ID . '/lib/location/3rdparty.php';
-		\OC::$CLASSPATH['OCA\Updater\Location_Apps'] = self::APP_ID . '/lib/location/apps.php';
-		\OC::$CLASSPATH['OCA\Updater\Location_Core'] = self::APP_ID . '/lib/location/core.php';
-		
 		//Allow config page
 		\OCP\App::registerAdmin(self::APP_ID, 'admin');
 	}

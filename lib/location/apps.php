@@ -10,21 +10,20 @@
  * later.
  */
 
-namespace OCA\Updater;
+namespace OCA\Updater\Location;
 
-class Location_Apps extends Location {
+use OCA\Updater\Location as Location;
+use OCA\Updater\Helper;
+
+class Apps extends Location {
 
 	protected $type = 'apps';
 	protected $appsToDisable = array();
 	protected $appsToUpdate = array();
-
-	protected function filterOld($pathArray) {
-		return $pathArray;
-	}
 	
 	public function update($tmpDir = '') {
 		Helper::mkdir($tmpDir, true);
-		$this->collect(true);
+		$this->collect();
 		try {
 			foreach ($this->appsToUpdate as $appId) {
 				if (!@file_exists($this->newBase . '/' . $appId)){
@@ -61,10 +60,6 @@ class Location_Apps extends Location {
 		parent::finalize();
 	}
 
-	protected function filterNew($pathArray) {
-		return $pathArray;
-	}
-
 	public function collect($dryRun = false) {
 		$dh = opendir($this->newBase);
 		if (is_resource($dh)) {
@@ -75,5 +70,4 @@ class Location_Apps extends Location {
 			}
 		}
 	}
-
 }

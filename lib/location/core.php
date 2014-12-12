@@ -10,9 +10,13 @@
  * later.
  */
 
-namespace OCA\Updater;
+namespace OCA\Updater\Location;
 
-class Location_Core extends Location {
+use OCA\Updater\Location as Location;
+use OCA\Updater\App;
+use OCA\Updater\Helper;
+
+class Core extends Location {
 
 	protected $type = 'core';
 
@@ -61,5 +65,4 @@ class Location_Core extends Location {
 
 		parent::finalize();
 	}
-
 }
