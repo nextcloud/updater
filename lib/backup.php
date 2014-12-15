@@ -24,9 +24,30 @@ class Backup {
 	 * Perform backup
 	 * @return string
 	 */
-	public static function create() {
+	public static function create($version) {
 		$collection = new Collection();
-		$locations = Helper::getPreparedLocations();
+		$installed = Helper::getDirectories();
+		$sources = Helper::getSources($version);
+		$thirdPartyUpdater = new \OCA\Updater\Location\Thirdparty(
+						$installed[Helper::THIRDPARTY_DIRNAME],
+						$sources[Helper::THIRDPARTY_DIRNAME]
+		);
+		$coreUpdater = new \OCA\Updater\Location\Core(
+						$installed[Helper::CORE_DIRNAME],
+						$sources[Helper::CORE_DIRNAME]
+		);
+		$appUpdater = new \OCA\Updater\Location\Apps(
+						$installed[Helper::APP_DIRNAME],
+						''
+		);
+		$thirdPartyFiles = $thirdPartyUpdater->collect(true);
+		$coreFiles = $coreUpdater->collect(true);
+		$appFiles = $appUpdater->collect(true);
+		$locations = array(
+			Helper::THIRDPARTY_DIRNAME => $thirdPartyFiles['old'], 
+			Helper::CORE_DIRNAME => $coreFiles['old'],
+			Helper::APP_DIRNAME => $appFiles['old']
+		);
 		foreach ($locations as $type => $dirs) {
 			foreach ($dirs as $name => $path) {
 				Helper::checkr($path, $collection);
@@ -87,5 +108,4 @@ class Backup {
 		}
 		Helper::removeIfExists(App::getTempBase());
 	}
-
 }

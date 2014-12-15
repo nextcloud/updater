@@ -160,67 +160,6 @@ class Helper {
 			return true;
 		}
 	}
-
-	/**
-	 * Get the final list of files/directories to be replaced
-	 * e.g. ['core']['lib'] = '/path/to/lib'
-	 * @return array
-	 */
-	public static function getPreparedLocations() {
-		$preparedLocations  = array();
-		foreach (self::getDirectories() as $type => $path) {
-			$preparedLocations[$type] = self::getFilteredContent($path);
-		}
-		return $preparedLocations;
-	}
-	
-	/**
-	 * Lists directory content as an array
-	 * ['basename']=>'full path' 
-	 * e.g.['lib'] = '/path/to/lib'
-	 * @param string $path
-	 * @return array
-	 */
-	public static function getFilteredContent($path){
-		$result = array();
-		$filtered =  self::filterLocations(self::scandir($path), $path);
-		foreach ($filtered as $dirName){
-			$result [$dirName] = $path . '/' . $dirName;
-		}
-		return $result;
-	}
-
-	public static function filterLocations($locations, $basePath) {
-		$fullPath = array_values(self::getDirectories());
-		$fullPath[] = rtrim(App::getBackupBase(), '/');
-		$fullPath[] = rtrim(App::getTempBase(), '/');
-		$fullPath[] = \OCP\Config::getSystemValue( "datadirectory", \OC::$SERVERROOT."/data" );
-		$fullPath[] = \OC::$SERVERROOT."/themes";
-		
-		foreach($fullPath as $key=>$path){
-			$fullPath[] = realpath($path);
-		}
-		
-		$exclusions = array(
-			'full' => $fullPath,
-			'relative' => array('.', '..')
-		);
-		
-		foreach ($locations as $key => $location) {
-			$fullPath = $basePath . '/' .$location;
-			$realPath = realpath($fullPath);
-			if (is_file($fullPath)) {
-				continue;
-			}
-			if (in_array($fullPath, $exclusions['full'])
-				|| in_array($realPath, $exclusions['full'])
-				|| in_array($location, $exclusions['relative'])
-			) {
-				unset($locations[$key]);
-			}
-		}
-		return $locations;
-	}
 	
 	/**
 	 * Get the list of directories to be replaced on update
@@ -230,17 +169,14 @@ class Helper {
 		$dirs = array();
 		$dirs[self::THIRDPARTY_DIRNAME] = \OC::$THIRDPARTYROOT . '/' . self::THIRDPARTY_DIRNAME;
 		
-		//Long, long ago we had single app location
 		if (isset(\OC::$APPSROOTS)) {
 			foreach (\OC::$APPSROOTS as $i => $approot){
 				$index = $i ? $i : '';
 				$dirs[self::APP_DIRNAME . $index] = $approot['path'];
 			}
-		} else {
-			$dirs[self::APP_DIRNAME] = \OC::$APPSROOT . '/' . self::APP_DIRNAME;
 		}
 		
-	    $dirs[self::CORE_DIRNAME] = \OC::$SERVERROOT;
+		$dirs[self::CORE_DIRNAME] = \OC::$SERVERROOT;
 		return $dirs;
 	}
 	

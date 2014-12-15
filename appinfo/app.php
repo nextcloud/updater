@@ -14,5 +14,3 @@ namespace OCA\Updater;
 
 //Startup
 App::init();
-
-

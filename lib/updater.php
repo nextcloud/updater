@@ -37,21 +37,21 @@ class Updater {
 		$sources = Helper::getSources($version);
 		
 		try{
-				$thirdPartyUpdater = new OCA\Updater\Location\Thirdparty(
+				$thirdPartyUpdater = new \OCA\Updater\Location\Thirdparty(
 						$installed[Helper::THIRDPARTY_DIRNAME],
 						$sources[Helper::THIRDPARTY_DIRNAME]
 				);
 				$thirdPartyUpdater->update($tempDir . '/' . Helper::THIRDPARTY_DIRNAME);
 				self::$processed[] = $thirdPartyUpdater;
 				
-				$coreUpdater = new OCA\Updater\Location\Core(
+				$coreUpdater = new \OCA\Updater\Location\Core(
 						$installed[Helper::CORE_DIRNAME],
 						$sources[Helper::CORE_DIRNAME]
 				);
 				$coreUpdater->update($tempDir . '/' . Helper::CORE_DIRNAME);
 				self::$processed[] = $coreUpdater;
 				
-				$appsUpdater = new OCA\Updater\Location\Apps(
+				$appsUpdater = new \OCA\Updater\Location\Apps(
 						'', //TODO: put smth really helpful here ;)
 						$sources[Helper::APP_DIRNAME]
 				);

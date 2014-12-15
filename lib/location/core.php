@@ -22,8 +22,8 @@ class Core extends Location {
 	
 	protected function getWhitelist(){
 		$strList = file_get_contents(dirname(__DIR__) . '/files.json');
-		$fullList = json_decode($strList);
-		$list = $fullList['base'];
+		$fullList = json_decode($strList, true);
+		$list = $fullList['generic'];
 		return $list;
 	}
 
@@ -32,7 +32,7 @@ class Core extends Location {
 
 		// Skip 3rdparty | apps | backup | datadir | config | themes
 		foreach ($pathArray as $key => $path) {
-			if (!in_array($whitelist, $path)) {
+			if (!in_array($path, $whitelist)) {
 				unset($pathArray[$key]);
 			}
 		}
@@ -50,10 +50,6 @@ class Core extends Location {
 	}
 
 	protected function finalize() {
-		// overwrite config.sample.php
-		Helper::removeIfExists($this->oldBase . '/config/config.sample.php');
-		Helper::move($this->newBase . '/config/config.sample.php', $this->oldBase . '/config/config.sample.php');
-
 		// overwrite themes content with new files only
 		$themes = $this->toAbsolute(
 				$this->newBase . '/themes', Helper::scandir($this->newBase . '/themes')

@@ -18,7 +18,6 @@ use OCA\Updater\Helper;
 class Apps extends Location {
 
 	protected $type = 'apps';
-	protected $appsToDisable = array();
 	protected $appsToUpdate = array();
 	
 	public function update($tmpDir = '') {
@@ -53,21 +52,20 @@ class Apps extends Location {
 		}
 	}
 
-	protected function finalize() {
-		foreach ($this->appsToDisable as $appId) {
-			\OC_App::disable($appId);
-		}
-		parent::finalize();
-	}
-
 	public function collect($dryRun = false) {
-		$dh = opendir($this->newBase);
+		$result = array();
+		$dir = $dryRun ? $this->oldBase : $this->newBase;
+		$dh = opendir($dir);
 		if (is_resource($dh)) {
 			while (($file = readdir($dh)) !== false) {
-				if ($file[0] != '.' && is_file($this->newBase . '/' . $file . '/appinfo/app.php')) {
+				if ($file[0] != '.' && is_file($dir . '/' . $file . '/appinfo/app.php')) {
 					$this->appsToUpdate[$file] =  $file;
+					if ($dryRun){
+						$result['old'][$file] = realpath($dir . '/' . $file);
+					}
 				}
 			}
 		}
+		return $result;
 	}
 }
