@@ -66,7 +66,7 @@ class Updater {
 		// zip backup 
 		$zip = new \ZipArchive();
 		if ($zip->open($backupBase . ".zip", \ZIPARCHIVE::CREATE) === true){
-			Helper::addDirectoryToZip($zip, $backupBase, $backupBase);
+			Helper::addDirectoryToZip($zip, $backupBase);
 			$zip->close();
 			\OCP\Files::rmdirr($backupBase);
 		}
