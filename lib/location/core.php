@@ -10,24 +10,29 @@
  * later.
  */
 
-namespace OCA\Updater;
+namespace OCA\Updater\Location;
 
-class Location_Core extends Location {
+use OCA\Updater\Location as Location;
+use OCA\Updater\App;
+use OCA\Updater\Helper;
+
+class Core extends Location {
 
 	protected $type = 'core';
+	
+	protected function getWhitelist(){
+		$strList = file_get_contents(dirname(__DIR__) . '/files.json');
+		$fullList = json_decode($strList, true);
+		$list = $fullList['generic'];
+		return $list;
+	}
 
 	protected function filterOld($pathArray) {
-		$skip = array_values(Helper::getDirectories());
-		$skip[] = realpath(App::getBackupBase());
-		$skip[] = realpath(\OCP\Config::getSystemValue("datadirectory", \OC::$SERVERROOT . "/data"));
-		$skip[] = realpath(App::getTempBase());
+		$whitelist = $this->getWhitelist();
 
 		// Skip 3rdparty | apps | backup | datadir | config | themes
 		foreach ($pathArray as $key => $path) {
-			if ($path === 'config' || $path === 'themes') {
-				unset($pathArray[$key]);
-			}
-			if (in_array($this->oldBase . '/' . $path, $skip)) {
+			if (!in_array($path, $whitelist)) {
 				unset($pathArray[$key]);
 			}
 		}
@@ -45,10 +50,6 @@ class Location_Core extends Location {
 	}
 
 	protected function finalize() {
-		// overwrite config.sample.php
-		Helper::removeIfExists($this->oldBase . '/config/config.sample.php');
-		Helper::move($this->newBase . '/config/config.sample.php', $this->oldBase . '/config/config.sample.php');
-
 		// overwrite themes content with new files only
 		$themes = $this->toAbsolute(
 				$this->newBase . '/themes', Helper::scandir($this->newBase . '/themes')
@@ -61,5 +62,4 @@ class Location_Core extends Location {
 
 		parent::finalize();
 	}
-
 }

@@ -59,7 +59,7 @@ try {
 		throw new \Exception($message);
 	}
 	
-	$backupPath = Backup::create();
+	$backupPath = Backup::create($packageVersion);
 	\OCP\JSON::success(array(
 		'backup' => $backupPath,
 		'version' => $packageVersion,

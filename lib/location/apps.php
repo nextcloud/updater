@@ -10,21 +10,19 @@
  * later.
  */
 
-namespace OCA\Updater;
+namespace OCA\Updater\Location;
 
-class Location_Apps extends Location {
+use OCA\Updater\Location as Location;
+use OCA\Updater\Helper;
+
+class Apps extends Location {
 
 	protected $type = 'apps';
-	protected $appsToDisable = array();
 	protected $appsToUpdate = array();
-
-	protected function filterOld($pathArray) {
-		return $pathArray;
-	}
 	
 	public function update($tmpDir = '') {
 		Helper::mkdir($tmpDir, true);
-		$this->collect(true);
+		$this->collect();
 		try {
 			foreach ($this->appsToUpdate as $appId) {
 				if (!@file_exists($this->newBase . '/' . $appId)){
@@ -54,26 +52,20 @@ class Location_Apps extends Location {
 		}
 	}
 
-	protected function finalize() {
-		foreach ($this->appsToDisable as $appId) {
-			\OC_App::disable($appId);
-		}
-		parent::finalize();
-	}
-
-	protected function filterNew($pathArray) {
-		return $pathArray;
-	}
-
 	public function collect($dryRun = false) {
-		$dh = opendir($this->newBase);
+		$result = array();
+		$dir = $dryRun ? $this->oldBase : $this->newBase;
+		$dh = opendir($dir);
 		if (is_resource($dh)) {
 			while (($file = readdir($dh)) !== false) {
-				if ($file[0] != '.' && is_file($this->newBase . '/' . $file . '/appinfo/app.php')) {
+				if ($file[0] != '.' && is_file($dir . '/' . $file . '/appinfo/app.php')) {
 					$this->appsToUpdate[$file] =  $file;
+					if ($dryRun){
+						$result['old'][$file] = realpath($dir . '/' . $file);
+					}
 				}
 			}
 		}
+		return $result;
 	}
-
 }
