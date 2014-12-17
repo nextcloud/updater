@@ -6,7 +6,7 @@ function updateCtrl($scope, $http) {
 	$scope.url = '';
 
 	$scope.fail = function (data) {
-		var message = t('updater', 'The update was unsuccessful. Please check logs at admin page and report this issue to the <a href="https://github.com/owncloud/apps/issues" target="_blank">ownCloud community</a>.');
+		var message = t('updater', 'The update was unsuccessful. Please check logs at admin page and report this issue to the <a href="https://github.com/owncloud/updater/issues/new" target="_blank">ownCloud community</a>.');
 		if (data && data.message) {
 			message = data.message;
 		}
