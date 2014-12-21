@@ -57,3 +57,7 @@
 .track-progress li.current {
 	font-weight: bold;
 }
+
+.updater-spinner {
+	display: block;
+}

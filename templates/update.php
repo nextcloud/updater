@@ -23,9 +23,18 @@
 		</p>
 		<div id="upd-step-title" style="display:none;">
 			<ul class="track-progress" data-steps="3">
-				<li class="icon-breadcrumb"><?php p($l->t('1. Check & Backup')) ?></li>
-				<li class="icon-breadcrumb"><?php p($l->t('2. Download & Extract')) ?></li>
-				<li><?php p($l->t('3. Replace')) ?></li>
+				<li class="icon-breadcrumb">
+					<?php p($l->t('1. Check & Backup')) ?>
+					<span class="updater-spinner icon-loading-small"></span>
+				</li>
+				<li class="icon-breadcrumb">
+					<?php p($l->t('2. Download & Extract')) ?>
+					<span class="updater-spinner icon-loading-small"></span>
+				</li>
+				<li>
+					<?php p($l->t('3. Replace')) ?>
+					<span class="updater-spinner icon-loading-small"></span>
+				</li>
 			</ul>
 		</div>
 		<div id="upd-progress" style="display:none;"><div></div></div>
