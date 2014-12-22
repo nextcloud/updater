@@ -38,7 +38,7 @@
 			</ul>
 		</div>
 		<div id="upd-progress" style="display:none;"><div></div></div>
-		<button ng-click="update()" ng-show="<?php p($isNewVersionAvailable) ?>" id="updater-start">
+		<button ng-click="update()" id="updater-start">
 			<?php p($l->t('Update')) ?>
 		</button>
 	</div>

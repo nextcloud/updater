@@ -6,16 +6,16 @@ function updateCtrl($scope, $http) {
 	$scope.url = '';
 
 	$scope.fail = function (data) {
-		var message = t('updater', 'The update was unsuccessful. Please check logs at admin page and report this issue to the <a href="https://github.com/owncloud/apps/issues" target="_blank">ownCloud community</a>.');
+		var message = t('updater', '<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href="https://github.com/owncloud/apps/issues" target="_blank">ownCloud community</a>.');
 		if (data && data.message) {
 			message = data.message;
 		}
-		$('<p></p>').append(message).appendTo($('#upd-progress'));
+		$('<div></div>').append($('<p></p>').append(message)).addClass('warning').appendTo($('#upd-progress'));
 	};
 
 	$scope.crash = function () {
-		var message = t('updater', 'Server error. Please check web server log file for details');
-		$('<p></p>').append(message).appendTo($('#upd-progress'));
+		var message = t('updater', '<strong>Server error.</strong> Please check web server log file for details');
+		$('<div></div>').append($('<p></p>').append(message)).addClass('warning').appendTo($('#upd-progress'));
 	};
 
 	$scope.update = function () {
