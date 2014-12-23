@@ -1,4 +1,5 @@
 /* global oc_requesttoken */
+
 function updateCtrl($scope, $http) {
 	$scope.step = 0;
 	$scope.backup = '';
@@ -10,17 +11,17 @@ function updateCtrl($scope, $http) {
 		if (data && data.message) {
 			message = data.message;
 		}
-		$('<div></div>').append($('<p></p>').append(message)).addClass('warning').appendTo($('#upd-progress'));
+		$('<div></div>').append($('<p></p>').addClass('updater-warning-p').append(message)).addClass('warning').appendTo($('.updater-progress'));
 	};
 
 	$scope.crash = function () {
 		var message = t('updater', '<strong>Server error.</strong> Please check web server log file for details');
-		$('<div></div>').append($('<p></p>').append(message)).addClass('warning').appendTo($('#upd-progress'));
+		$('<div></div>').append($('<p></p>').addClass('updater-warning-p').append(message)).addClass('warning').appendTo($('.updater-progress'));
 	};
 
 	$scope.update = function () {
 		if ($scope.step === 0) {
-			$('#upd-progress').empty().show();
+			$('.updater-progress').empty().show();
 			$('#upd-step-title').show();
 			$('.track-progress li').first().addClass('current');
 			$('.updater-spinner').hide();
@@ -49,7 +50,7 @@ function updateCtrl($scope, $http) {
 			$('.updater-spinner:eq(1)').fadeIn();
 			$('.track-progress li.current').next().addClass('current');
 			$('.track-progress li.done').removeClass('current');
-			$('<p></p>').append(t('updater', 'Here is your backup:') + ' ' + $scope.backup).appendTo($('#upd-progress'));
+			$('<p></p>').append(t('updater', 'Here is your backup:') + ' ' + $scope.backup).appendTo($('.updater-progress'));
 			
 			$http.post(
 				OC.filePath('updater', 'ajax', 'download.php'), {
@@ -93,8 +94,8 @@ function updateCtrl($scope, $http) {
 						if (OC.webroot !== '') {
 							href = OC.webroot;
 						}
-						$('<p></p>').append(t('updater', 'All done. Click to the link below to start database upgrade.')).appendTo($('#upd-progress'));
-						$('<p></p>').addClass('bold').append($('<a href="' + href + '">' + title + '</a>').addClass('button')).appendTo($('#upd-progress'));
+						$('<p></p>').addClass('updater-space-bottom').append(t('updater', '<strong>All done.</strong> Click to the link below to start database upgrade.')).appendTo($('.updater-progress'));
+						$('<p></p>').addClass('bold').append($('<a href="' + href + '">' + title + '</a>').addClass('button')).appendTo($('.updater-progress'));
 					} else {
 						$scope.fail(data);
 					}

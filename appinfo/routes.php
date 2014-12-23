@@ -2,8 +2,6 @@
 
 /** @var $this \OC\Route\Router */
 
-$this->create('updater_update', 'update.php')
-	->actionInclude('updater/update.php');
 $this->create('updater_admin', 'admin.php')
 	->actionInclude('updater/admin.php');
 $this->create('updater_ajax_backup', 'ajax/backup.php')
