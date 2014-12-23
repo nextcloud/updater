@@ -189,15 +189,15 @@ class Helper {
 		);
 	}
 	
-	public static function addDirectoryToZip($zip, $dir, $base) {
-		$newFolder = str_replace($base, '', $dir);
-		$zip->addEmptyDir($newFolder);
-		foreach(glob($dir . '/*') as $file) {
-			if(is_dir($file)) {
-				$zip = self::addDirectoryToZip($zip, $file, $base);
+	public static function addDirectoryToZip($zip, $dir) {
+		$dirIterator = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
+		$iterator = new \RecursiveIteratorIterator($dirIterator, \RecursiveIteratorIterator::SELF_FIRST);
+		foreach ($iterator as $key=>$file) {
+			$relPath = str_replace($dir, '', $key);
+			if ($file->isDir()){
+				$zip->addEmptyDir($relPath);
 			} else {
-				$newFile = str_replace($base, '', $file);
-				$zip->addFile($file, $newFile);
+				$zip->addFile(realpath($key), $relPath);
 			}
 		}
 		return $zip;
