@@ -4,7 +4,6 @@ $TRANSLATIONS = array(
 "Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Peningkatan versi tidak memungkinkan. Server web Anda tidak memiliki izin untuk menghapus direktori berikut:",
 "Update permissions on this directory and its content or remove it manually first." => "Izin pembaruan pada direktori ini beserta isinya atau hapus secara manual terlebih dahulu.",
 "Update failed." => "Pembaruan gagal",
-"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Pembaruan tidak berhasil. Mohon periksa log di halaman admin dan laporkan masalah ini ke <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">komunitas ownCloud</a>.",
 "Server error. Please check web server log file for details" => "Kesalahan server. Mohon periksa berkas log server web untuk rinciannya",
 "Retry" => "Ulangi",
 "Proceed" => "Melanjutkan",

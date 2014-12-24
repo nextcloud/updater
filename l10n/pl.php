@@ -4,7 +4,6 @@ $TRANSLATIONS = array(
 "Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Aktualizacja nie jest możliwa. Twój serwer ma niewystarczające uprawnienia do usuwania następujących katalogów:",
 "Update permissions on this directory and its content or remove it manually first." => "Zaktualizuj uprawnienia do tego katalogu i jego zawartości lub usuń go najpierw ręcznie.",
 "Update failed." => "Aktualizacja nieudana.",
-"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Aktualizacja nie powiodła się. Prosimy sprawdzić logi i zgłosić ten problem na <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>.",
 "Server error. Please check web server log file for details" => "Błąd serwera. Proszę sprawdzić log serwera www, aby uzyskać więcej informacji",
 "Retry" => "Powtórz",
 "Proceed" => "Wykonaj",

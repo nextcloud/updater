@@ -5,7 +5,6 @@ OC.L10N.register(
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Обновление невозможно. Ваш веб-сервер не имеет достаточных привилегий для удаления следующей директории:",
     "Update permissions on this directory and its content or remove it manually first." : "Обновите разрешения на эту дерикторию и её содержимое или удалите её вручную для начала.",
     "Update failed." : "Обновление не удалось.",
-    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Обновление не удалось. Пожалуйста, проверьте журналы на странице администратора и сообщите об этой проблеме <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">сообществу ownCloud</a>.",
     "Server error. Please check web server log file for details" : "Ошибка сервера. Проверьте логи сервера для подробностей",
     "Retry" : "Повторить",
     "Here is your backup:" : "Ваша резервная копия:",

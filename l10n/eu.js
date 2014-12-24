@@ -5,7 +5,6 @@ OC.L10N.register(
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Eguneraketa ezinezkoa da. Zure web zerbitzariak ez du baimenik hurrengo karpeta ezabatzeko:",
     "Update permissions on this directory and its content or remove it manually first." : "Eguneratu karpeta honen eta bere edukiaren baimenak edo ezabatu eskuz.",
     "Update failed." : "Eguneraketak huts egin du.",
-    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Eguneraketak ez du arrakastarik izan. Mesedez aztertu egunerakoak administrazio orria eta eman abisua  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud komunitateari</a>.",
     "Server error. Please check web server log file for details" : "Zerbitzariko errorea. Begiratu web zerbitzariaren log fitxategia zehaztasunetarako.",
     "Retry" : "Saiatu berriro.",
     "Proceed" : "Jarraitu",

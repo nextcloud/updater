@@ -4,7 +4,6 @@ $TRANSLATIONS = array(
 "Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Uuendamine pole võimalik. Veebiserveril pole õigusi kustutada järgmisi katalooge:",
 "Update permissions on this directory and its content or remove it manually first." => "Uuenda selle kataloogi ja sisu õigusi või eemalda see käsitsi.",
 "Update failed." => "Uuendamine ebaõnnestus.",
-"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Uuendus ebaõnnestus. Palun vaata admin lehelt logisid ning teavita probleemidest  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud kogukonda</a>.",
 "Server error. Please check web server log file for details" => "Serveri tõrge. Palun vaata üksikasju veebiserveri logifailist",
 "Retry" => "Proovi uuesti",
 "Proceed" => "Jätka",
