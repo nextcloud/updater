@@ -21,7 +21,7 @@
 		<p ng-show="<?php p(!$isNewVersionAvailable) ?>">
 			<?php print_unescaped($l->t('<strong>Up to date.</strong> <em>Checked on %s</em>', array($_['checkedAt']))) ?>
 		</p>
-		<div id="upd-step-title" style="display:none;">
+		<div class="upd-step-title" style="display:none;">
 			<ul class="track-progress" data-steps="3">
 				<li class="icon-breadcrumb">
 					<?php p($l->t('1. Check & Backup')) ?>

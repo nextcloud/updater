@@ -41,6 +41,10 @@
 	background-position: right;
 }
 
+.upd-step-title {
+	padding-bottom: 1em;
+}
+
 .updater-warning-p {
 	padding-left: 0.5em;
 }
