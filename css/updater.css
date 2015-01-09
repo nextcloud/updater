@@ -60,3 +60,8 @@
 .updater-spinner {
 	display: block;
 }
+
+.updater-update {
+	padding: 1em 0.75em;
+	background-color: rgba(240, 240, 240, 0.9);
+}

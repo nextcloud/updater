@@ -122,6 +122,7 @@ function backupCtrl($scope, $http) {
 				});
 		});
 	};
+
 	$scope.doDownload = function (name) {
 		window.open(OC.filePath('updater', 'ajax', 'backup/download.php') +
 			'?requesttoken=' + oc_requesttoken +
@@ -129,4 +130,3 @@ function backupCtrl($scope, $http) {
 		);
 	};
 }
-
