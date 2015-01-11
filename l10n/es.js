@@ -5,7 +5,7 @@ OC.L10N.register(
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "No se puede actualizar. Su servidor web no tiene permiso para eliminar el siguiente directorio:",
     "Update permissions on this directory and its content or remove it manually first." : "Actualice los permisos de esta carpeta y sus contenidos o elimínela manualmente.",
     "Update failed." : "Falló la actualización",
-    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>." : "La actualización ha fallado. Por favor, revisa la razón del fallo en el log de la página de admin y reporta este problema a la <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>.",
+    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>." : "La actualización ha fallado. Por favor, revise la razón del fallo en el registro de la página de admin y notifique este problema a la <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>.",
     "Server error. Please check web server log file for details" : "Error en el servidor. Por favor, revise los registros del servidor para más detalles,",
     "Retry" : "Reintentar",
     "Here is your backup:" : "Aquí está su copia de seguridad:",
