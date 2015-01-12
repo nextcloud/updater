@@ -26,6 +26,15 @@ class App {
 		//Allow config page
 		\OCP\App::registerAdmin(self::APP_ID, 'admin');
 	}
+	
+	public static function getFeed(){
+		$updater = new \OC\Updater(\OC::$server->getHTTPHelper(), \OC::$server->getAppConfig());
+		$data = $updater->check('https://apps.owncloud.com/updater.php');
+		if (!is_array($data)){
+			$data = array();
+		}
+		return $data;
+	}
 
 	/**
 	 * Get app working directory
