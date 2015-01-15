@@ -9,7 +9,20 @@
 
  class Test_Updater_App extends  \PHPUnit_Framework_TestCase {
 	public function testGetFeed(){
-		$data = OCA\Updater\App::getFeed();
+		$mockedAppConfig = $this->getMockBuilder('\OC\AppConfig')
+				->disableOriginalConstructor()
+				->getMock()
+		;
+
+		$certificateManager = $this->getMock('\OCP\ICertificateManager');
+		$mockedHTTPHelper = $this->getMockBuilder('\OC\HTTPHelper')
+				->setConstructorArgs(array(\OC::$server->getConfig(), $certificateManager))
+				->getMock()
+		;
+
+		$mockedHTTPHelper->expects($this->once())->method('getUrlContent')->will($this->returnValue(''));
+		
+		$data = OCA\Updater\App::getFeed($mockedHTTPHelper, $mockedAppConfig);
 		$this->assertNotNull($data);
 	}
  }
