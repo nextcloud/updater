@@ -26,8 +26,8 @@ $TRANSLATIONS = array(
 "Backups" => "Copies de sauvegarde",
 "Backup directory" => "Dossier de sauvegarde.",
 "No backups found" => "Aucune copie de sauvegarde n'a été trouvée.",
-"Backup" => "Copie de sauvegarde.",
-"Done on" => "Terminé le",
+"Backup" => "Copie de sauvegarde",
+"Done on" => "Terminé à la date ",
 "Download" => "Télécharger",
 "Delete" => "Supprimer"
 );
