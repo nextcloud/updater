@@ -25,7 +25,7 @@ OC.L10N.register(
     "3. Replace" : "3. Remplacement",
     "Update" : "Mettre à jour",
     "Backups" : "Copies de sauvegarde",
-    "Backup directory" : "Dossier de sauvegarde.",
+    "Backup directory" : "Dossier de sauvegarde",
     "No backups found" : "Aucune copie de sauvegarde n'a été trouvée.",
     "Backup" : "Copie de sauvegarde",
     "Done on" : "Terminé à la date ",
