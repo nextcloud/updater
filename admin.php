@@ -24,8 +24,7 @@ if (!@file_exists(App::getBackupBase())){
 	Helper::mkdir(App::getBackupBase());
 }
 
-$updater = new \OC\Updater();
-$data = $updater->check('http://apps.owncloud.com/updater.php');
+$data = App::getFeed();
 $isNewVersionAvailable = isset($data['version']) && $data['version'] != '' && $data['version'] !== Array();
 
 $tmpl = new \OCP\Template(App::APP_ID, 'admin');
