@@ -4,7 +4,7 @@ $TRANSLATIONS = array(
 "Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Não é possível atualizar. O seu servidor da Web não tem permissão para remover a seguinte diretoria:",
 "Update permissions on this directory and its content or remove it manually first." => "Atualize as permissões nesta diretoria e o seu conteúdo, ou remova-as primeiro manualmente.",
 "Update failed." => "Não foi possível atualizar.",
-"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "A atualização falhou. Por favor, verifique os registos na página de administração e comunique este problema à <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunidade do ownCloud</a>.",
+"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>." => "A atualização não foi bem sucedida. Verifique os logs na página da administração e reporta este problema à <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">comunidade ownCloud</a>.",
 "Server error. Please check web server log file for details" => "Erro de servidor. Por favor, verifique o ficheiro de registos do seu servidor da Web para detalhes.",
 "Retry" => "Repetir",
 "Here is your backup:" => "Aqui está a sua cópia de segurança:",

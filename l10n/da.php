@@ -4,7 +4,7 @@ $TRANSLATIONS = array(
 "Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Det er ikke muligt at opgradere. Din webserver har ikke de tilstrækkelige rettigheder til at fjerne den følgende mappe:",
 "Update permissions on this directory and its content or remove it manually first." => "Opdatér rettigheder for denne mappe og dens indhold, eller fjern den manuelt først.",
 "Update failed." => "Opdatering mislykkedes.",
-"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "Opdateringen lykkedes ikke. Kontrollér venligst loggen på administratorsiden og rapportér dette problem til <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud-fællesskabet</a>.",
+"The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>." => "Opdateringen lykkedes ikke. Kontrollér venligst loggen på administratorsiden og rapportér dette problem til <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud-fællesskabet</a>.",
 "Server error. Please check web server log file for details" => "Serverfejl. Tjek venligst webserverens logfil for yderligere detaljer",
 "Retry" => "Forsøg igen",
 "Here is your backup:" => "Her er din sikkerhedskopi:",

@@ -3,7 +3,7 @@
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Aktualizaci nelze provést. Váš webový server nemá dostatečná oprávnění ke smazání následujícího adresáře:",
     "Update permissions on this directory and its content or remove it manually first." : "Upravte oprávnění u tohoto adresáře a jeho obsahu nebo jej nejdřív ručně smažte.",
     "Update failed." : "Aktualizace se nezdařila.",
-    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Aktualizace byla neúspěšná. Zkontrolujte, prosím, logy v administračním rozhraní a oznamte tuto událost  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">komunitě ownCloud</a>.",
+    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>." : "Aktualizace neproběhla úspěšně. Prohlédněte si logy na stránce administrace a oznamte tento problém <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">týmu ownCloud</a>.",
     "Server error. Please check web server log file for details" : "Chyba na serveru. Pro více informací zkontrolujte prosím serverové logy.",
     "Retry" : "Zkusit znovu",
     "Here is your backup:" : "Zde je vaše záloha:",

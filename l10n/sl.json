@@ -3,7 +3,7 @@
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Posodobitev ni mogoča. Ni ustreznih dovoljenj za odstranitev naslednjih map:",
     "Update permissions on this directory and its content or remove it manually first." : "Posodobiti je treba dovoljenja te mape in njene vsebine ali pa jo ročno odstraniti.",
     "Update failed." : "Posodobitev je spodletela.",
-    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Posodobitev ni uspešno končana. Preveriti je treba dnevniški zapis na skrbniških straneh in poslati poročilo na razvijalcem sistema<a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud</a>.",
+    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>." : "Posodobitev ni uspešno končana. Preverite dnevniški zapis in pošljite poročilo o napaki na <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud</a>.",
     "Server error. Please check web server log file for details" : "Napaka strežnika. Za več podrobnosti preverite dnevnik spletnega strežnika.",
     "Retry" : "Poskusi znova",
     "Here is your backup:" : "Varnostna kopija:",

@@ -5,7 +5,7 @@ OC.L10N.register(
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Bijwerken is niet mogelijk. Uw webserver heeft geen permissie om de volgende directory re verwijderen:",
     "Update permissions on this directory and its content or remove it manually first." : "Werk de permissies op deze directory en de inhoud bij , of verwijder ze eerst handmatig.",
     "Update failed." : "Bijwerken mislukt.",
-    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "De update is mislukt. Controleer de logs op de beheerpagina en meld het probleem aan de <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>.",
+    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>." : "De update is mislukt. Controleer de logs op de beheerpagina en meld het probleem aan de <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>.",
     "Server error. Please check web server log file for details" : "Server fout. Verifieer het webserver logbestand voor details",
     "Retry" : "Opniew",
     "Here is your backup:" : "Hier is uw backup:",

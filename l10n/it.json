@@ -3,7 +3,7 @@
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Impossibile aggiornare. Il tuo server web non ha i permessi per rimuovere la seguente cartella:",
     "Update permissions on this directory and its content or remove it manually first." : "Aggiorna i permessi su questa cartella e il suo contenuto oppure rimuovila manualmente.",
     "Update failed." : "Aggiornamento non riuscito",
-    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "L'aggiornamento non è riuscito. Controlla i log nella pagina di amministrazione e segnala il problema alla <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunità di ownCloud</ a>.",
+    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>." : "L'aggiornamento non è riuscito. Controlla i log nella pagina di amministrazione e segnala il problema alla <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">comunità di ownCloud</ a>.",
     "Server error. Please check web server log file for details" : "Errore del server. Controlla il file di log del server web per i dettagli",
     "Retry" : "Riprova",
     "Here is your backup:" : "Qui è la tua copia di sicurezza:",

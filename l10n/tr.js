@@ -5,7 +5,7 @@ OC.L10N.register(
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Yükseltme mümkün değil. Web sunucunuz aşağıdaki dizini silmek için yeterli yetkiye sahip değil:",
     "Update permissions on this directory and its content or remove it manually first." : "Aşağıdaki dizinin ve içindekilerin izinlerini güncelleyin veya elle silin.",
     "Update failed." : "Güncelleme başarısız.",
-    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "Güncelleme başarısız oldu. Lütfen yönetici sayfasındaki günlüğü denetleyin ve bu durumu <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud topluluğuna</a> bildirin.",
+    "The update was unsuccessful. Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud community</a>." : "Güncelleme başarısız oldu. Lütfen yönetici sayfasındaki günlüğe bakın ve bu durumu <a href=\"https://github.com/owncloud/updater/issues/new\" target=\"_blank\">ownCloud topluluğuna</a> bildirin.",
     "Server error. Please check web server log file for details" : "Sunucu hatası. Lütfen ayrıntılar için web sunucunuzun günlük dosyasına bakın",
     "Retry" : "Yeniden Dene",
     "Here is your backup:" : "Yedeğiniz burada:",
