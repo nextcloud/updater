@@ -29,15 +29,8 @@ foreach ($list as $item){
 	$result[] = array(
 		'title' => $item,
 		'date' => date ("F d Y H:i:s", filectime(App::getBackupBase() . '/' . $item)),
-		'size' => human_filesize(filesize(App::getBackupBase() . '/' . $item))
+		'size' => \OCP\Util::humanFileSize(filesize(App::getBackupBase() . '/' . $item))
 	);
 }
 
 \OCP\JSON::success(array('data' => $result));
-
-/* adapted from http://php.net/manual/de/function.filesize.php */
-function human_filesize($bytes, $decimals = 2) {
-  $sz = 'BKMGTP';
-  $factor = floor((strlen($bytes) - 1) / 3);
-  return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
-}
