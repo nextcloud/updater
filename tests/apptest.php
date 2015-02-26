@@ -9,7 +9,7 @@
 
  class Test_Updater_App extends  \PHPUnit_Framework_TestCase {
 	public function testGetFeed(){
-		$mockedAppConfig = $this->getMockBuilder('\OC\AppConfig')
+		$mockedConfig = $this->getMockBuilder('\OCP\IConfig')
 				->disableOriginalConstructor()
 				->getMock()
 		;
@@ -22,7 +22,7 @@
 
 		$mockedHTTPHelper->expects($this->once())->method('getUrlContent')->will($this->returnValue(''));
 		
-		$data = OCA\Updater\App::getFeed($mockedHTTPHelper, $mockedAppConfig);
+		$data = OCA\Updater\App::getFeed($mockedHTTPHelper, $mockedConfig);
 		$this->assertNotNull($data);
 	}
  }
