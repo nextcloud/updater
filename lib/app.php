@@ -32,7 +32,7 @@ class App {
 			$helper = \OC::$server->getHTTPHelper();
 		}
 		if (!$config){
-			$config = \OC::$server->getAppConfig();
+			$config = \OC::$server->getConfig();
 		}
 		$updater = new \OC\Updater($helper, $config);
 		$data = $updater->check('https://apps.owncloud.com/updater.php');
