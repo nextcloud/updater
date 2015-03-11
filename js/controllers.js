@@ -17,6 +17,7 @@ function updateCtrl($scope, $http) {
 	$scope.crash = function () {
 		var message = t('updater', '<strong>Server error.</strong> Please check web server log file for details');
 		$('<div></div>').hide().append($('<p></p>').addClass('updater-warning-p').append(message)).addClass('warning').appendTo($('.updater-progress')).fadeIn();
+		$('.updater-spinner').hide();
 	};
 
 	$scope.update = function () {
@@ -39,6 +40,7 @@ function updateCtrl($scope, $http) {
 						$scope.update();
 					} else {
 						$scope.fail(data);
+						$('.updater-spinner').hide();
 						$('#updater-start').text(t('updater', 'Retry')).fadeIn();
 					}
 				})
@@ -64,6 +66,7 @@ function updateCtrl($scope, $http) {
 						$scope.update();
 					} else {
 						$scope.fail(data);
+						$('.updater-spinner').hide();
 					}
 				})
 				.error($scope.crash);
@@ -98,6 +101,7 @@ function updateCtrl($scope, $http) {
 						$('<p></p>').hide().addClass('bold').append($('<a href="' + href + '">' + title + '</a>').addClass('button')).appendTo($('.updater-progress')).fadeIn();
 					} else {
 						$scope.fail(data);
+						$('.updater-spinner').hide();
 					}
 				})
 				.error($scope.crash);
