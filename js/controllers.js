@@ -59,7 +59,11 @@ function updateCtrl($scope, $http) {
 					url: $scope.url,
 					version: $scope.version
 				},
-				{headers: {'requesttoken': oc_requesttoken}}
+				{
+					headers: {
+						'requesttoken': oc_requesttoken
+					}
+				}
 			).success(function (data) {
 					if (data && data.status && data.status === 'success') {
 						$scope.step = 2;
@@ -85,7 +89,11 @@ function updateCtrl($scope, $http) {
 					version: $scope.version,
 					backupPath: $scope.backup
 				},
-				{headers: {'requesttoken': oc_requesttoken}}
+				{
+					headers: {
+						'requesttoken': oc_requesttoken
+					}
+				}
 			).success(function (data) {
 					if (data && data.status && data.status === 'success') {
 						$scope.step = 3;
