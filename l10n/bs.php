@@ -10,6 +10,7 @@ $TRANSLATIONS = array(
 "Here is your backup:" => "Ovdje vam je sigurnosna kopija:",
 "Proceed" => "Nastavi",
 "All done. Click to the link below to start database upgrade." => "Sve je odrađeno. Klikni na vezu (link) ispod za pokretanje ažuriranja baze podataka.",
+"Please ask your server administrator to enable PHP zip extension." => "Molimo vas da pitate server administratora da omogući PHP zip ekstenziju.",
 "Updater" => "Unapređivač",
 "Open Update Center" => "Otvori Centar za Ažuriranje/Unapređivanje",
 "Updates" => "Ažuriranja",
