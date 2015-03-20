@@ -1,4 +1,5 @@
 /* global oc_requesttoken */
+
 function updateCtrl($scope, $http) {
 	$scope.step = 0;
 	$scope.backup = '';
@@ -6,22 +7,23 @@ function updateCtrl($scope, $http) {
 	$scope.url = '';
 
 	$scope.fail = function (data) {
-		var message = t('updater', 'The update was unsuccessful. Please check logs at admin page and report this issue to the <a href="https://github.com/owncloud/updater/issues/new" target="_blank">ownCloud community</a>.');
+		var message = t('updater', '<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href="https://github.com/owncloud/apps/issues" target="_blank">ownCloud community</a>.');
 		if (data && data.message) {
 			message = data.message;
 		}
-		$('<p></p>').append(message).appendTo($('#upd-progress'));
+		$('<div></div>').hide().append($('<p></p>').addClass('updater-warning-p').append(message)).addClass('warning').appendTo($('.updater-progress')).fadeIn();
 	};
 
 	$scope.crash = function () {
-		var message = t('updater', 'Server error. Please check web server log file for details');
-		$('<p></p>').append(message).appendTo($('#upd-progress'));
+		var message = t('updater', '<strong>Server error.</strong> Please check web server log file for details');
+		$('<div></div>').hide().append($('<p></p>').addClass('updater-warning-p').append(message)).addClass('warning').appendTo($('.updater-progress')).fadeIn();
+		$('.updater-spinner').hide();
 	};
 
 	$scope.update = function () {
 		if ($scope.step === 0) {
-			$('#upd-progress').empty().show();
-			$('#upd-step-title').show();
+			$('.updater-progress').empty().show();
+			$('.upd-step-title').show();
 			$('.track-progress li').first().addClass('current');
 			$('.updater-spinner').hide();
 			$('.updater-spinner:eq(0)').fadeIn();
@@ -38,7 +40,8 @@ function updateCtrl($scope, $http) {
 						$scope.update();
 					} else {
 						$scope.fail(data);
-						$('#updater-start').text(t('updater', 'Retry')).show();
+						$('.updater-spinner').hide();
+						$('#updater-start').text(t('updater', 'Retry')).fadeIn();
 					}
 				})
 				.error($scope.crash);
@@ -49,20 +52,25 @@ function updateCtrl($scope, $http) {
 			$('.updater-spinner:eq(1)').fadeIn();
 			$('.track-progress li.current').next().addClass('current');
 			$('.track-progress li.done').removeClass('current');
-			$('<p></p>').append(t('updater', 'Here is your backup:') + ' ' + $scope.backup).appendTo($('#upd-progress'));
+			$('<p></p>').hide().append(t('updater', 'Here is your backup:') + ' ' + $scope.backup).appendTo($('.updater-progress')).fadeIn();
 			
 			$http.post(
 				OC.filePath('updater', 'ajax', 'download.php'), {
 					url: $scope.url,
 					version: $scope.version
 				},
-				{headers: {'requesttoken': oc_requesttoken}}
+				{
+					headers: {
+						'requesttoken': oc_requesttoken
+					}
+				}
 			).success(function (data) {
 					if (data && data.status && data.status === 'success') {
 						$scope.step = 2;
 						$scope.update();
 					} else {
 						$scope.fail(data);
+						$('.updater-spinner').hide();
 					}
 				})
 				.error($scope.crash);
@@ -81,7 +89,11 @@ function updateCtrl($scope, $http) {
 					version: $scope.version,
 					backupPath: $scope.backup
 				},
-				{headers: {'requesttoken': oc_requesttoken}}
+				{
+					headers: {
+						'requesttoken': oc_requesttoken
+					}
+				}
 			).success(function (data) {
 					if (data && data.status && data.status === 'success') {
 						$scope.step = 3;
@@ -93,10 +105,11 @@ function updateCtrl($scope, $http) {
 						if (OC.webroot !== '') {
 							href = OC.webroot;
 						}
-						$('<p></p>').append(t('updater', 'All done. Click to the link below to start database upgrade.')).appendTo($('#upd-progress'));
-						$('<p></p>').addClass('bold').append($('<a href="' + href + '">' + title + '</a>').addClass('button')).appendTo($('#upd-progress'));
+						$('<p></p>').hide().addClass('updater-space-bottom').append(t('updater', '<strong>All done.</strong> Click to the link below to start database upgrade.')).appendTo($('.updater-progress')).fadeIn();
+						$('<p></p>').hide().addClass('bold').append($('<a href="' + href + '">' + title + '</a>').addClass('button')).appendTo($('.updater-progress')).fadeIn();
 					} else {
 						$scope.fail(data);
+						$('.updater-spinner').hide();
 					}
 				})
 				.error($scope.crash);
@@ -121,6 +134,7 @@ function backupCtrl($scope, $http) {
 				});
 		});
 	};
+
 	$scope.doDownload = function (name) {
 		window.open(OC.filePath('updater', 'ajax', 'backup/download.php') +
 			'?requesttoken=' + oc_requesttoken +
@@ -128,4 +142,3 @@ function backupCtrl($scope, $http) {
 		);
 	};
 }
-

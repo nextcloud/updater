@@ -28,7 +28,8 @@ foreach ($list as $item){
 	}
 	$result[] = array(
 		'title' => $item,
-		'date' => date ("F d Y H:i:s", filectime(App::getBackupBase() . '/' . $item))
+		'date' => date ("F d Y H:i:s", filectime(App::getBackupBase() . '/' . $item)),
+		'size' => \OCP\Util::humanFileSize(filesize(App::getBackupBase() . '/' . $item))
 	);
 }
 

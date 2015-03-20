@@ -1,40 +1,28 @@
 
-#upd-progress {
-	margin: 30px 0;
+.updater-progress {
+	margin: 2em 0;
 }
 
-#updater-content p {
-	margin: 10px 0;
+.updater-admin p {
+	margin: 0.5em 0;
 }
 
-#updater-content {
-	width: 640px;
-	margin: 20px 0 20px -180px;
-	padding: 5px 20px 10px 20px;
-	background: #fff;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
-	cursor: default;
-}
-
-#updater-content table {
+.updater-backups-table {
 	width: 100%;
-	margin: 20px 0;
+	margin: 0.8em 0;
 }
 
-#updater-content table th {
-	padding: 5px 10px;
+.updater-backups-table th {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
 	filter: alpha(opacity=50);
 	opacity: .5;
 }
 
-#updater-content table td {
-	padding: 10px;
+.updater-backups-table td {
+	padding: 10px 0;
 }
 
-#updater-content .icon-delete {
+.updater-backups-table .icon-delete {
 	cursor: pointer;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
 	filter: alpha(opacity=50);
@@ -46,11 +34,27 @@
 	display: inline-block;
 	position: relative;
 	margin: 0;
-	padding: 0 20px;
-	text-align: center;
+	padding: 0 2.3em 0 1.2em;
+	text-align: left;
 	line-height: 30px;
 	height: 30px;
 	background-position: right;
+}
+
+.upd-step-title {
+	padding-bottom: 1em;
+}
+
+.updater-warning-p {
+	padding-left: 0.5em;
+}
+
+.updater-space-bottom {
+	padding-bottom: 1em;
+}
+
+.track-progress li:first-child {
+	padding-left: 0;
 }
 
 .track-progress li.current {
@@ -59,4 +63,9 @@
 
 .updater-spinner {
 	display: block;
+}
+
+.updater-update {
+	padding: 1em 0.75em;
+	background-color: rgba(240, 240, 240, 0.9);
 }
