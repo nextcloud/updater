@@ -27,6 +27,10 @@ class App {
 		\OCP\App::registerAdmin(self::APP_ID, 'admin');
 	}
 	
+	public static function flushCache(){
+		\OC::$server->getConfig()->setAppValue('core', 'lastupdatedat', 0);
+	}
+	
 	public static function getFeed($helper = false, $config = false){
 		if (!$helper){
 			$helper = \OC::$server->getHTTPHelper();

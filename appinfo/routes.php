@@ -16,4 +16,5 @@ $this->create('updater_ajax_backup_download', 'ajax/backup/download.php')
 	->actionInclude('updater/ajax/backup/download.php');
 $this->create('updater_ajax_backup_list', 'ajax/backup/list.php')
 	->actionInclude('updater/ajax/backup/list.php');
-
+$this->create('updater_ajax_channel', 'ajax/channel.php')
+	->actionInclude('updater/ajax/channel.php');
