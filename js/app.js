@@ -22,20 +22,6 @@ app.directive('ngConfirmClick', [
           }
         });
       }
-    }
+    };
   }
 ]);
-
-$(document).ready(function() {
-	$('#release-channel').change(function(){
-		$.post(
-			OC.filePath('updater', 'ajax', 'channel.php'),
-			{
-				newChannel : $('#release-channel').val()
-			},
-			function(r){
-				console.log(r);
-			}
-		);
-	});
-});

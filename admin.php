@@ -30,7 +30,7 @@ $isNewVersionAvailable = isset($data['version']) && $data['version'] != '' && $d
 $tmpl = new \OCP\Template(App::APP_ID, 'admin');
 $lastCheck = \OC_Appconfig::getValue('core', 'lastupdatedat');
 $tmpl->assign('checkedAt', \OCP\Util::formatDate($lastCheck));
-$tmpl->assign('isNewVersionAvailable', $isNewVersionAvailable);
+$tmpl->assign('isNewVersionAvailable', $isNewVersionAvailable ? 'true' : 'false');
 $tmpl->assign('channels', Channel::getChannels());
 $tmpl->assign('currentChannel', Channel::getCurrentChannel());
 $tmpl->assign('version', isset($data['versionstring']) ? $data['versionstring'] : '');

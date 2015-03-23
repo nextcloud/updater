@@ -17,14 +17,25 @@ namespace OCA\Updater;
 
 $newChannel = isset($_POST['newChannel']) ? $_POST['newChannel'] : false;
 
-if ($newChannel) {
+if ($newChannel){
 	App::flushCache();
 	$channel = Channel::setCurrentChannel($newChannel);
-	$data = App::getFeed();
-	
-	$data['channel'] = $channel;
-	
-	\OCP\JSON::success(
-		$data
-	);
+	if ($channel){
+		$data = App::getFeed();
+		$data['checkedAt'] = \OCP\Util::formatDate($lastCheck);
+		$data['channel'] = $channel;
+		$data['data']['message'] = '';
+		
+		\OCP\JSON::success(
+				$data
+		);
+	} else {
+		\OCP\JSON::error(
+				['data' =>
+					[
+						'message' => App::$l10n->t('Unable to switch channel. Check if %s is writable', [\OC::$SERVERROOT . '/version.php'])
+					]
+				]
+		);
+	}
 }
