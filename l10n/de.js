@@ -24,6 +24,8 @@ OC.L10N.register(
     "Update" : "Update durchführen",
     "Updater-Backups" : "Updater-Backups",
     "Note" : "Hinweis",
+    "Here you can find backups of the core of your ownCloud <strong>(excluding your data)</strong> after starting an update to a newer version." : "Hier findest Du nach dem Start einer Aktualisierung auf eine neuere Version, die Backups vom Kern Deiner ownCloud <strong>(ohne Deine Daten)</strong> ",
+    "<strong>Please always backup your data separately before updating!</strong>" : "<strong>Bitte sichern Sie Ihre Daten vor der Aktualisierung immer separat!</strong>",
     "Backup directory" : "Sicherungverzeichnis",
     "No backups found." : "Keine Backups gefunden.",
     "Backup" : "Sicherung",
