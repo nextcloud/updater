@@ -41,7 +41,7 @@ class Apps extends Location {
 					Helper::move($this->newBase . '/' . $appId, $path);
 				} else { 
 					// The app is new and doesn't exist in the current instance
-					$pathData = first(\OC::$APPSROOTS);
+					$pathData = \OC::$APPSROOTS[0];
 					Helper::move($this->newBase . '/' . $appId, $pathData['path'] . '/' . $appId);
 				}
 			}
