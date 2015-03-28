@@ -20,6 +20,7 @@ $TRANSLATIONS = array(
 "2. Download & Extract" => "2. ダウンロードと展開",
 "3. Replace" => "3. 更新",
 "Update" => "アップデート",
+"Updater-Backups" => "アップデータバックエンド",
 "Note" => "メモ",
 "<strong>Please always backup your data separately before updating!</strong>" => "<strong>アップデートの前に必ずデータのバックアップを取ってください！</strong>",
 "Backup directory" => "バックアップディレクトリ",
