@@ -20,6 +20,7 @@
     "2. Download & Extract" : "2. Scarica ed estrai",
     "3. Replace" : "3. Sostituisci",
     "Update" : "Aggiorna",
+    "Updater-Backups" : "Strumento di aggiornamento-Backup",
     "Note" : "Nota",
     "Here you can find backups of the core of your ownCloud <strong>(excluding your data)</strong> after starting an update to a newer version." : "Qui puoi trovare le copie di sicurezza dei componenti principali del tuo <strong> ownCloud (dati esclusi)</strong> dopo aver avviato l'aggiornamento a una nuova versione.",
     "<strong>Please always backup your data separately before updating!</strong>" : "<strong>Effettua sempre una copia di sicurezza separata dei tuoi dati prima di aggiornare!</strong>",
