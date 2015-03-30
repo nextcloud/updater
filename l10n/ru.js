@@ -6,6 +6,7 @@ OC.L10N.register(
     "Update permissions on this directory and its content or remove it manually first." : "Обновите права доступа для каталога и его содержимого или удалите их в ручную.",
     "Update failed." : "Обновление не удалось.",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>Не удалось обновить.</strong><br />Проверьте пожалуйста журналы на странице администратора, и  сообщите  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">сообществу ownCloud</a> об этой проблеме.",
+    "<strong>Server error.</strong> Please check web server log file for details" : "<strong>Ошибка сервера.</strong> Проверьте логи сервера для получения подробностей",
     "Retry" : "Повторить",
     "Here is your backup:" : "Ваша резервная копия:",
     "Proceed" : "Продолжить",
