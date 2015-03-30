@@ -10,6 +10,7 @@
 .updater-backups-table {
 	width: 100%;
 	margin: 0.8em 0;
+	max-width: 750px;
 }
 
 .updater-backups-table th {
@@ -20,6 +21,7 @@
 
 .updater-backups-table td {
 	padding: 10px 0;
+	cursor: pointer;
 }
 
 .updater-backups-table .icon-delete {
@@ -68,4 +70,5 @@
 .updater-update {
 	padding: 1em 0.75em;
 	background-color: rgba(240, 240, 240, 0.9);
+	max-width: 750px;
 }
