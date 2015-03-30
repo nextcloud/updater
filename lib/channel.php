@@ -29,8 +29,8 @@ class Channel {
 		return [
 			self::CHANNEL_PRODUCTION => $l10n->t('Production'),
 			self::CHANNEL_STABLE => $l10n->t('Stable'),
-			self::CHANNEL_DAILY => $l10n->t('Daily'),
 			self::CHANNEL_BETA => $l10n->t('Beta'),
+			self::CHANNEL_DAILY => $l10n->t('Daily'),
 		];
 	}
 	
