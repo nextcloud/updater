@@ -20,6 +20,7 @@
     "2. Download & Extract" : "2. Загрузка и извлечение",
     "3. Replace" : "3. Замена",
     "Update" : "Обновить",
+    "Updater-Backups" : "Обновление и Резервирование",
     "Note" : "Заметка",
     "Here you can find backups of the core of your ownCloud <strong>(excluding your data)</strong> after starting an update to a newer version." : "Здесь вы можете найти резервные копии ядра вашего OwnCloud <strong>(за исключением данных)</strong> после старта обновления до новейшей версии.",
     "<strong>Please always backup your data separately before updating!</strong>" : "<strong>Пожалуйста, всегда выполняйте резервное копирование данных отдельно перед обновлением!</strong>",
@@ -28,8 +29,8 @@
     "Backup" : "Резервная копия",
     "Done on" : "Готово на",
     "Size" : "Размер",
+    "Download" : "Скачать",
     "Delete" : "Удалить",
-    "Are you sure you want to delete {{entry.title}}" : "Вы уверены что хотите удалить {{entry.title}}",
-    "Download" : "Скачать"
+    "Are you sure you want to delete {{entry.title}}" : "Вы уверены что хотите удалить {{entry.title}}"
 },"pluralForm" :"nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
 }

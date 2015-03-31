@@ -31,8 +31,8 @@ OC.L10N.register(
     "Backup" : "Kopia zapasowa",
     "Done on" : "Ukończono na",
     "Size" : "Rozmiar",
+    "Download" : "Pobierz",
     "Delete" : "Usuń",
-    "Are you sure you want to delete {{entry.title}}" : "Czy na pewno chcesz usunąć {{entry.title}}",
-    "Download" : "Pobierz"
+    "Are you sure you want to delete {{entry.title}}" : "Czy na pewno chcesz usunąć {{entry.title}}"
 },
 "nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);");

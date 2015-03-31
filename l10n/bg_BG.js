@@ -30,7 +30,7 @@ OC.L10N.register(
     "Backup" : "Архивиране",
     "Done on" : "Извършено върху",
     "Size" : "Размер",
-    "Delete" : "Изтрий",
-    "Download" : "Изтегли"
+    "Download" : "Изтегли",
+    "Delete" : "Изтрий"
 },
 "nplurals=2; plural=(n != 1);");

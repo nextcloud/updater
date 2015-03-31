@@ -31,8 +31,8 @@ OC.L10N.register(
     "Backup" : "Záloha",
     "Done on" : "Dokončeno",
     "Size" : "Velikost",
+    "Download" : "Stáhnout",
     "Delete" : "Smazat",
-    "Are you sure you want to delete {{entry.title}}" : "Opravdu si přejete odstranit {{entry.title}}",
-    "Download" : "Stáhnout"
+    "Are you sure you want to delete {{entry.title}}" : "Opravdu si přejete odstranit {{entry.title}}"
 },
 "nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;");

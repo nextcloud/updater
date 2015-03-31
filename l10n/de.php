@@ -30,8 +30,8 @@ $TRANSLATIONS = array(
 "Backup" => "Sicherung",
 "Done on" => "Abgeschlossen am",
 "Size" => "Größe",
+"Download" => "Herunterladen",
 "Delete" => "Löschen",
-"Are you sure you want to delete {{entry.title}}" => "Soll {{entry.title}} wirklich gelöscht werden?",
-"Download" => "Herunterladen"
+"Are you sure you want to delete {{entry.title}}" => "Soll {{entry.title}} wirklich gelöscht werden?"
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n != 1);";

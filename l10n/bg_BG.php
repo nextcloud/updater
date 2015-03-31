@@ -29,7 +29,7 @@ $TRANSLATIONS = array(
 "Backup" => "Архивиране",
 "Done on" => "Извършено върху",
 "Size" => "Размер",
-"Delete" => "Изтрий",
-"Download" => "Изтегли"
+"Download" => "Изтегли",
+"Delete" => "Изтрий"
 );
 $PLURAL_FORMS = "nplurals=2; plural=(n != 1);";

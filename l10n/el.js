@@ -31,8 +31,8 @@ OC.L10N.register(
     "Backup" : "Αντίγραφο ασφαλείας",
     "Done on" : "Oλοκληρώθηκε",
     "Size" : "Μέγεθος",
+    "Download" : "Λήψη",
     "Delete" : "Διαγραφή",
-    "Are you sure you want to delete {{entry.title}}" : "Είστε σίγουρος ότι επιθυμείτε τη διαγραφή του {{entry.title}}",
-    "Download" : "Λήψη"
+    "Are you sure you want to delete {{entry.title}}" : "Είστε σίγουρος ότι επιθυμείτε τη διαγραφή του {{entry.title}}"
 },
 "nplurals=2; plural=(n != 1);");

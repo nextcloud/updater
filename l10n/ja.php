@@ -28,8 +28,8 @@ $TRANSLATIONS = array(
 "Backup" => "バックアップ",
 "Done on" => "完了:",
 "Size" => "サイズ",
+"Download" => "ダウンロード",
 "Delete" => "削除",
-"Are you sure you want to delete {{entry.title}}" => "本当に {{entry.title}}を削除してもよろしいですか？",
-"Download" => "ダウンロード"
+"Are you sure you want to delete {{entry.title}}" => "本当に {{entry.title}}を削除してもよろしいですか？"
 );
 $PLURAL_FORMS = "nplurals=1; plural=0;";

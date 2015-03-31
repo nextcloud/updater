@@ -30,8 +30,8 @@ OC.L10N.register(
     "Backup" : "Varmuuskopioi",
     "Done on" : "Luontiaika",
     "Size" : "Koko",
+    "Download" : "Lataa",
     "Delete" : "Poista",
-    "Are you sure you want to delete {{entry.title}}" : "Haluatko varmasti poistaa kohteen {{entry.title}}",
-    "Download" : "Lataa"
+    "Are you sure you want to delete {{entry.title}}" : "Haluatko varmasti poistaa kohteen {{entry.title}}"
 },
 "nplurals=2; plural=(n != 1);");

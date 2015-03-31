@@ -31,8 +31,8 @@ OC.L10N.register(
     "Backup" : "Backup",
     "Done on" : "Done on",
     "Size" : "Size",
+    "Download" : "Download",
     "Delete" : "Delete",
-    "Are you sure you want to delete {{entry.title}}" : "Are you sure you want to delete {{entry.title}}",
-    "Download" : "Download"
+    "Are you sure you want to delete {{entry.title}}" : "Are you sure you want to delete {{entry.title}}"
 },
 "nplurals=2; plural=(n != 1);");

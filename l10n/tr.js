@@ -31,8 +31,8 @@ OC.L10N.register(
     "Backup" : "Yedek",
     "Done on" : "Yapılma",
     "Size" : "Boyut",
+    "Download" : "İndir",
     "Delete" : "Sil",
-    "Are you sure you want to delete {{entry.title}}" : "{{entry.title}} girdisini silmek istediğinizden emin misiniz",
-    "Download" : "İndir"
+    "Are you sure you want to delete {{entry.title}}" : "{{entry.title}} girdisini silmek istediğinizden emin misiniz"
 },
 "nplurals=2; plural=(n > 1);");

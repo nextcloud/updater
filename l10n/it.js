@@ -31,8 +31,8 @@ OC.L10N.register(
     "Backup" : "Copia di sicurezza",
     "Done on" : "Completato il",
     "Size" : "Dimensione",
+    "Download" : "Scarica",
     "Delete" : "Elimina",
-    "Are you sure you want to delete {{entry.title}}" : "Sei sicuro di voler eliminare {{entry.title}}",
-    "Download" : "Scarica"
+    "Are you sure you want to delete {{entry.title}}" : "Sei sicuro di voler eliminare {{entry.title}}"
 },
 "nplurals=2; plural=(n != 1);");
