@@ -22,6 +22,6 @@ app.directive('ngConfirmClick', [
           }
         });
       }
-    }
+    };
   }
 ]);

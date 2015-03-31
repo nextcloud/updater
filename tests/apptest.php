@@ -14,7 +14,7 @@
 				->getMock()
 		;
 
-		$certificateManager = $this->getMock('\OCP\ICertificateManager');
+		$certificateManager = $this->getMock('OCP\Http\Client\IClientService');
 		$mockedHTTPHelper = $this->getMockBuilder('\OC\HTTPHelper')
 				->setConstructorArgs(array(\OC::$server->getConfig(), $certificateManager))
 				->getMock()

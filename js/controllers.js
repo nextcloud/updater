@@ -5,6 +5,26 @@ function updateCtrl($scope, $http) {
 	$scope.backup = '';
 	$scope.version = '';
 	$scope.url = '';
+	
+	$scope.updateChannel = function(){
+		OC.msg.startAction('#channel_save_msg', t('updater', 'Fetching...'));
+		$.post(
+			OC.filePath('updater', 'ajax', 'channel.php'),
+			{
+				newChannel : $('#release-channel').val()
+			},
+			function(data){
+				if (data.status && data.status==='success'){
+					$scope.$apply(function(){
+						$scope.checkedAt = data.checkedAt;
+						$scope.newVersion = data.version;
+						$scope.hasUpdate = data.version && data.version.length;
+					});
+				}
+				OC.msg.finishedAction('#channel_save_msg', data);
+			}
+		);
+	};
 
 	$scope.fail = function (data) {
 		var message = t('updater', '<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href="https://github.com/owncloud/apps/issues" target="_blank">ownCloud community</a>.');

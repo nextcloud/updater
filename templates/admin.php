@@ -13,13 +13,14 @@
 ?>
 <?php $isNewVersionAvailable = $_['isNewVersionAvailable']?>
 <div ng-app="updater" ng-init="navigation='backup'" class="updater-admin">
-	<div class="section" ng-controller="updateCtrl">
+	<div class="section" ng-controller="updateCtrl" ng-init="hasUpdate=<?php p($isNewVersionAvailable) ?>;">
 		<h2><?php p($l->t('Updates')) ?></h2>
-		<p id="update-info" ng-show="<?php p($isNewVersionAvailable) ?>">
-			<?php print_unescaped($l->t('<strong>A new version is available: %s</strong>', array($_['version']))) ?>
+		<p id="update-info" ng-show="hasUpdate" 
+		   ng-init="newVersion='<?php p($_['version']) ?>'">
+			<?php print_unescaped($l->t('<strong>A new version is available: {{newVersion}}</strong>')) ?>
 		</p>
-		<p ng-show="<?php p(!$isNewVersionAvailable) ?>">
-			<?php print_unescaped($l->t('<strong>Up to date.</strong> <em>Checked on %s</em>', array($_['checkedAt']))) ?>
+		<p ng-show="!hasUpdate" ng-init="checkedAt='<?php p($_['checkedAt']) ?>'">
+			<?php print_unescaped($l->t('<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>')) ?>
 		</p>
 		<div class="upd-step-title" style="display:none;">
 			<ul class="track-progress" data-steps="3">
@@ -38,9 +39,22 @@
 			</ul>
 		</div>
 		<div class="updater-progress" style="display:none;"><div></div></div>
-		<button ng-click="update()" ng-show="<?php p($isNewVersionAvailable) ?>" id="updater-start">
+		<p><button ng-click="update()" ng-show="hasUpdate" id="updater-start">
 			<?php p($l->t('Update')) ?>
-		</button>
+		</button></p>
+		<label for="release-channel"><?php p($l->t('Update channel:')) ?></label>
+		<select id="release-channel" ng-change="updateChannel()" 
+				ng-model="releaseChannel" ng-init="releaseChannel='<?php p($_['currentChannel']) ?>'">
+			<?php foreach ($_['channels'] as $channel => $channelTitle){ ?>
+			<option value="<?php p($channel) ?>">
+				<?php p($channelTitle) ?>
+			</option>
+			<?php } ?>
+		</select>
+		<span id="channel_save_msg"></span>
+		<p>
+			<?php p($l->t('Please note update is possible only to a version that is greater than the one currently installed. If you upgraded from a less stable channel you will be able to upgrade from a more stable channel only after the version that is greater than you installed reaches it.')); ?>
+		</p>
 	</div>
 	<div class="section" ng-controller="backupCtrl">
 		<h2><?php p($l->t('Updater-Backups')) ?></h2>
