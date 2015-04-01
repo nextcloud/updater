@@ -16,8 +16,6 @@ OC.L10N.register(
     "Make sure that your web server has read access to the following files and directories:" : "Asegúrese de que su servidor tenga acceso de lectura a los siguientes archivos y carpetas:",
     "Make sure that your web server has write access to the following files and directories:" : "Asegúrese de que su servidor tenga acceso de escritura a los siguientes archivos y carpetas:",
     "Updates" : "Actualizaciones",
-    "<strong>A new version is available: %s</strong>" : "<strong>Hay una nueva versión disponible: %s</strong>",
-    "<strong>Up to date.</strong> <em>Checked on %s</em>" : "<strong>Actualizado.</strong> <em>Comprobado el %s</em>",
     "1. Check & Backup" : "1. Comprobar y resguardar",
     "2. Download & Extract" : "2. Descargar y extraer",
     "3. Replace" : "3. Reemplazar",

@@ -16,8 +16,6 @@ OC.L10N.register(
     "Make sure that your web server has read access to the following files and directories:" : "Aşağıdaki dosya ve dizinlere web sunucunuzun okuma izni olduğundan emin olun:",
     "Make sure that your web server has write access to the following files and directories:" : "Aşağıdaki dosya ve dizinlere web sunucunuzun yazma izni olduğundan emin olun:",
     "Updates" : "Güncellemeler",
-    "<strong>A new version is available: %s</strong>" : "<strong>Yeni bir sürüm mevcut: %s</strong>",
-    "<strong>Up to date.</strong> <em>Checked on %s</em>" : "<strong>Güncel.</strong> <em>Denetlenme: %s</em>",
     "1. Check & Backup" : "1. Denetle ve Yedekle",
     "2. Download & Extract" : "2. İndir ve Çıkart",
     "3. Replace" : "3. Değiştir",

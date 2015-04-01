@@ -14,8 +14,6 @@
     "Make sure that your web server has read access to the following files and directories:" : "Controleer of uw webserver leesrechten heeft op de volgende bestanden en directories:",
     "Make sure that your web server has write access to the following files and directories:" : "Controleer of uw webserver schrijfrechten heeft op de volgende bestanden en directories:",
     "Updates" : "Updates",
-    "<strong>A new version is available: %s</strong>" : "<strong>Er is een nieuwe versie beschikbaar: %s<strong>",
-    "<strong>Up to date.</strong> <em>Checked on %s</em>" : "<strong>Up to date.</strong> <em>Gecontroleerd op %s</em>",
     "1. Check & Backup" : "1. Controleren & Backup maken",
     "2. Download & Extract" : "2. Downloaden & Uitpakken",
     "3. Replace" : "3. Vervangen",

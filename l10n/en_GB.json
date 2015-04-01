@@ -14,8 +14,6 @@
     "Make sure that your web server has read access to the following files and directories:" : "Make sure that your web server has read access to the following files and directories:",
     "Make sure that your web server has write access to the following files and directories:" : "Make sure that your web server has write access to the following files and directories:",
     "Updates" : "Updates",
-    "<strong>A new version is available: %s</strong>" : "<strong>A new version is available: %s</strong>",
-    "<strong>Up to date.</strong> <em>Checked on %s</em>" : "<strong>Up to date.</strong> <em>Checked on %s</em>",
     "1. Check & Backup" : "1. Check & Backup",
     "2. Download & Extract" : "2. Download & Extract",
     "3. Replace" : "3. Replace",

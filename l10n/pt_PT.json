@@ -14,8 +14,6 @@
     "Make sure that your web server has read access to the following files and directories:" : "Certifique-se que o seu servidor tem acesso de leitura aos seguintes ficheiros e diretorias:",
     "Make sure that your web server has write access to the following files and directories:" : "Certifique-se que o seu servidor tem acesso de gravação aos seguintes ficheiros e diretorias:",
     "Updates" : "Atualizações",
-    "<strong>A new version is available: %s</strong>" : "<strong>Uma nova versão está disponível: %s</strong>",
-    "<strong>Up to date.</strong> <em>Checked on %s</em>" : "<strong>Atualizado.</strong> <em>Verificado a %s</em>",
     "1. Check & Backup" : "1. Verificar & Cópia de Segurança",
     "2. Download & Extract" : "2. Transferir e Extrair",
     "3. Replace" : "3. Substituir",

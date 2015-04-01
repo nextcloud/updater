@@ -16,8 +16,6 @@ OC.L10N.register(
     "Make sure that your web server has read access to the following files and directories:" : "Ujistěte se, že má váš webový server práva ke čtení následujících souborů a adresářů:",
     "Make sure that your web server has write access to the following files and directories:" : "Ujistěte se, že má váš webový server práva k zápisu do následujících souborů a adresářů:",
     "Updates" : "Aktualizace",
-    "<strong>A new version is available: %s</strong>" : "<strong>Je dostupná nová verze: %s</strong>",
-    "<strong>Up to date.</strong> <em>Checked on %s</em>" : "<strong>Nejnovější verze.</strong> <em>Ověřeno %s</em>",
     "1. Check & Backup" : "1. Ověřit & Zálohovat",
     "2. Download & Extract" : "2. Stáhnout & Rozbalit",
     "3. Replace" : "3. Nahradit",
