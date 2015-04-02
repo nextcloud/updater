@@ -9,6 +9,7 @@
     "Here is your backup:" : "Here is your backup:",
     "Proceed" : "Proceed",
     "<strong>All done.</strong> Click to the link below to start database upgrade." : "<strong>All done.</strong> Click to the link below to start database upgrade.",
+    "Daily" : "Daily",
     "Please ask your server administrator to enable PHP zip extension." : "Please ask your server administrator to enable PHP zip extension.",
     "Not possible to update %s to %s. Downgrading or skipping major releases is not supported." : "Not possible to update %s to %s. Downgrading or skipping major releases is not supported.",
     "Make sure that your web server has read access to the following files and directories:" : "Make sure that your web server has read access to the following files and directories:",

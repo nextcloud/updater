@@ -10,6 +10,7 @@ $TRANSLATIONS = array(
 "Here is your backup:" => "Zde je vaše záloha:",
 "Proceed" => "Provést",
 "<strong>All done.</strong> Click to the link below to start database upgrade." => "<strong>Vše dokončeno.</strong> Klikněte na odkaz níže pro zahájení aktualizace databáze.",
+"Daily" => "Denně",
 "Please ask your server administrator to enable PHP zip extension." => "Požádejte svého správce systému o zapnutí rozšíření zip pro PHP.",
 "Not possible to update %s to %s. Downgrading or skipping major releases is not supported." => "Není možné aktualizovat %s na %s. Downgrade nebo přeskočení hlavní verze programu není podporováno.",
 "Make sure that your web server has read access to the following files and directories:" => "Ujistěte se, že má váš webový server práva ke čtení následujících souborů a adresářů:",

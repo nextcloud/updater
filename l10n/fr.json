@@ -9,6 +9,7 @@
     "Here is your backup:" : "Voici votre sauvegarde :",
     "Proceed" : "Exécuter",
     "<strong>All done.</strong> Click to the link below to start database upgrade." : "<strong>Terminé.</strong> Cliquez sur le lien ci-dessous pour démarrer la mise à niveau de la base de données.",
+    "Daily" : "Quotidiennement",
     "Please ask your server administrator to enable PHP zip extension." : "Veuillez demander à votre administrateur système d'activer l'extension zip de PHP.",
     "Not possible to update %s to %s. Downgrading or skipping major releases is not supported." : "Impossible de mettre à jour de %s vers %s. La mise à jour vers une version plus ancienne ou passer outre les versions majeures n'est pas pris en charge.",
     "Make sure that your web server has read access to the following files and directories:" : "Veuillez vérifier que votre serveur a les droits en lecture des fichiers et dossiers suivants :",

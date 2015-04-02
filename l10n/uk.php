@@ -10,6 +10,7 @@ $TRANSLATIONS = array(
 "Here is your backup:" => "Це ваша резервна копія:",
 "Proceed" => "Продовжити",
 "<strong>All done.</strong> Click to the link below to start database upgrade." => "<strong>Готово.</strong> Натисніть посилання нижче для початку оновлення бази даних.",
+"Daily" => "Щоденно",
 "Please ask your server administrator to enable PHP zip extension." => "Будь ласка, зверніться до адміністратора сервера, щоб включити zip-розширення PHP.",
 "Not possible to update %s to %s. Downgrading or skipping major releases is not supported." => "Неможливо оновити %s до %s. Відкат або пропуск основної версії не підтримується.",
 "Make sure that your web server has read access to the following files and directories:" => "Перевірте, чи має ваш веб-сервер привілеї на читання наступних файлів та директорій:",

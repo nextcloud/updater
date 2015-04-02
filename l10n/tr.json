@@ -9,6 +9,7 @@
     "Here is your backup:" : "Yedeğiniz burada:",
     "Proceed" : "Devam et",
     "<strong>All done.</strong> Click to the link below to start database upgrade." : "<strong>Her şey tamam</strong>. Veritabanı güncellemesi için aşağıdaki bağlantıya tıklayın.",
+    "Daily" : "Her gün",
     "Please ask your server administrator to enable PHP zip extension." : "Lütfen PHP zip uzantısını etkinleştirmesi için sunucu yöneticinize danışın.",
     "Not possible to update %s to %s. Downgrading or skipping major releases is not supported." : "%s, %s sürümüne güncellenemedi. Sürüm düşürme veya ana sürümleri atlamak desteklenmemektedir.",
     "Make sure that your web server has read access to the following files and directories:" : "Aşağıdaki dosya ve dizinlere web sunucunuzun okuma izni olduğundan emin olun:",

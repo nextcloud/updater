@@ -11,6 +11,7 @@ OC.L10N.register(
     "Here is your backup:" : "Ваша резервная копия:",
     "Proceed" : "Продолжить",
     "<strong>All done.</strong> Click to the link below to start database upgrade." : "Готово . Для начала обновления базы данных нажмите на ссылку ниже ",
+    "Daily" : "Ежедневно",
     "Please ask your server administrator to enable PHP zip extension." : "Попросите администратора вашего сервера включить zip-расширение PHP.",
     "Not possible to update %s to %s. Downgrading or skipping major releases is not supported." : "Невозможно обновить %s до %s. Откат на предыдущую версию или пропуск главных релизов не поддерживается.",
     "Make sure that your web server has read access to the following files and directories:" : "Убедитесь, что вебсервер имеет права на чтение следующих файлов и каталогов:",
