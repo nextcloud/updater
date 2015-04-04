@@ -29,6 +29,7 @@ OC.L10N.register(
     "3. Replace" : "3. Ersetzen",
     "Update" : "Update durchführen",
     "Update channel:" : "Update-Kanal:",
+    "Please note update is possible only to a version that is greater than the one currently installed. If you upgraded from a less stable channel you will be able to upgrade from a more stable channel only after the version that is greater than you installed reaches it." : "Bitte beachten Sie, dass ein Update nur auf eine höhere Version als die derzeit installierte Version möglich ist. Haben Sie von einem weniger stabilen Kanal aktualisiert, können Sie von einen stabileren Kanal nur dann aktualisieren, wenn die erreichte Version nach der Installation höher ist.",
     "Updater-Backups" : "Updater-Backups",
     "Note" : "Hinweis",
     "Here you can find backups of the core of your ownCloud <strong>(excluding your data)</strong> after starting an update to a newer version." : "Hier finden Sie Backups des Kerns Ihrer ownCloud <strong>(ohne Ihre Daten)</strong>, nachdem Sie ein Update auf eine neuere Version gestartet haben.",
