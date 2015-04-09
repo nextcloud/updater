@@ -27,6 +27,7 @@
     "3. Replace" : "3. Nahradit",
     "Update" : "Aktualizovat",
     "Update channel:" : "Aktualizovat kanál:",
+    "Please note update is possible only to a version that is greater than the one currently installed. If you upgraded from a less stable channel you will be able to upgrade from a more stable channel only after the version that is greater than you installed reaches it." : "Vezměte prosím na vědomí, že je možné aktualizovat pouze na novější verzi. Pokud jste provedli upgrade z méně stabilního kanálu, budete moci upgradovat ze stabilnějšího kanálu po uvolnění novější verze.",
     "Updater-Backups" : "Zálohy aktualizačního programu",
     "Note" : "Poznámka",
     "Here you can find backups of the core of your ownCloud <strong>(excluding your data)</strong> after starting an update to a newer version." : "Zde najdete zálohy jádra své aplikace ownCloud <strong>(vyjma svých dat)</strong> uložené při spuštění aktualizace na novější verzi.",
