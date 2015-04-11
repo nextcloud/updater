@@ -6,7 +6,7 @@ $TRANSLATIONS = array(
 "Unable to switch channel. Check if %s is writable" => "Non é posíbel cambiar de canle. Comprobe se %s é escribíbel",
 "Update failed." => "Non foi posíbel facer a actualización.",
 "Fetching..." => "Obtendo...",
-"<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "<strong>A actualización non foi satisfactoria.</strong><br />Revise os rexistros na páxina de administración e informe deste problema á <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunidade ownCloud</a>.",
+"<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "<strong>A actualización non foi satisfactoria.</strong><br />Revise os rexistros na páxina de administración e informe desta incidencia á <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunidade ownCloud</a>.",
 "<strong>Server error.</strong> Please check web server log file for details" => "<strong>Produciuse un erro no servidor.</strong>Revise o ficheiro de rexistro do servidor web para obter máis detalles",
 "Retry" => "Tentar de novo",
 "Here is your backup:" => "A súa copia de seguranza está aquí:",
