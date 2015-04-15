@@ -30,7 +30,7 @@ OC.L10N.register(
     "Update" : "Mettre à jour",
     "Update channel:" : "Canal de mise à jour :",
     "Please note update is possible only to a version that is greater than the one currently installed. If you upgraded from a less stable channel you will be able to upgrade from a more stable channel only after the version that is greater than you installed reaches it." : "Veuillez noter qu'il est uniquement possible de mettre à jour vers une version supérieure à celle actuellement installée. Si vous avez mis à jour vers un canal moins stable, il ne sera possible de mettre à jour vers un canal plus stable qu'après la publication d'une version dont le numéro est plus élevé que celui de votre installation.",
-    "Updater-Backups" : "Mise à jour-Sauvegardes",
+    "Updater-Backups" : "Mise à jour - Sauvegardes",
     "Note" : "Remarque",
     "Here you can find backups of the core of your ownCloud <strong>(excluding your data)</strong> after starting an update to a newer version." : "Vous pouvez trouver ici les sauvegardes du noyau de votre ownCloud <strong>(sans vos données)</strong> après avoir lancé une mise à jour vers la nouvelle version.",
     "<strong>Please always backup your data separately before updating!</strong>" : "<strong>Veuillez toujours sauvegarder vos données séparément avant de mettre à jour !</strong>",
