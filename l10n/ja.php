@@ -7,7 +7,7 @@ $TRANSLATIONS = array(
 "Update failed." => "アップデートに失敗しました。",
 "Fetching..." => "取得しています...",
 "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "<strong>アップデートに失敗しました。</strong><br />管理ページでログを確認し、この問題を<a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloudコミュニティ</a>.に報告してください。",
-"<strong>Server error.</strong> Please check web server log file for details" => "サーバーエラー。詳細に関してはウェブサーバーのログを確認して下さい",
+"<strong>Server error.</strong> Please check web server log file for details" => "サーバーエラー。詳細に関してはWebサーバーのログを確認して下さい",
 "Retry" => "リトライ",
 "Here is your backup:" => "あなたのバックアップ:",
 "Proceed" => "続行",

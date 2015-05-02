@@ -5,7 +5,7 @@
     "Unable to switch channel. Check if %s is writable" : "No se puede cambiar de canal. Compruebe si se puede escribir en %s",
     "Update failed." : "Falló la actualización.",
     "Fetching..." : "Trayendo...",
-    "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>La actualización ha fallado.</strong><br />Por favor, revisa la razón del fallo en el log de la página de admin e informa de este problema a la <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunidad de ownCloud</a>.",
+    "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>La actualización ha fallado.</strong><br />Por favor, revise la razón del fallo en el registro de la página de admin e informe de este problema a la <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunidad de ownCloud</a>.",
     "<strong>Server error.</strong> Please check web server log file for details" : "<strong>Error en el servidor.</strong> Por favor compruebe los registros del servidor para más detalles",
     "Retry" : "Reintentar",
     "Here is your backup:" : "Aquí está su copia de seguridad:",
