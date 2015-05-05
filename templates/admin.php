@@ -19,6 +19,9 @@
 		   ng-init="newVersion='<?php p($_['version']) ?>'">
 			<?php print_unescaped($l->t('<strong>A new version is available: {{newVersion}}</strong>')) ?>
 		</p>
+		<p ng-show="!hasUpdate">
+			<?php p($l->t('Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement.')) ?>
+		</p>
 		<p ng-show="!hasUpdate" ng-init="checkedAt='<?php p($_['checkedAt']) ?>'">
 			<?php print_unescaped($l->t('<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>')) ?>
 		</p>
@@ -42,16 +45,18 @@
 		<p><button ng-click="update()" ng-show="hasUpdate" id="updater-start">
 			<?php p($l->t('Update')) ?>
 		</button></p>
-		<label for="release-channel"><?php p($l->t('Update channel:')) ?></label>
-		<select id="release-channel" ng-change="updateChannel()" 
+		<p>
+			<label for="release-channel"><?php p($l->t('Update channel:')) ?></label>
+			<select id="release-channel" ng-change="updateChannel()" 
 				ng-model="releaseChannel" ng-init="releaseChannel='<?php p($_['currentChannel']) ?>'">
-			<?php foreach ($_['channels'] as $channel => $channelTitle){ ?>
-			<option value="<?php p($channel) ?>">
-				<?php p($channelTitle) ?>
-			</option>
-			<?php } ?>
-		</select>
-		<span id="channel_save_msg"></span>
+				<?php foreach ($_['channels'] as $channel => $channelTitle){ ?>
+				<option value="<?php p($channel) ?>">
+					<?php p($channelTitle) ?>
+				</option>
+				<?php } ?>
+			</select>
+			<span id="channel_save_msg"></span>
+		</p>
 		<p>
 			<?php p($l->t('Please note update is possible only to a version that is greater than the one currently installed. If you upgraded from a less stable channel you will be able to upgrade from a more stable channel only after the version that is greater than you installed reaches it.')); ?>
 		</p>
