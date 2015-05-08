@@ -23,6 +23,7 @@ OC.L10N.register(
     "Make sure that your web server has write access to the following files and directories:" : "Assicurati che il tuo server web abbia accesso in scrittura ai seguenti file e cartelle:",
     "Updates" : "Aggiornamenti",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Una nuova versione è disponibile: {{newVersion}}</strong>",
+    "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." : "Gli aggiornamenti saranno disponibili nello strumento di aggiornamento e nel pannello di amministrazione di ownCloud nel giro di pochi giorni dall'annuncio di un aggiornamento.",
     "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" : "<strong>Aggiornato.</strong> <em>Controllato il {{checkedAt}}</em>",
     "1. Check & Backup" : "1. Controlla e crea copie di sicurezza",
     "2. Download & Extract" : "2. Scarica ed estrai",

@@ -23,6 +23,7 @@ OC.L10N.register(
     "Make sure that your web server has write access to the following files and directories:" : "Проверите да ваш веб сервер може да пише у следеће фајлове и директоријуме:",
     "Updates" : "Ажурирања",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Доступна је нова верзија: {{newVersion}}</strong>",
+    "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." : "Ажурирања ће бити доступна у апликацији ажурирања и оунКлауд администраторском панелу, пар дана након објаве.",
     "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" : "<strong>Ажурно.</strong> <em>Проверено {{checkedAt}}</em>",
     "1. Check & Backup" : "1. Провери и направи резерву",
     "2. Download & Extract" : "2. Преузми и распакуј",

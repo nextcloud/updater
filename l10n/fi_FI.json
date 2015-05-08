@@ -21,6 +21,7 @@
     "Make sure that your web server has write access to the following files and directories:" : "Varmista, että http-palvelimella on kirjoitusoikeus seuraaviin tiedostoihin ja hakemistoihin:",
     "Updates" : "Päivitykset",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Uusi versio on saatavilla: {{newVersion}}</strong>",
+    "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." : "Päivitykset ovat saatavilla joko päivityssovelluksen tai ownCloudin ylläpitopaneelin kautta muutaman päivän sisällä päivityksen tiedottamisesta.",
     "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" : "<strong>Ajan tasalla.</strong> <em>Tarkistettu {{checkedAt}}</em>",
     "1. Check & Backup" : "1. Tarkista ja varmuuskopioi",
     "2. Download & Extract" : "2. Lataa ja pura",

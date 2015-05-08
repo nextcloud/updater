@@ -22,6 +22,7 @@ $TRANSLATIONS = array(
 "Make sure that your web server has write access to the following files and directories:" => "Βεβαιωθείτε ότι ο διακομιστής δικτύου σας έχει πρόσβαση εγγραφής στα ακόλουθα αρχεία και καταλόγους:",
 "Updates" => "Ενημερώσεις",
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>Μια νέα έκδοση είναι διαθέσιμη: {{newVersion}}</strong>",
+"Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." => "Οι ενημερώσεις θα είναι διαθέσιμες στην εφαρμογή ενημέρωσης και στον πίνακα ελέγχου του διαχειριστή εντός ολίγων ημερών από την ανακοίνωσή τους.",
 "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" => "<strong>Ενημερωμένο.</strong> <em>Ελέγχθηκε: {{checkedAt}}</em>",
 "1. Check & Backup" => "1. Έλεγχος και Δημιουργία Αντιγράφων Ασφαλείας",
 "2. Download & Extract" => "2. Λήψη και Εξαγωγή",

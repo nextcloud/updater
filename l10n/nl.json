@@ -21,6 +21,7 @@
     "Make sure that your web server has write access to the following files and directories:" : "Controleer of uw webserver schrijfrechten heeft op de volgende bestanden en directories:",
     "Updates" : "Updates",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Er is een nieuwe versie beschikbaar: {{newVersion}}</strong>",
+    "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." : "Updates komen binnen enkele dagen na aankondiging beschikbaar in de Updater app en in het ownCloud beheerscherm.",
     "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" : "<strong>Bijgewerkt.</strong> <em>Gecontroleerd op  {{checkedAt}}</em>",
     "1. Check & Backup" : "1. Controleer en back-up",
     "2. Download & Extract" : "2. Download en pak uit",
