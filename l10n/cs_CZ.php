@@ -22,6 +22,7 @@ $TRANSLATIONS = array(
 "Make sure that your web server has write access to the following files and directories:" => "Ujistěte se, že má váš webový server práva k zápisu do následujících souborů a adresářů:",
 "Updates" => "Aktualizace",
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>Je dostupná nová verze: {{newVersion}}</strong>",
+"Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." => "Aktualizace budou dostupné v aplikaci aktualizací a na administrátorském panelu ownCloud v několika následujících dnech po oznámení aktualizace",
 "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" => "<strong>Nejnovější verze.</strong> <em>Ověřeno {{checkedAt}}</em>",
 "1. Check & Backup" => "1. Ověřit & Zálohovat",
 "2. Download & Extract" => "2. Stáhnout & Rozbalit",
