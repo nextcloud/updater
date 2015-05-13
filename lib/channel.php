@@ -39,21 +39,12 @@ class Channel {
 	 * @return string
 	 */
 	public static function getCurrentChannel(){
-		return \OC_Util::getChannel();
+		return \OCP\Util::getChannel();
 	}
 
 	public static function setCurrentChannel($newChannel){
 		$cleanValue = preg_replace('/[^A-Za-z0-9]/', '', $newChannel);
-		$filename = \OC::$SERVERROOT . '/version.php';
-		$content = preg_replace(
-			'/(\$OC_Channel\w*=\w*[\'"])([^\'"])*/', 
-			'\1'.$cleanValue, 
-			file_get_contents($filename)
-		);
-
-		if (file_put_contents($filename, $content)){
-			return $cleanValue;
-		}
-		return false;
+		\OCP\Util::setChannel($cleanValue);
+		return $cleanValue;
 	}
 }
