@@ -21,6 +21,7 @@
     "Make sure that your web server has write access to the following files and directories:" : "Bitte stelle sicher, dass Dein Server Schreibzugriff auf die folgenden Dateien und Verzeichnisse hat:",
     "Updates" : "Updates",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Es ist eine neue Version verfügbar: {{newVersion}}</strong>",
+    "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." : "Aktualisierungen werden im Aktualisierungsprogramm und der ownCloud-Adminoberfläche einige Tage nach Erscheinen einer Aktualisierung zur Verfügung stehen.",
     "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" : "<strong>Auf dem aktuellen Stand.</strong> <em>Überprüft am {{checkedAt}}</em>",
     "1. Check & Backup" : "1. Prüfen & Sichern",
     "2. Download & Extract" : "2. Herunterladen & Entpacken",
