@@ -21,6 +21,7 @@
     "Make sure that your web server has write access to the following files and directories:" : "Make sure that your web server has write access to the following files and directories:",
     "Updates" : "Updates",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>A new version is available: {{newVersion}}</strong>",
+    "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." : "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement.",
     "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" : "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>",
     "1. Check & Backup" : "1. Check & Backup",
     "2. Download & Extract" : "2. Download & Extract",
