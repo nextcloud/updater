@@ -22,6 +22,7 @@ if ($newChannel){
 	$channel = Channel::setCurrentChannel($newChannel);
 	if ($channel){
 		$data = App::getFeed();
+		$lastCheck = \OC_Appconfig::getValue('core', 'lastupdatedat');
 		$data['checkedAt'] = \OCP\Util::formatDate($lastCheck);
 		$data['channel'] = $channel;
 		$data['data']['message'] = '';
