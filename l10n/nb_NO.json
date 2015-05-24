@@ -21,6 +21,7 @@
     "Make sure that your web server has write access to the following files and directories:" : "Sørg for at web-serveren din har skrivetilgang til følgende filer og mapper:",
     "Updates" : "Oppdateringer",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>En ny versjon er tilgjengelig: {{newVersion}}</strong>",
+    "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." : "Oppdateringer vil være tilgjengelige i oppdaterings-appen og ownCloud admin-panel få dager etter at oppdateringen er blitt annonsert.",
     "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" : "<strong>Allerede oppdatert.</strong> <em>Sjekket {{checkedAt}}</em>",
     "1. Check & Backup" : "1. Sjekk & Sikkerhetskopiering",
     "2. Download & Extract" : "2. Nedlasting & Utpakking",
