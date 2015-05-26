@@ -34,7 +34,7 @@ if ($newChannel){
 		\OCP\JSON::error(
 				['data' =>
 					[
-						'message' => App::$l10n->t('Unable to switch channel. Check if %s is writable', [\OC::$SERVERROOT . '/version.php'])
+						'message' => App::$l10n->t('Unable to switch channel.')
 					]
 				]
 		);
