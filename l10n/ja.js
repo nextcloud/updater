@@ -4,7 +4,6 @@ OC.L10N.register(
     "Version not found" : "バージョンが見つかりません",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "アップグレードできません。Webサーバーに以下のディレクトリを削除する権限がありません:",
     "Update permissions on this directory and its content or remove it manually first." : "まず、このディレクトリのパーミッションを更新するか、手動で削除してください。",
-    "Unable to switch channel. Check if %s is writable" : "チャンネルの切り替えができません。%s が書き込み可能か確認してください。",
     "Update failed." : "アップデートに失敗しました。",
     "Fetching..." : "取得しています...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>アップデートに失敗しました。</strong><br />管理ページでログを確認し、この問題を<a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloudコミュニティ</a>.に報告してください。",

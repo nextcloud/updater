@@ -4,7 +4,6 @@ OC.L10N.register(
     "Version not found" : "Različice ni mogoče najti",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Posodobitev ni mogoča. Ni ustreznih dovoljenj za odstranitev naslednjih map:",
     "Update permissions on this directory and its content or remove it manually first." : "Posodobiti je treba dovoljenja te mape in njene vsebine ali pa jo ročno odstraniti.",
-    "Unable to switch channel. Check if %s is writable" : "Ni mogoče preklopiti kanala. Preverite, če je %s zapisljiva.",
     "Update failed." : "Posodobitev je spodletela.",
     "Fetching..." : "Poteka pridobivanje ...",
     "<strong>Server error.</strong> Please check web server log file for details" : "<strong>Napaka strežnika.</strong> Prosimo, preverite dnevniške zapise za detajle",

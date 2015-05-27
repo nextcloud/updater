@@ -4,7 +4,6 @@ OC.L10N.register(
     "Version not found" : "Versión no encontrada",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "No se puede actualizar. Su servidor de internet no tiene permiso para eliminar el siguiente directorio:",
     "Update permissions on this directory and its content or remove it manually first." : "Actualice los permisos de esta carpeta y sus contenidos o elimínela manualmente.",
-    "Unable to switch channel. Check if %s is writable" : "No se puede cambiar de canal. Compruebe si se puede escribir en %s",
     "Update failed." : "Falló la actualización.",
     "Fetching..." : "Trayendo...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>La actualización ha fallado.</strong><br />Por favor, revise la razón del fallo en el registro de la página de admin e informe de este problema a la <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunidad de ownCloud</a>.",

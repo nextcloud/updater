@@ -3,7 +3,6 @@ $TRANSLATIONS = array(
 "Version not found" => "Версия не найдена",
 "Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Обновление невозможно. Ваш веб-сервер не имеет достаточных привилегий для удаления следующего каталога:",
 "Update permissions on this directory and its content or remove it manually first." => "Обновите права доступа для каталога и его содержимого или удалите их в ручную.",
-"Unable to switch channel. Check if %s is writable" => "Не удается сменить канал обновлений. Проверьте что веб сервер может изменять %s ",
 "Update failed." => "Обновление не удалось.",
 "Fetching..." => "Получение данных...",
 "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "<strong>Не удалось обновить.</strong><br />Проверьте пожалуйста журналы на странице администратора, и  сообщите  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">сообществу ownCloud</a> об этой проблеме.",
