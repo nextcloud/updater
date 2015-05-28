@@ -4,6 +4,7 @@ OC.L10N.register(
     "Version not found" : "Versiota ei löytynyt",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Päivitys ei ole mahdollinen. HTTP-palvelimella ei ole oikeutta poistaa seuraavaa hakemistoa:",
     "Update permissions on this directory and its content or remove it manually first." : "Päivitä tämän hakemiston ja sen sisällön oikeudet tai poista se ensin käsin.",
+    "Unable to switch channel." : "Kanavan vaihtaminen epäonnistui.",
     "Update failed." : "Päivitys epäonnistui.",
     "Fetching..." : "Noudetaan...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>Päivitys epäonnistui.</strong><br />Tarkista lokit ylläpito-osiosta ja ilmoita tästä ongelmasta <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud-yhteisölle</a>.",

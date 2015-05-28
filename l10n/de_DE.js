@@ -4,6 +4,7 @@ OC.L10N.register(
     "Version not found" : "Version nicht gefunden",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Upgrade nicht möglich. Ihr Webserver hat keine Berechtigung zum Entfernen des folgenden Verzeichnisses:",
     "Update permissions on this directory and its content or remove it manually first." : "Aktualisieren Sie die Berechtigungen für dieses Verzeichnis und seinen Inhalt oder löschen Sie es vorher manuell.",
+    "Unable to switch channel." : "Kanalwechsel fehlgeschlagen.",
     "Update failed." : "Update fehlgeschlagen.",
     "Fetching..." : "Abrufen…",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>Das Update ist fehlgeschlagen.</strong><br />Bitte überprüfen Sie die Protokolle auf der Administratorenseite und melden Sie dieses Problem der <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud-Community</a>.",

@@ -2,6 +2,7 @@
     "Version not found" : "Non se atopa a versión",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Non é posíbel a anovación. O servidor web non ten permiso para eliminar o seguinte directorio:",
     "Update permissions on this directory and its content or remove it manually first." : "Actualice os permisos deste directorio e o seu contido ou retíreo manualmente antes.",
+    "Unable to switch channel." : "Non é posíbel cambiar a canle.",
     "Update failed." : "Non foi posíbel facer a actualización.",
     "Fetching..." : "Obtendo...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>A actualización non foi satisfactoria.</strong><br />Revise os rexistros na páxina de administración e informe desta incidencia á <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunidade ownCloud</a>.",
