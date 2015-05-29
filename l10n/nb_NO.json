@@ -2,6 +2,7 @@
     "Version not found" : "Versjon ikke funnet",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Oppgradering er ikke mulig. Web-serveren din har ikke tillatelse til å fjerne følgende mappe:",
     "Update permissions on this directory and its content or remove it manually first." : "Oppdater tilgang til denne mappen og innholdet i den eller fjern den manuelt først.",
+    "Unable to switch channel." : "Kan ikke bytte kanal.",
     "Update failed." : "Oppdatering feilet",
     "Fetching..." : "Henter...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>Mislykket oppdatering.</strong><br />Sjekk logger på admin-siden og rapporter dette problemet til <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud-fellesskapet</a>.",
