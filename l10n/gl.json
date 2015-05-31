@@ -23,7 +23,7 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Hai unha nova versión dispoñíbel: {{newVersion}}</strong>",
     "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." : "As actualizacións estarán dispoñíbeis na aplicación de actualización e no panel de administración do ownCloud aos poucos días de seren anunciada a actualización.",
     "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" : "<strong>Actualizado.</strong> <em>Comprobado o {{checkedAt}}</em>",
-    "1. Check & Backup" : "1. Comprobar e facer copia de seguranza",
+    "1. Check & Backup" : "1. Comprobar e facer unha copia de seguranza",
     "2. Download & Extract" : "2. Descargar e extraer",
     "3. Replace" : "3. Substituír",
     "Update" : "Actualizar",
