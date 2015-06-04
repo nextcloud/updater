@@ -3,6 +3,7 @@ $TRANSLATIONS = array(
 "Version not found" => "Version blev ikke fundet",
 "Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Det er ikke muligt at opgradere. Din webserver har ikke de tilstrækkelige rettigheder til at fjerne den følgende mappe:",
 "Update permissions on this directory and its content or remove it manually first." => "Opdatér rettigheder for denne mappe og dens indhold, eller fjern den manuelt først.",
+"Unable to switch channel." => "Kan ikke skifte kanal.",
 "Update failed." => "Opdatering mislykkedes.",
 "Fetching..." => "Henter...",
 "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "<strong>Opdateringen lykkedes ikke.</strong><br/> Kontroller venligst loggen på administratorsiden og rapporter dette problem til <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud fællesskabet</a>.",
