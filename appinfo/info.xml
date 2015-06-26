@@ -3,12 +3,14 @@
 	<id>updater</id>
 	<name>Updater</name>
 	<description>ownCloud updater plugin. Check README for details.</description>
-	<version>0.4</version>
+	<version>0.5</version>
 	<licence>AGPL</licence>
 	<author>Victor Dubiniuk</author>
+	<bugs>https://github.com/owncloud/updater/issues</bugs>
+	<repository type="git">http://github.com/owncloud/updater.git</repository>
 	<shipped>true</shipped>
 	<default_enable/>
-	<require>4.93</require>
+	<require>8</require>
 		<types></types>
 	<ocsid>166059</ocsid>
 </info>
