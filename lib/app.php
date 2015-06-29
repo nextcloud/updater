@@ -39,7 +39,7 @@ class App {
 			$config = \OC::$server->getConfig();
 		}
 		$updater = new \OC\Updater($helper, $config);
-		$data = $updater->check('https://apps.owncloud.com/updater.php');
+		$data = $updater->check('https://updates.owncloud.com/server/');
 		if (!is_array($data)){
 			$data = array();
 		}
