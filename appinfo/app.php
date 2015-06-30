@@ -13,4 +13,6 @@
 namespace OCA\Updater;
 
 //Startup
-if (\OC_Util::getEditionString() === '') App::init();
+if (\OC_Util::getEditionString() === ''){
+	App::init();
+}

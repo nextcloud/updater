@@ -27,10 +27,10 @@ try {
 	$packageVersion = '';
 	$updateData = App::getFeed();
 
-	if (isset($updateData['version']) && $updateData['version'] !== Array()){
+	if (!empty($updateData['version'])){
 		$packageVersion = $updateData['version'];
 	}
-	if (isset($updateData['url']) && $updateData['url'] !== Array()){
+	if (!empty($updateData['url'])){
 		$packageUrl = $updateData['url'];
 	}
 	if (!strlen($packageVersion) || !strlen($packageUrl)) {

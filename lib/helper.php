@@ -18,7 +18,7 @@ class Helper {
 	const CORE_DIRNAME = 'core';
 
 	public static function checkVersion($newVersionArray, $newVersionString){
-		$currentVersionArray = \OC_Util::getVersion();
+		$currentVersionArray = \OCP\Util::getVersion();
 		$currentVersion = \OC_Util::getVersionString();
 
 		$difference = intval($newVersionArray[0]) - intval($currentVersionArray[0]);
@@ -62,7 +62,7 @@ class Helper {
 		if(is_dir($src)) {
 			$files = scandir($src);
 			foreach ($files as $file) {
-				if ($file != "." && $file != "..") {
+				if (!in_array($file, [".", ".."])) {
 					self::checkr("$src/$file", $collection);
 				}
 			}
@@ -88,7 +88,7 @@ class Helper {
 			}
 			$files = scandir($src);
 			foreach ($files as $file) {
-				if ($file != "." && $file != "..") {
+				if (!in_array($file, [".", ".."])) {
 					self::copyr("$src/$file", "$dest/$file", $stopOnError);
 				}
 			}
@@ -146,7 +146,7 @@ class Helper {
 		if(is_dir($dir)) {
 			$files = scandir($dir);
 			foreach($files as $file) {
-				if ($file != "." && $file != "..") {
+				if (!in_array($file, [".", ".."])) {
 					self::rmdirr("$dir/$file");
 				}
 			}

@@ -25,10 +25,11 @@ if (!@file_exists(App::getBackupBase())){
 }
 
 $data = App::getFeed();
-$isNewVersionAvailable = isset($data['version']) && $data['version'] != '' && $data['version'] !== Array();
+$isNewVersionAvailable = !empty($data['version']);
 
 $tmpl = new \OCP\Template(App::APP_ID, 'admin');
-$lastCheck = \OC_Appconfig::getValue('core', 'lastupdatedat');
+$lastCheck =  \OC::$server->getConfig()->getAppValue('core', 'lastupdatedat');
+
 $tmpl->assign('checkedAt', \OCP\Util::formatDate($lastCheck));
 $tmpl->assign('isNewVersionAvailable', $isNewVersionAvailable ? 'true' : 'false');
 $tmpl->assign('channels', Channel::getChannels());

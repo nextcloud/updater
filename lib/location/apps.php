@@ -58,7 +58,7 @@ class Apps extends Location {
 		$dh = opendir($dir);
 		if (is_resource($dh)) {
 			while (($file = readdir($dh)) !== false) {
-				if ($file[0] != '.' && is_file($dir . '/' . $file . '/appinfo/app.php')) {
+				if ($file[0] !== '.' && is_file($dir . '/' . $file . '/appinfo/app.php')) {
 					$this->appsToUpdate[$file] =  $file;
 					if ($dryRun){
 						$result['old'][$file] = realpath($dir . '/' . $file);

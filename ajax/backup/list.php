@@ -18,19 +18,19 @@ namespace OCA\Updater;
 try {
 	$list = Helper::scandir(App::getBackupBase());
 } catch (\Exception $e) {
-	$list = array();
+	$list = [];
 }
 clearstatcache();
-$result = array();
+$result = [];
 foreach ($list as $item){
-	if ($item=='.' || $item=='..'){
+	if (in_array($item, ['.', '..'])) {
 		continue;
 	}
-	$result[] = array(
+	$result[] = [
 		'title' => $item,
 		'date' => date ("F d Y H:i:s", filectime(App::getBackupBase() . '/' . $item)),
 		'size' => \OCP\Util::humanFileSize(filesize(App::getBackupBase() . '/' . $item))
-	);
+	];
 }
 
-\OCP\JSON::success(array('data' => $result));
+\OCP\JSON::success(['data' => $result]);

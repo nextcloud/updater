@@ -59,13 +59,16 @@ abstract class Location {
 
 	// Extra steps needed
 	protected function finalize() {
-		App::log('Success: ' . $this->type, \OC_Log::INFO);
+		\OC::$server->getLogger()->info('Success: ' . $this->type, ['app' => 'updater']);
 	}
 
 	// Move sources back on Error
 	public final function rollback($log = false) {
 		if ($log) {
-			App::log('Something went wrong for ' . $this->type . '. Rolling back.');
+			\OC::$server->getLogger()->error(
+				'Something went wrong for ' . $this->type . '. Rolling back.',
+				['app' => 'updater']
+			);
 		}
 		foreach ($this->done as $item) {
 			Helper::copyr($item['src'], $item['dst'], false);
