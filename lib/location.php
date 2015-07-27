@@ -21,7 +21,7 @@ abstract class Location {
 	// Type of sources (3rdparty | apps | core)
 	protected $type = 'generic';
 	// Already moved items are collected here;
-	protected $done = array();
+	protected $done = [];
 
 	public function __construct($oldBase, $newBase) {
 		$this->oldBase = $oldBase;
@@ -39,10 +39,10 @@ abstract class Location {
 				Helper::move($src, $dst);
 
 				// ! reverted intentionally
-				$this->done [] = array(
+				$this->done[] = [
 					'dst' => $src,
 					'src' => $dst
-				);
+				];
 			}
 
 			foreach ($collected['new'] as $src) {
@@ -81,10 +81,10 @@ abstract class Location {
 				Helper::scandir($this->oldBase)
 		);
 
-		$collected = array(
+		$collected = [
 			'old' => $this->toAbsolute($this->oldBase, $oldSources),
-			'new' => array()
-		);
+			'new' => []
+		];
 
 		if (!$dryRun) {
 			$newSources = $this->filterNew(
@@ -97,10 +97,10 @@ abstract class Location {
 	}
 
 	protected function toAbsolute($base, $pathArray) {
-		$result = array();
+		$result = [];
 		foreach ($pathArray as $path) {
 			// There is a little sense to make these entries absolute
-			if (!in_array($path, array('.', '..'))) {
+			if (!in_array($path, ['.', '..'])) {
 				$result [$path] = realpath($base . '/' . $path);
 			}
 		}

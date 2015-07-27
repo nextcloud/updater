@@ -25,7 +25,7 @@ class Channel {
 	 * @return array
 	 */
 	public static function getChannels(){
-		$l10n = App::$l10n;
+		$l10n = \OC::$server->getL10N('updater');
 		return [
 			self::CHANNEL_PRODUCTION => $l10n->t('Production'),
 			self::CHANNEL_STABLE => $l10n->t('Stable'),

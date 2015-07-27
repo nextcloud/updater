@@ -14,7 +14,7 @@ namespace OCA\Updater;
 
 class Updater {
 
-	protected static $processed = array();
+	protected static $processed = [];
 
 	public static function update($version, $backupBase){
 		if (!is_dir($backupBase)){

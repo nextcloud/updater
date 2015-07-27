@@ -21,14 +21,15 @@ class PermissionException extends \Exception{
 	private $collection;
 	
 	public function getExtendedMessage(){
+		$l10n = \OC::$server->getL10N('updater');
 		$message = '';
 		if (count($this->collection->getNotReadable())) {
-			$message .= App::$l10n->t('Make sure that your web server has read access to the following files and directories:');
+			$message .= $l10n->t('Make sure that your web server has read access to the following files and directories:');
 			$message .= '<br />' . implode('<br />', $this->collection->getNotReadable());
 			$message .= '<br /><br />';
 		}
 		if (count($this->collection->getNotWritable())) {
-			$message .= App::$l10n->t('Make sure that your web server has write access to the following files and directories:');
+			$message .= $l10n->t('Make sure that your web server has write access to the following files and directories:');
 			$message .= '<br />' . implode('<br />', $this->collection->getNotWritable());
 		}
 		return $message;
