@@ -13,6 +13,10 @@ class Test_Updater_Channel extends  \PHPUnit_Framework_TestCase {
 				->disableOriginalConstructor()
 				->getMock()
 		;
+		$mockedL10n = $this->getMockBuilder('\OCP\IL10N')
+				->disableOriginalConstructor()
+				->getMock()
+		;
 
 		$certificateManager = $this->getMock('OCP\Http\Client\IClientService');
 		$mockedHTTPHelper = $this->getMockBuilder('\OC\HTTPHelper')
@@ -22,7 +26,9 @@ class Test_Updater_Channel extends  \PHPUnit_Framework_TestCase {
 
 		$mockedHTTPHelper->expects($this->once())->method('getUrlContent')->will($this->returnValue(''));
 		
-		$data = OCA\Updater\Channel::getFeed($mockedHTTPHelper, $mockedConfig);
+		$channel = new \OCA\Updater\Channel($mockedL10n);
+		
+		$data = $channel->getFeed($mockedHTTPHelper, $mockedConfig);
 		$this->assertNotNull($data);
 	}
 }

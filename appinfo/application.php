@@ -18,6 +18,7 @@ use \OCA\Updater\Controller\UpdateController;
 use \OCA\Updater\Controller\BackupController;
 use \OCA\Updater\Controller\AdminController;
 
+use \OCA\Updater\Channel;
 use \OCA\Updater\Config;
 use \OCA\Updater\Helper;
 
@@ -61,6 +62,12 @@ class Application extends App {
 		$container->registerService('Config', function($c) {
 			return  new Config(
 				$c->query('ServerContainer')->getConfig()
+			);
+		});
+		
+		$container->registerService('Channel', function($c) {
+			return  new Channel(
+				$c->query('L10N')
 			);
 		});
 		

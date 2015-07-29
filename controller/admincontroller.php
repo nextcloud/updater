@@ -28,25 +28,27 @@ class AdminController extends Controller{
 	
 	/** @var IL10N */
 	private $l10n;
+	
+	/** @var Channel */
+	private $channel;
 
-	public function __construct($appName, IRequest $request, Config $config, IL10N $l10n){
+	public function __construct($appName, IRequest $request, Channel $channel, Config $config, IL10N $l10n){
 		parent::__construct($appName, $request);
+		$this->channel = $channel;
 		$this->config = $config;
 		$this->l10n = $l10n;
 	}
 	
 	public function index(){
-		$feed = Channel::getFeed();
+		$feed = $this->channel->getFeed();
 		$isNewVersionAvailable = !empty($feed['version']);
 
 		$data = [
-			'checkedAt' => \OC::$server->getDateTimeFormatter()->formatDate(
-				Channel::getLastCheckedAt()
-			),
+			'checkedAt' => $this->channel->getLastCheckedAt(),
 			'backupDir' => $this->config->getBackupBase(),
 			'isNewVersionAvailable' => $isNewVersionAvailable ? 'true' : 'false',
-			'channels' => Channel::getChannels(),
-			'currentChannel' => Channel::getCurrentChannel(),
+			'channels' => $this->channel->getChannels(),
+			'currentChannel' => $this->channel->getCurrentChannel(),
 			'version' => isset($feed['versionstring']) ? $feed['versionstring'] : ''
 		];
 		
@@ -60,13 +62,11 @@ class AdminController extends Controller{
 	*/
 	public function setChannel($newChannel){
 		if ($newChannel){
-			Channel::flushCache();
-			$channel = Channel::setCurrentChannel($newChannel);
+			$this->channel->flushCache();
+			$channel = $this->channel->setCurrentChannel($newChannel);
 			if ($channel){
-				$data = Channel::getFeed();
-				$data['checkedAt'] = \OC::$server->getDateTimeFormatter()->formatDate(
-					Channel::getLastCheckedAt()
-				);
+				$data = $this->channel->getFeed();
+				$data['checkedAt'] = $this->channel->getLastCheckedAt();
 				$data['channel'] = $channel;
 				$data['data']['data']['message'] = '';
 		

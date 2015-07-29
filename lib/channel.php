@@ -13,6 +13,8 @@
 
 namespace OCA\Updater;
 
+use \OCP\IL10N;
+
 class Channel {
 	const CHANNEL_DAILY = 'daily';
 	const CHANNEL_BETA = 'beta';
@@ -20,17 +22,23 @@ class Channel {
 	const CHANNEL_PRODUCTION ='production';
 	const CHANNEL_NONE ='none';
 	
+	/** @var IL10N */
+	private $l10n;
+	
+	public function __construct(IL10N $l10n){
+		$this->l10n = $l10n;
+	}
+	
 	/**
 	 * All available values
 	 * @return array
 	 */
-	public static function getChannels(){
-		$l10n = \OC::$server->getL10N('updater');
+	public function getChannels(){
 		return [
-			self::CHANNEL_PRODUCTION => $l10n->t('Production'),
-			self::CHANNEL_STABLE => $l10n->t('Stable'),
-			self::CHANNEL_BETA => $l10n->t('Beta'),
-			self::CHANNEL_DAILY => $l10n->t('Daily'),
+			self::CHANNEL_PRODUCTION => $this->l10n->t('Production'),
+			self::CHANNEL_STABLE => $this->l10n->t('Stable'),
+			self::CHANNEL_BETA => $this->l10n->t('Beta'),
+			self::CHANNEL_DAILY => $this->l10n->t('Daily'),
 		];
 	}
 	
@@ -38,25 +46,31 @@ class Channel {
 	 * Get current value
 	 * @return string
 	 */
-	public static function getCurrentChannel(){
+	public function getCurrentChannel(){
 		return \OCP\Util::getChannel();
 	}
 
-	public static function setCurrentChannel($newChannel){
+	/**
+	 * Set a new value
+	 * @return string
+	 */
+	public function setCurrentChannel($newChannel){
 		$cleanValue = preg_replace('/[^A-Za-z0-9]/', '', $newChannel);
 		\OCP\Util::setChannel($cleanValue);
 		return $cleanValue;
 	}
 	
-	public static function getLastCheckedAt(){
-		return \OC::$server->getConfig()->getAppValue('core', 'lastupdatedat');
+	public function getLastCheckedAt(){
+		return \OC::$server->getDateTimeFormatter()->formatDateTime(
+			\OC::$server->getConfig()->getAppValue('core', 'lastupdatedat')
+		);
 	}
 	
-	public static function flushCache(){
+	public function flushCache(){
 		\OC::$server->getConfig()->setAppValue('core', 'lastupdatedat', 0);
 	}
 	
-	public static function getFeed($helper = null, $config = null){
+	public function getFeed($helper = null, $config = null){
 		$helper = is_null($helper) ? \OC::$server->getHTTPHelper() : $helper;
 		$config = is_null($config) ? \OC::$server->getConfig() : $config;
 		$updater = new \OC\Updater($helper, $config);
