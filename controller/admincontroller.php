@@ -19,7 +19,6 @@ use \OCP\IL10N;
 use \OCP\AppFramework\Http\TemplateResponse;
 use \OCP\AppFramework\Http\JSONResponse;
 
-use \OCA\Updater\App;
 use \OCA\Updater\Channel;
 
 class AdminController extends Controller{
@@ -58,10 +57,10 @@ class AdminController extends Controller{
 	*/
 	public function setChannel($newChannel){
 		if ($newChannel){
-			App::flushCache();
+			Channel::flushCache();
 			$channel = Channel::setCurrentChannel($newChannel);
 			if ($channel){
-				$data = App::getFeed();
+				$data = Channel::getFeed();
 				$lastCheck = \OC::$server->getConfig()->getAppValue('core', 'lastupdatedat');
 				$data['checkedAt'] = \OC::$server->getDateTimeFormatter()->formatDate($lastCheck);
 				$data['channel'] = $channel;

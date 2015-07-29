@@ -7,7 +7,7 @@
  * See the COPYING-README file.
  */
 
- class Test_Updater_App extends  \PHPUnit_Framework_TestCase {
+class Test_Updater_Channel extends  \PHPUnit_Framework_TestCase {
 	public function testGetFeed(){
 		$mockedConfig = $this->getMockBuilder('\OCP\IConfig')
 				->disableOriginalConstructor()
@@ -22,7 +22,7 @@
 
 		$mockedHTTPHelper->expects($this->once())->method('getUrlContent')->will($this->returnValue(''));
 		
-		$data = OCA\Updater\App::getFeed($mockedHTTPHelper, $mockedConfig);
+		$data = OCA\Updater\Channel::getFeed($mockedHTTPHelper, $mockedConfig);
 		$this->assertNotNull($data);
 	}
- }
+}

@@ -47,4 +47,20 @@ class Channel {
 		\OCP\Util::setChannel($cleanValue);
 		return $cleanValue;
 	}
+	
+	public static function flushCache(){
+		\OC::$server->getConfig()->setAppValue('core', 'lastupdatedat', 0);
+	}
+	
+	public static function getFeed($helper = null, $config = null){
+		$helper = is_null($helper) ? \OC::$server->getHTTPHelper() : $helper;
+		$config = is_null($config) ? \OC::$server->getConfig() : $config;
+		$updater = new \OC\Updater($helper, $config);
+		
+		$data = $updater->check('https://updates.owncloud.com/server/');
+		if (!is_array($data)){
+			$data = [];
+		}
+		return $data;
+	}
 }
