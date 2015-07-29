@@ -14,8 +14,8 @@
 namespace OCA\Updater;
 
 class Collection {
-	private $notReadable = array();
-	private $notWritable = array();
+	private $notReadable = [];
+	private $notWritable = [];
 	
 	public function addNotReadable($item) {
 		if (!in_array($item, $this->notReadable)) {

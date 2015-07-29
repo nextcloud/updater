@@ -38,9 +38,15 @@ class Downloader {
 				if (self::fetch($url)===false) {
 					throw new \Exception("Error storing package content");
 				}
-				App::log('Downloaded ' . filesize(self::$package) . ' bytes.' , \OCP\Util::DEBUG);
+				\OC::$server->getLogger()->debug(
+					'Downloaded ' . filesize(self::$package) . ' bytes.',
+					['app' => 'updater']
+				);
 			} else {
-				App::log('Use already downloaded package ' . self::$package . '. Size is ' . filesize(self::$package) . ' bytes.' , \OCP\Util::DEBUG);
+				\OC::$server->getLogger()->debug(
+					'Use already downloaded package ' . self::$package . '. Size is ' . filesize(self::$package) . ' bytes.',
+					['app' => 'updater']
+				);
 			}
 			
 			$extractDir = self::getPackageDir($version);
@@ -52,7 +58,7 @@ class Downloader {
 			}
 			
 		} catch (\Exception $e){
-			App::log('Retrieving ' . $url);
+			\OC::$server->getLogger()->error('Retrieving ' . $url, ['app' => 'updater']);
 			self::cleanUp($version);
 			throw $e;
 		}
@@ -61,10 +67,18 @@ class Downloader {
 		//  to have '3rdparty', 'apps' and 'core' subdirectories
 		$baseDir = $extractDir. '/' . self::PACKAGE_ROOT;
 		if (!file_exists($baseDir)){
-			App::log('Expected fresh sources in ' . $baseDir . '. Nothing is found. Something is wrong with OC_Archive.');
-			App::log($extractDir  . ' content: ' . implode(' ', scandir($extractDir)));
+			\OC::$server->getLogger()->error(
+				'Expected fresh sources in ' . $baseDir . '. Nothing is found. Something is wrong with OC_Archive.',
+				['app' => 'updater']
+			);
+			\OC::$server->getLogger()->error(
+				$extractDir  . ' content: ' . implode(' ', scandir($extractDir)),
+				['app' => 'updater']
+				
+			);
 			if ($type === '.zip' && !extension_loaded('zip')){
-				$hint = App::$l10n->t('Please ask your server administrator to enable PHP zip extension.');
+				$l10n = \OC::$server->getL10N('updater');
+				$hint = $l10n->t('Please ask your server administrator to enable PHP zip extension.');
 			}
 			throw new \Exception(self::$package . " extraction error. " . $hint);
 		}

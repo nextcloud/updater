@@ -9,10 +9,8 @@ function updateCtrl($scope, $http) {
 	$scope.updateChannel = function(){
 		OC.msg.startAction('#channel_save_msg', t('updater', 'Fetching...'));
 		$.post(
-			OC.filePath('updater', 'ajax', 'channel.php'),
-			{
-				newChannel : $('#release-channel').val()
-			},
+			OC.generateUrl('apps/updater/admin/setChannel/{channel}', {channel :$('#release-channel').val() }),
+			{},
 			function(data){
 				if (data.status && data.status==='success'){
 					$scope.$apply(function(){
@@ -50,7 +48,7 @@ function updateCtrl($scope, $http) {
 			$('#updater-start').hide();
 			$('#update-info').hide();
 
-			$http.get(OC.filePath('updater', 'ajax', 'backup.php'), {headers: {'requesttoken': oc_requesttoken}})
+			$http.get(OC.generateUrl('apps/updater/update/backup'), {headers: {'requesttoken': oc_requesttoken}})
 				.success(function (data) {
 					if (data && data.status && data.status === 'success') {
 						$scope.step = 1;
@@ -75,7 +73,7 @@ function updateCtrl($scope, $http) {
 			$('<p></p>').hide().append(t('updater', 'Here is your backup:') + ' ' + $scope.backup).appendTo($('.updater-progress')).fadeIn();
 			
 			$http.post(
-				OC.filePath('updater', 'ajax', 'download.php'), {
+				OC.generateUrl('apps/updater/update/download'), {
 					url: $scope.url,
 					version: $scope.version
 				},
@@ -103,7 +101,7 @@ function updateCtrl($scope, $http) {
 			$('.track-progress li.done').removeClass('current');
 			
 			$http.post(
-				OC.filePath('updater', 'ajax', 'update.php'),
+				OC.generateUrl('apps/updater/update/update'),
 				{
 					url: $scope.url,
 					version: $scope.version,
@@ -131,24 +129,24 @@ function updateCtrl($scope, $http) {
 						$scope.fail(data);
 						$('.updater-spinner').hide();
 					}
-				})
-				.error($scope.crash);
+				}
+			).error($scope.crash);
 		}
 	};
 }
 
 function backupCtrl($scope, $http) {
-	$http.get(OC.filePath('updater', 'ajax', 'backup/list.php'), {headers: {'requesttoken': oc_requesttoken}})
+	$http.get(OC.generateUrl('apps/updater/backup/index'), {headers: {'requesttoken': oc_requesttoken}})
 		.success(function (data) {
 			$scope.entries = data.data;
 		});
 
 	$scope.doDelete = function (name) {
-		$http.get(OC.filePath('updater', 'ajax', 'backup/delete.php'), {
+		$http.get(OC.generateUrl('apps/updater/backup/delete'), {
 			headers: {'requesttoken': oc_requesttoken},
 			params: {'filename': name}
 		}).success(function () {
-			$http.get(OC.filePath('updater', 'ajax', 'backup/list.php'), {headers: {'requesttoken': oc_requesttoken}})
+			$http.get(OC.generateUrl('apps/updater/backup/index'), {headers: {'requesttoken': oc_requesttoken}})
 				.success(function (data) {
 					$scope.entries = data.data;
 				});
@@ -156,9 +154,10 @@ function backupCtrl($scope, $http) {
 	};
 
 	$scope.doDownload = function (name) {
-		window.open(OC.filePath('updater', 'ajax', 'backup/download.php') +
-			'?requesttoken=' + oc_requesttoken +
-			'&filename=' + name
+		window.open(
+			OC.generateUrl('apps/updater/backup/download?requesttoken=')
+				+ encodeURIComponent(oc_requesttoken)
+				+ '&filename=' + encodeURIComponent(name)
 		);
 	};
 }

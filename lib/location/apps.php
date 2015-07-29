@@ -18,7 +18,7 @@ use OCA\Updater\Helper;
 class Apps extends Location {
 
 	protected $type = 'apps';
-	protected $appsToUpdate = array();
+	protected $appsToUpdate = [];
 	
 	public function update($tmpDir = '') {
 		Helper::mkdir($tmpDir, true);
@@ -33,10 +33,10 @@ class Apps extends Location {
 					Helper::move($path, $tmpDir . '/' . $appId);
 					
 					// ! reverted intentionally
-					$this->done [] = array(
+					$this->done [] = [
 						'dst' => $path,
 						'src' => $tmpDir . '/' . $appId
-					);
+					];
 					
 					Helper::move($this->newBase . '/' . $appId, $path);
 				} else { 
@@ -53,12 +53,12 @@ class Apps extends Location {
 	}
 
 	public function collect($dryRun = false) {
-		$result = array();
+		$result = [];
 		$dir = $dryRun ? $this->oldBase : $this->newBase;
 		$dh = opendir($dir);
 		if (is_resource($dh)) {
 			while (($file = readdir($dh)) !== false) {
-				if ($file[0] != '.' && is_file($dir . '/' . $file . '/appinfo/app.php')) {
+				if ($file[0] !== '.' && is_file($dir . '/' . $file . '/appinfo/app.php')) {
 					$this->appsToUpdate[$file] =  $file;
 					if ($dryRun){
 						$result['old'][$file] = realpath($dir . '/' . $file);

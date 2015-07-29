@@ -10,7 +10,6 @@
  * later.
  */
 
-namespace OCA\Updater;
+namespace OCA\Updater\AppInfo;
 
-//Startup
-if (\OC_Util::getEditionString() === '') App::init();
+$app = new Application();
