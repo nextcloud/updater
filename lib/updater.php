@@ -98,7 +98,7 @@ class Updater {
 
 	public static function cleanUp(){
 		Helper::removeIfExists(self::getTempDir());
-		Helper::removeIfExists(App::getTempBase());
+		Helper::removeIfExists(self::getTempBase());
 	}
 	
 	public static function isClean(){
@@ -106,7 +106,11 @@ class Updater {
 	}
 
 	public static function getTempDir(){
-		return App::getTempBase() . 'tmp';
+		return self::getTempBase() . 'tmp';
 	}
-
+	
+	protected static function getTempBase(){
+		$app = new \OCA\Updater\AppInfo\Application();
+		return $app->getContainer()->query('Config')->getTempBase();
+	}
 }

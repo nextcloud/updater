@@ -20,27 +20,30 @@ use \OCP\AppFramework\Http\TemplateResponse;
 use \OCP\AppFramework\Http\JSONResponse;
 
 use \OCA\Updater\Channel;
+use \OCA\Updater\Config;
 
 class AdminController extends Controller{
+	/** @var Config */
+	private $config;
+	
+	/** @var IL10N */
 	private $l10n;
 
-	public function __construct($appName, IRequest $request, IL10N $l10n){
+	public function __construct($appName, IRequest $request, Config $config, IL10N $l10n){
 		parent::__construct($appName, $request);
+		$this->config = $config;
 		$this->l10n = $l10n;
 	}
 	
 	public function index(){
-		if (!@file_exists(App::getBackupBase())){
-			Helper::mkdir(App::getBackupBase());
-		}
-
-		$feed = App::getFeed();
+		$feed = Channel::getFeed();
 		$isNewVersionAvailable = !empty($feed['version']);
 
-		$lastCheck =  \OC::$server->getConfig()->getAppValue('core', 'lastupdatedat');
-
 		$data = [
-			'checkedAt' => \OC::$server->getDateTimeFormatter()->formatDate($lastCheck),
+			'checkedAt' => \OC::$server->getDateTimeFormatter()->formatDate(
+				Channel::getLastCheckedAt()
+			),
+			'backupDir' => $this->config->getBackupBase(),
 			'isNewVersionAvailable' => $isNewVersionAvailable ? 'true' : 'false',
 			'channels' => Channel::getChannels(),
 			'currentChannel' => Channel::getCurrentChannel(),
@@ -61,8 +64,9 @@ class AdminController extends Controller{
 			$channel = Channel::setCurrentChannel($newChannel);
 			if ($channel){
 				$data = Channel::getFeed();
-				$lastCheck = \OC::$server->getConfig()->getAppValue('core', 'lastupdatedat');
-				$data['checkedAt'] = \OC::$server->getDateTimeFormatter()->formatDate($lastCheck);
+				$data['checkedAt'] = \OC::$server->getDateTimeFormatter()->formatDate(
+					Channel::getLastCheckedAt()
+				);
 				$data['channel'] = $channel;
 				$data['data']['data']['message'] = '';
 		

@@ -48,6 +48,10 @@ class Channel {
 		return $cleanValue;
 	}
 	
+	public static function getLastCheckedAt(){
+		return \OC::$server->getConfig()->getAppValue('core', 'lastupdatedat');
+	}
+	
 	public static function flushCache(){
 		\OC::$server->getConfig()->setAppValue('core', 'lastupdatedat', 0);
 	}

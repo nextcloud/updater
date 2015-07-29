@@ -15,22 +15,28 @@ namespace OCA\Updater\Controller;
 use \OCP\AppFramework\Controller;
 use \OCP\AppFramework\Http\DataDownloadResponse;
 use \OCP\IRequest;
+use OCP\IConfig;
 use \OCP\IL10N;
 
-use \OCA\Updater\App;
+use \OCA\Updater\Config;
 use \OCA\Updater\Helper;
 
 class BackupController extends Controller{
+	/** @var Config */
+	private $config;
+
+	/** @var IL10N */
 	private $l10n;
 
-	public function __construct($appName, IRequest $request, IL10N $l10n){
+	public function __construct($appName, IRequest $request, Config $config, IL10N $l10n){
 		parent::__construct($appName, $request);
+		$this->config = $config;
 		$this->l10n = $l10n;
 	}
 	
 	public function index(){
 		try {
-			$list = Helper::scandir(App::getBackupBase());
+			$list = Helper::scandir($this->config->getBackupBase());
 		} catch (\Exception $e) {
 			$list = [];
 		}
@@ -42,8 +48,8 @@ class BackupController extends Controller{
 			}
 			$result[] = [
 				'title' => $item,
-				'date' => date ("F d Y H:i:s", filectime(App::getBackupBase() . '/' . $item)),
-				'size' => \OCP\Util::humanFileSize(filesize(App::getBackupBase() . '/' . $item))
+				'date' => date ("F d Y H:i:s", filectime($this->config->getBackupBase() . '/' . $item)),
+				'size' => \OCP\Util::humanFileSize(filesize($this->config->getBackupBase() . '/' . $item))
 			];
 		}
 
@@ -55,7 +61,7 @@ class BackupController extends Controller{
 	
 	public function download($filename){
 		$file = basename($filename);
-		$filename = App::getBackupBase() . $file;
+		$filename = $this->config->getBackupBase() . $file;
 		// Prevent directory traversal
 		if (strlen($file)<3 || !@file_exists($filename)) {
 			exit();
@@ -74,7 +80,7 @@ class BackupController extends Controller{
 			exit();
 		}
 
-		$filename = App::getBackupBase() . $file;
+		$filename = $this->config->getBackupBase() . $file;
 		Helper::removeIfExists($filename);
 	}
 }

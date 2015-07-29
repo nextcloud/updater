@@ -16,10 +16,10 @@ class Downloader {
 
 	const PACKAGE_ROOT = 'owncloud';
 
-	protected static $package = false;
+	protected static $package;
 
 	public static function getPackage($url, $version) {
-		self::$package = App::getBackupBase() . $version;
+		self::$package = self::getBackupBase() . $version;
 		if (preg_match('/\.zip$/i', $url)) {
 			$type = '.zip';
 		} elseif (preg_match('/(\.tgz|\.tar\.gz)$/i', $url)) {
@@ -125,7 +125,7 @@ class Downloader {
 
 	public static function cleanUp($version){
 		Helper::removeIfExists(self::getPackageDir($version));
-		Helper::removeIfExists(App::getTempBase());
+		Helper::removeIfExists(self::getTempBase());
 	}
 	
 	public static function isClean($version){
@@ -133,6 +133,16 @@ class Downloader {
 	}
 	
 	public static function getPackageDir($version) {
-		return App::getTempBase() . $version;
+		return self::getTempBase() . $version;
+	}
+	
+	protected static function getTempBase(){
+		$app = new \OCA\Updater\AppInfo\Application();
+		return $app->getContainer()->query('Config')->getTempBase();
+	}
+	
+	protected static function getBackupBase(){
+		$app = new \OCA\Updater\AppInfo\Application();
+		return $app->getContainer()->query('Config')->getBackupBase();
 	}
 }

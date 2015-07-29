@@ -16,7 +16,6 @@ use \OCP\AppFramework\Controller;
 use \OCP\IRequest;
 use \OCP\IL10N;
 
-use \OCA\Updater\App;
 use \OCA\Updater\Helper;
 use \OCA\Updater\Downloader;
 use \OCA\Updater\Updater;
@@ -66,7 +65,7 @@ class UpdateController extends Controller{
 
 			//Package version e.g. 8.0.2
 			$packageVersion = '';
-			$updateData = App::getFeed();
+			$updateData = Channel::getFeed();
 
 			if (!empty($updateData['version'])){
 				$packageVersion = $updateData['version'];
@@ -135,7 +134,6 @@ class UpdateController extends Controller{
 	public function update(){
 		$request = file_get_contents('php://input');
 		$decodedRequest = json_decode($request, true);
-		$packageUrl = isset($decodedRequest['url']) ? $decodedRequest['url'] : '';
 		$packageVersion = isset($decodedRequest['version']) ? $decodedRequest['version'] : '';
 		$backupPath = isset($decodedRequest['backupPath']) ? $decodedRequest['backupPath'] : '';
 

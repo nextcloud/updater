@@ -78,7 +78,7 @@
 		</div>
 		<p>
 			<?php p($l->t('Backup directory')) ?>:
-			<?php p(\OCA\Updater\App::getBackupBase()); ?>
+			<?php p($_['backupDir']); ?>
 		</p>
 		<p ng-show="!entries.length"><?php p($l->t('No backups found.')) ?></p>
 		<table ng-hide="!entries.length" class="updater-backups-table">
