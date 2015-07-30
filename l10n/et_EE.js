@@ -1,10 +1,10 @@
 OC.L10N.register(
     "updater",
     {
+    "Unable to switch channel." : "Kanali vahetamine ebaõnnestus",
     "Version not found" : "Versiooni ei leitud",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Uuendamine pole võimalik. Veebiserveril pole õigusi kustutada järgmisi katalooge:",
     "Update permissions on this directory and its content or remove it manually first." : "Uuenda selle kataloogi ja sisu õigusi või eemalda see käsitsi.",
-    "Unable to switch channel." : "Kanali vahetamine ebaõnnestus",
     "Update failed." : "Uuendamine ebaõnnestus.",
     "Fetching..." : "Tõmbamine...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>Uuendus ebaõnnestus.</strong><br />Palun vaata admin lehelt logisid ning teavita probleemidest  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud kogukonda</a>.",

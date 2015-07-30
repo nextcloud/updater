@@ -1,8 +1,8 @@
 { "translations": {
+    "Unable to switch channel." : "Nie można zmienić kanału.",
     "Version not found" : "Nie znaleziono wersji",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Aktualizacja nie jest możliwa. Twój serwer ma niewystarczające uprawnienia do usuwania następujących katalogów:",
     "Update permissions on this directory and its content or remove it manually first." : "Zaktualizuj uprawnienia do tego katalogu i jego zawartości lub usuń go najpierw ręcznie.",
-    "Unable to switch channel." : "Nie można zmienić kanału.",
     "Update failed." : "Aktualizacja nieudana.",
     "Fetching..." : "Pobieranie...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>Aktualizacja nie powiodła się.</strong><br />Proszę sprawdzić logi dostępne na stronie administratora i zgłosić ten problem do <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">społeczności ownCloud</a>.",

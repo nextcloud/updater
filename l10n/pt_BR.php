@@ -1,9 +1,9 @@
 <?php
 $TRANSLATIONS = array(
+"Unable to switch channel." => "Não é possível mudar de canal.",
 "Version not found" => "Versão não encontrada",
 "Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "Atualização não é possível. O servidor web não tem permissão para remover o seguinte diretório:",
 "Update permissions on this directory and its content or remove it manually first." => "Atualizar permissões neste diretório e seu conteúdo ou removê-lo manualmente em primeiro lugar.",
-"Unable to switch channel." => "Não é possível mudar de canal.",
 "Update failed." => "Falha na atualização.",
 "Fetching..." => "Buscando...",
 "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "<strong>A atualização não foi bem sucedida.</strong><br />Por favor, verifique os logs na página de administração e relate esse problema para o <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunidade ownCloud</a>.",

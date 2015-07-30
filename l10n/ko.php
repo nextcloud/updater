@@ -1,9 +1,9 @@
 <?php
 $TRANSLATIONS = array(
+"Unable to switch channel." => "채널을 변경할 수 없습니다.",
 "Version not found" => "버전을 찾을 수 없음",
 "Upgrade is not possible. Your web server does not have permission to remove the following directory:" => "업그레이드할 수 없습니다. 웹 서버의 권한으로 다음 디렉터리를 지울 수 없습니다:",
 "Update permissions on this directory and its content or remove it manually first." => "이 디렉터리 및 내용의 권한을 업데이트하거나 수동으로 삭제하십시오.",
-"Unable to switch channel." => "채널을 변경할 수 없습니다.",
 "Update failed." => "업데이트가 실패하였습니다.",
 "Fetching..." => "가져오는 중...",
 "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." => "<strong>업데이트에 실패하였습니다.</strong><br />관리자 페이지에서 로그를 확인한 다음 이 문제를 <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud 커뮤니티</a>에 보고해 주십시오.",

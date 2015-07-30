@@ -1,8 +1,8 @@
 { "translations": {
+    "Unable to switch channel." : "ไม่สามารถเปลี่ยนช่อง",
     "Version not found" : "ไม่พบรุ่น",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "อัพเกรดไม่ได้เพราะเว็บเซิร์ฟเวอร์ของคุณไม่ได้รับอนุญาตให้ลบไดเรกทอรีต่อไปนี้:",
     "Update permissions on this directory and its content or remove it manually first." : "สิทธิ์ในการปรับปรุงในไดเรกทอรีนี้และเนื้อหาหรือลบมันด้วยตนเองก่อน",
-    "Unable to switch channel." : "ไม่สามารถเปลี่ยนช่อง",
     "Update failed." : "ปรับปรุงล้มเหลว",
     "Fetching..." : "กำลังเรียก ...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>การอัพเดตไม่สำเร็จ</strong><br />กรุณาตรวจสอบบันทึกได้ที่หน้าผู้ดูแลระบบและรายงานเรื่องนี้ไปที่ <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ชุมชนของ ownCloud</a>",

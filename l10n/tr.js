@@ -1,10 +1,10 @@
 OC.L10N.register(
     "updater",
     {
+    "Unable to switch channel." : "Kanal değiştirme başarısız.",
     "Version not found" : "Sürüm bulunamadı",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Yükseltme mümkün değil. Web sunucunuz aşağıdaki dizini silmek için yeterli yetkiye sahip değil:",
     "Update permissions on this directory and its content or remove it manually first." : "Aşağıdaki dizinin ve içindekilerin izinlerini güncelleyin veya elle silin.",
-    "Unable to switch channel." : "Kanal değiştirme başarısız.",
     "Update failed." : "Güncelleme başarısız.",
     "Fetching..." : "Getiriliyor...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>Güncelleme başarısız oldu.</strong><br />Lütfen yönetici sayfasındaki günlükleri denetleyin ve bu sorunu <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud topluluğuna</a> bildirin.",

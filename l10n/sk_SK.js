@@ -1,10 +1,10 @@
 OC.L10N.register(
     "updater",
     {
+    "Unable to switch channel." : "Nemožno prepnúť na kanál.",
     "Version not found" : "Verzia sa nenašla",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Aktualizáciu nie je možné vykonať. Váš webserver nemá oprávnenie na zmazanie nasledovného priečinka:",
     "Update permissions on this directory and its content or remove it manually first." : "Aktualizovať oprávnenia tohto priečinka a jeho obsahu alebo odstrániť najskôr ručne.",
-    "Unable to switch channel." : "Nemožno prepnúť na kanál.",
     "Update failed." : "Aktualizácia sa nepodarila.",
     "Fetching..." : "Získavanie...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>Aktualizácia nebola úspešná.</strong><br />Skontrolujte logy v administračnom rozhraní a oznámte túto udalosť  <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud komunite</a>.",

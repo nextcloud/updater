@@ -1,10 +1,10 @@
 OC.L10N.register(
     "updater",
     {
+    "Unable to switch channel." : "Impossibile cambiare canale.",
     "Version not found" : "Versione non trovata",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Impossibile aggiornare. Il tuo server web non ha i permessi per rimuovere la seguente cartella:",
     "Update permissions on this directory and its content or remove it manually first." : "Aggiorna i permessi su questa cartella e il suo contenuto oppure rimuovila manualmente.",
-    "Unable to switch channel." : "Impossibile cambiare canale.",
     "Update failed." : "Aggiornamento non riuscito",
     "Fetching..." : "Recupero in corso...",
     "<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">ownCloud community</a>." : "<strong>L'aggiornamento non è riuscito. </strong><br />Controlla i log nella pagina di amministrazione e segnala il problema alla <a href=\"https://github.com/owncloud/apps/issues\" target=\"_blank\">comunità di ownCloud</ a>.",
