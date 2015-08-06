@@ -30,6 +30,7 @@ OC.L10N.register(
     "3. Replace" : "3. Asendamine",
     "Update" : "Uuenda",
     "Update channel:" : "Uuenduste kanal:",
+    "Please note update is possible only to a version that is greater than the one currently installed. If you upgraded from a less stable channel you will be able to upgrade from a more stable channel only after the version that is greater than you installed reaches it." : "Pea meeles, et uuendada saab ainult suuremale versioonile, kui see, mis sul on praegu installitud. Kui sa uuendasid vähem stabiilsemalt kanalilt, siis sa saa saad uuendada kõrgemale versioonile, kui stabiilsema versiooni number on kõrgem.",
     "Updater-Backups" : "Uuendaja-varukoopiad",
     "Note" : "Märkus",
     "Here you can find backups of the core of your ownCloud <strong>(excluding your data)</strong> after starting an update to a newer version." : "Siit võid sa leida pärast uuendamise alustamist oma ownCloudi tuuma varukoopiaid <strong>(väljaarvatud sinu andmed)</strong>.",
