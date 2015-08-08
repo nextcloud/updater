@@ -1,6 +1,7 @@
 OC.L10N.register(
     "updater",
     {
+    "Unable to switch channel." : "Não foi possível mudar de canal",
     "Version not found" : "Versão não encontrada",
     "Upgrade is not possible. Your web server does not have permission to remove the following directory:" : "Não é possível atualizar. O seu servidor da Web não tem permissão para remover a seguinte diretoria:",
     "Update permissions on this directory and its content or remove it manually first." : "Atualize as permissões nesta diretoria e o seu conteúdo, ou remova-as primeiro manualmente.",
@@ -22,6 +23,7 @@ OC.L10N.register(
     "Make sure that your web server has write access to the following files and directories:" : "Certifique-se que o seu servidor tem acesso de gravação aos seguintes ficheiros e diretorias:",
     "Updates" : "Atualizações",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Está disponivel uma versão nova: {{newVersion}}</strong>",
+    "Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement." : "As atualizações irão estar disponíveis na aplicação de atualização e no painel de administração do ownCloud dentro de dias de um anúncio de atualização.",
     "<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>" : "<strong>Atualizado.</strong> <em>Verificado a {{checkedAt}}</em>",
     "1. Check & Backup" : "1. Verificar & Cópia de Segurança",
     "2. Download & Extract" : "2. Transferir e Extrair",
