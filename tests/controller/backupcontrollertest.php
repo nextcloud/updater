@@ -12,6 +12,7 @@ namespace OCA\Updater\Controller;
 class Test_Updater_BackupControllerTest extends  \PHPUnit_Framework_TestCase {
 	private $appName = 'updater';
 	private $request;
+	private $config;
 	private $l10n;
 	private $controller;
 	
@@ -20,7 +21,7 @@ class Test_Updater_BackupControllerTest extends  \PHPUnit_Framework_TestCase {
 			->disableOriginalConstructor()
 			->getMock()
 		;	
-		$this->settings = $this->getMockBuilder('\OCP\IConfig')
+		$this->config = $this->getMockBuilder('\OCA\Updater\Config')
 			->disableOriginalConstructor()
 			->getMock()
 		;
@@ -31,6 +32,7 @@ class Test_Updater_BackupControllerTest extends  \PHPUnit_Framework_TestCase {
 		$this->controller = new BackupController(
 			$this->appName,
 			$this->request,
+			$this->config,
 			$this->l10n
 		);
 	}

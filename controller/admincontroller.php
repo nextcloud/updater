@@ -20,30 +20,35 @@ use \OCP\AppFramework\Http\TemplateResponse;
 use \OCP\AppFramework\Http\JSONResponse;
 
 use \OCA\Updater\Channel;
+use \OCA\Updater\Config;
 
 class AdminController extends Controller{
+	/** @var Config */
+	private $config;
+	
+	/** @var IL10N */
 	private $l10n;
+	
+	/** @var Channel */
+	private $channel;
 
-	public function __construct($appName, IRequest $request, IL10N $l10n){
+	public function __construct($appName, IRequest $request, Channel $channel, Config $config, IL10N $l10n){
 		parent::__construct($appName, $request);
+		$this->channel = $channel;
+		$this->config = $config;
 		$this->l10n = $l10n;
 	}
 	
 	public function index(){
-		if (!@file_exists(App::getBackupBase())){
-			Helper::mkdir(App::getBackupBase());
-		}
-
-		$feed = App::getFeed();
+		$feed = $this->channel->getFeed();
 		$isNewVersionAvailable = !empty($feed['version']);
 
-		$lastCheck =  \OC::$server->getConfig()->getAppValue('core', 'lastupdatedat');
-
 		$data = [
-			'checkedAt' => \OC::$server->getDateTimeFormatter()->formatDate($lastCheck),
+			'checkedAt' => $this->channel->getLastCheckedAt(),
+			'backupDir' => $this->config->getBackupBase(),
 			'isNewVersionAvailable' => $isNewVersionAvailable ? 'true' : 'false',
-			'channels' => Channel::getChannels(),
-			'currentChannel' => Channel::getCurrentChannel(),
+			'channels' => $this->channel->getChannels(),
+			'currentChannel' => $this->channel->getCurrentChannel(),
 			'version' => isset($feed['versionstring']) ? $feed['versionstring'] : ''
 		];
 		
@@ -57,12 +62,11 @@ class AdminController extends Controller{
 	*/
 	public function setChannel($newChannel){
 		if ($newChannel){
-			Channel::flushCache();
-			$channel = Channel::setCurrentChannel($newChannel);
+			$this->channel->flushCache();
+			$channel = $this->channel->setCurrentChannel($newChannel);
 			if ($channel){
-				$data = Channel::getFeed();
-				$lastCheck = \OC::$server->getConfig()->getAppValue('core', 'lastupdatedat');
-				$data['checkedAt'] = \OC::$server->getDateTimeFormatter()->formatDate($lastCheck);
+				$data = $this->channel->getFeed();
+				$data['checkedAt'] = $this->channel->getLastCheckedAt();
 				$data['channel'] = $channel;
 				$data['data']['data']['message'] = '';
 		

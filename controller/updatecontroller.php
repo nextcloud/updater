@@ -16,7 +16,7 @@ use \OCP\AppFramework\Controller;
 use \OCP\IRequest;
 use \OCP\IL10N;
 
-use \OCA\Updater\App;
+use \OCA\Updater\Channel;
 use \OCA\Updater\Helper;
 use \OCA\Updater\Downloader;
 use \OCA\Updater\Updater;
@@ -25,10 +25,15 @@ use \OCA\Updater\PermissionException;
 use \OCA\Updater\FsException;
 
 class UpdateController extends Controller{
+	/** @var IL10N */
 	private $l10n;
+	
+	/** @var Channel */
+	private $channel;
 
-	public function __construct($appName, IRequest $request, IL10N $l10n){
+	public function __construct($appName, IRequest $request, Channel $channel, IL10N $l10n){
 		parent::__construct($appName, $request);
+		$this->channel = $channel;
 		$this->l10n = $l10n;
 		set_time_limit(0);
 	}
@@ -66,7 +71,7 @@ class UpdateController extends Controller{
 
 			//Package version e.g. 8.0.2
 			$packageVersion = '';
-			$updateData = App::getFeed();
+			$updateData = $this->channel->getFeed();
 
 			if (!empty($updateData['version'])){
 				$packageVersion = $updateData['version'];
@@ -135,7 +140,6 @@ class UpdateController extends Controller{
 	public function update(){
 		$request = file_get_contents('php://input');
 		$decodedRequest = json_decode($request, true);
-		$packageUrl = isset($decodedRequest['url']) ? $decodedRequest['url'] : '';
 		$packageVersion = isset($decodedRequest['version']) ? $decodedRequest['version'] : '';
 		$backupPath = isset($decodedRequest['backupPath']) ? $decodedRequest['backupPath'] : '';
 

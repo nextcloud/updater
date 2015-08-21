@@ -88,7 +88,7 @@ class Backup {
 	 */
 	public static function getPath() {
 		if (!self::$path) {
-			$backupBase = App::getBackupBase();
+			$backupBase = self::getBackupBase();
 			$currentVersion = \OC::$server->getConfig()->getSystemValue('version', '0.0.0');
 			$path = $backupBase . $currentVersion . '-';
 
@@ -105,6 +105,16 @@ class Backup {
 		if (self::$path) {
 			Helper::removeIfExists(self::$path);
 		}
-		Helper::removeIfExists(App::getTempBase());
+		Helper::removeIfExists(self::getTempBase());
+	}
+	
+	protected static function getTempBase(){
+		$app = new \OCA\Updater\AppInfo\Application();
+		return $app->getContainer()->query('Config')->getTempBase();
+	}
+	
+	protected static function getBackupBase(){
+		$app = new \OCA\Updater\AppInfo\Application();
+		return $app->getContainer()->query('Config')->getBackupBase();
 	}
 }

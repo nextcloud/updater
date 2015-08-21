@@ -10,7 +10,6 @@
  * later.
  */
 
-
 namespace OCA\Updater;
 
 class Collection {
