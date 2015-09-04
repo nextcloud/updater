@@ -35,9 +35,14 @@ class Downloader {
 		try {
 			// Reuse already downloaded package
 			if (!file_exists(self::$package)){
-				if (self::fetch($url)===false) {
-					throw new \Exception("Error storing package content");
-				}
+				$client = \OC::$server->getHTTPClientService()->newClient();
+				$client->get($url, 
+					[
+						'save_to' => self::$package,
+						'timeout' => 10*60,
+					]
+				);
+
 				\OC::$server->getLogger()->debug(
 					'Downloaded ' . filesize(self::$package) . ' bytes.',
 					['app' => 'updater']
@@ -90,37 +95,6 @@ class Downloader {
 		rename($baseDir . '/' . Helper::THIRDPARTY_DIRNAME, $sources[Helper::THIRDPARTY_DIRNAME]);
 		rename($baseDir . '/' . Helper::APP_DIRNAME, $sources[Helper::APP_DIRNAME]);
 		rename($baseDir, $sources[Helper::CORE_DIRNAME]);
-	}
-	
-	public static function fetch($url){
-		
-		$urlFopen = ini_get('allow_url_fopen');
-		$allowed = array('on', 'yes', 'true', 1);
-		
-		if (\in_array($urlFopen, $allowed)){
-			$result = @file_put_contents(self::$package, fopen($url, 'r'));
-		} elseif  (function_exists('curl_init')) {
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_HEADER, 0);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 0);
-			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-			curl_setopt($curl, CURLOPT_URL, $url);
-			curl_setopt($curl, CURLOPT_USERAGENT, "ownCloud Server Crawler");
-			
-			$result = @file_put_contents(self::$package, curl_exec($curl));
-			
-			curl_close($curl);
-		} else {
-			$ctx = stream_context_create(
-				array(
-					'http' => array('timeout' => 32000)
-				     )
-				);
-			
-			$result = @file_put_contents(self::$package, @file_get_contents($url, 0, $ctx));
-		}
-		return $result;
 	}
 
 	public static function cleanUp($version){
