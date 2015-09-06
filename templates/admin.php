@@ -19,7 +19,7 @@
 <div ng-app="updater" ng-init="navigation='backup'" class="updater-admin">
 	<div class="section" ng-controller="updateCtrl" ng-init="hasUpdate=<?php p($isNewVersionAvailable) ?>;">
 		<h2><?php p($l->t('Updates')) ?></h2>
-		<p id="update-info" ng-show="hasUpdate" 
+		<p id="update-info" ng-show="hasUpdate"
 		   ng-init="newVersion='<?php p($_['version']) ?>'">
 			<?php print_unescaped($l->t('<strong>A new version is available: {{newVersion}}</strong>')) ?>
 		</p>
@@ -51,7 +51,7 @@
 		</button></p>
 		<p>
 			<label for="release-channel"><?php p($l->t('Update channel:')) ?></label>
-			<select id="release-channel" ng-change="updateChannel()" 
+			<select id="release-channel" ng-change="updateChannel()"
 				ng-model="releaseChannel" ng-init="releaseChannel='<?php p($_['currentChannel']) ?>'">
 				<?php foreach ($_['channels'] as $channel => $channelTitle){ ?>
 				<option value="<?php p($channel) ?>">
@@ -64,15 +64,14 @@
 		<p>
 			<?php p($l->t('Please note update is possible only to a version that is greater than the one currently installed. If you upgraded from a less stable channel you will be able to upgrade from a more stable channel only after the version that is greater than you installed reaches it.')); ?>
 		</p>
-	</div>
-	<div class="section" ng-controller="backupCtrl">
-		<h2><?php p($l->t('Updater-Backups')) ?></h2>
+	<div ng-controller="backupCtrl">
+		<h3><?php p($l->t('Updater-Backups')) ?></h3>
 		<div class="updater-update">
 			<h3><?php p($l->t('Note')); ?></h3>
 			<p>
 				<?php print_unescaped($l->t('Here you can find backups of the core of your ownCloud <strong>(excluding your data)</strong> after starting an update to a newer version.')); ?>
 			</p>
-			<p>	
+			<p>
 				<?php print_unescaped($l->t('<strong>Please always backup your data separately before updating!</strong>')); ?>
 			</p>
 		</div>
