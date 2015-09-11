@@ -68,7 +68,7 @@
 }
 
 .updater-update {
-	padding: 1em 0.75em;
+	padding: 2px 20px 8px 20px;
 	background-color: rgba(240, 240, 240, 0.9);
 	max-width: 750px;
 }
