@@ -24,10 +24,11 @@
 			<?php print_unescaped($l->t('<strong>A new version is available: {{newVersion}}</strong>')) ?>
 		</p>
 		<p ng-show="!hasUpdate">
-			<?php p($l->t('Updates will be available in the updater app and ownCloud admin panel within a few days of an update announcement.')) ?>
+			<?php p($l->t('Testing is everything: Therefore updates will be available here within a few days after the announcement.')) ?>
 		</p>
 		<p ng-show="!hasUpdate" ng-init="checkedAt='<?php p($_['checkedAt']) ?>'">
-			<?php print_unescaped($l->t('<strong>Up to date.</strong> <em>Checked on {{checkedAt}}</em>')) ?>
+			<?php print_unescaped($l->t('<strong>Your version is up to date.</strong>')) ?>
+			<span class="icon-info svg" title="<?php p($l->t('Checked on {{checkedAt}}')) ?>"></span>
 		</p>
 		<div class="upd-step-title" style="display:none;">
 			<ul class="track-progress" data-steps="3">
@@ -62,41 +63,41 @@
 			<span id="channel_save_msg"></span>
 		</p>
 		<p>
-			<?php p($l->t('Please note update is possible only to a version that is greater than the one currently installed. If you upgraded from a less stable channel you will be able to upgrade from a more stable channel only after the version that is greater than you installed reaches it.')); ?>
+			<?php print_unescaped($l->t('<em>Rule of thumb: You can always update to a newer version. But you can never downgrade to a lower version number. Keep that in mind while using experimental channels.')); ?>
 		</p>
-	<div ng-controller="backupCtrl">
-		<h3><?php p($l->t('Updater-Backups')) ?></h3>
-		<div class="updater-update">
-			<h3><?php p($l->t('Note')); ?></h3>
+		<br>
+		<div ng-controller="backupCtrl">
+			<h3><?php p($l->t('Updater-Backups')) ?></h3>
 			<p>
-				<?php print_unescaped($l->t('Here you can find backups of the core of your ownCloud <strong>(excluding your data)</strong> after starting an update to a newer version.')); ?>
+				<?php print_unescaped($l->t('Take your time for a backup strategy: <strong>This app will only backup core files (no personal data).</strong>')); ?>
+				<br>
+				<?php print_unescaped($l->t('<strong>Important: Please always do a separate backup of database and personal data before updating.</strong>')); ?>
 			</p>
+			<p ng-show="!entries.length"><?php p($l->t('No backups found.')) ?></p>
+			<table ng-hide="!entries.length" class="updater-backups-table">
+				<thead>
+					<tr>
+						<th><?php p($l->t('Backup')) ?></th>
+						<th><?php p($l->t('Done on')) ?></th>
+						<th><?php p($l->t('Size')) ?></th>
+						<th>&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="entry in entries">
+						<td title="<?php p($l->t('Download')) ?>" class="item" ng-click="doDownload(entry.title)">{{entry.title}}</td>
+						<td title="<?php p($l->t('Download')) ?>" class="item" ng-click="doDownload(entry.title)">{{entry.date}}</td>
+						<td title="<?php p($l->t('Download')) ?>" class="item" ng-click="doDownload(entry.title)">{{entry.size}}</td>
+						<td title="<?php p($l->t('Delete')) ?>" class="item icon-delete" ng-confirm-click="<?php p($l->t('Are you sure you want to delete {{entry.title}}')); ?>" ng-click="doDelete(entry.title)"></td>
+					</tr>
+				</tbody>
+			</table>
 			<p>
-				<?php print_unescaped($l->t('<strong>Please always backup your data separately before updating!</strong>')); ?>
+				<em>
+					<?php p($l->t('Backup directory')) ?>:
+					<?php p($_['backupDir']); ?>
+				</em>
 			</p>
 		</div>
-		<p>
-			<?php p($l->t('Backup directory')) ?>:
-			<?php p($_['backupDir']); ?>
-		</p>
-		<p ng-show="!entries.length"><?php p($l->t('No backups found.')) ?></p>
-		<table ng-hide="!entries.length" class="updater-backups-table">
-			<thead>
-				<tr>
-					<th><?php p($l->t('Backup')) ?></th>
-					<th><?php p($l->t('Done on')) ?></th>
-					<th><?php p($l->t('Size')) ?></th>
-					<th>&nbsp;</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="entry in entries">
-					<td title="<?php p($l->t('Download')) ?>" class="item" ng-click="doDownload(entry.title)">{{entry.title}}</td>
-					<td title="<?php p($l->t('Download')) ?>" class="item" ng-click="doDownload(entry.title)">{{entry.date}}</td>
-					<td title="<?php p($l->t('Download')) ?>" class="item" ng-click="doDownload(entry.title)">{{entry.size}}</td>
-					<td title="<?php p($l->t('Delete')) ?>" class="item icon-delete" ng-confirm-click="<?php p($l->t('Are you sure you want to delete {{entry.title}}')); ?>" ng-click="doDelete(entry.title)"></td>
-				</tr>
-			</tbody>
-		</table>
 	</div>
 </div>

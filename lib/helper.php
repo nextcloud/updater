@@ -95,7 +95,7 @@ class Helper {
 			}
 		}elseif(file_exists($src)) {
 			if (!copy($src, $dest) && $stopOnError) {
-				throw new \Exception("Unable copy $src to $dest");
+				throw new \Exception("Unable to copy $src to $dest");
 			}
 		}
 	}

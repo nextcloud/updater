@@ -25,7 +25,7 @@ function updateCtrl($scope, $http) {
 	};
 
 	$scope.fail = function (data) {
-		var message = t('updater', '<strong>The update was unsuccessful.</strong><br />Please check logs at admin page and report this issue to the <a href="https://github.com/owncloud/apps/issues" target="_blank">ownCloud community</a>.');
+		var message = t('updater', '<strong>The update was unsuccessful.</strong><br />Please check the logs at admin page and report this issue to the <a href="https://github.com/owncloud/apps/issues" target="_blank">ownCloud community</a>.');
 		if (data && data.message) {
 			message = data.message;
 		}
@@ -33,7 +33,7 @@ function updateCtrl($scope, $http) {
 	};
 
 	$scope.crash = function () {
-		var message = t('updater', '<strong>Server error.</strong> Please check web server log file for details');
+		var message = t('updater', '<strong>Server error.</strong> Please check the web server log file for details.');
 		$('<div></div>').hide().append($('<p></p>').addClass('updater-warning-p').append(message)).addClass('warning').appendTo($('.updater-progress')).fadeIn();
 		$('.updater-spinner').hide();
 	};
