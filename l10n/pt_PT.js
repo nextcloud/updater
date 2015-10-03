@@ -21,6 +21,7 @@ OC.L10N.register(
     "Make sure that your web server has write access to the following files and directories:" : "Certifique-se que o seu servidor tem acesso de gravação aos seguintes ficheiros e diretorias:",
     "Updates" : "Atualizações",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Está disponivel uma versão nova: {{newVersion}}</strong>",
+    "Checked on {{checkedAt}}" : "Verificado em {{checkedAt}}",
     "1. Check & Backup" : "1. Verificar & Cópia de Segurança",
     "2. Download & Extract" : "2. Transferir e Extrair",
     "3. Replace" : "3. Substituir",
