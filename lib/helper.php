@@ -21,6 +21,12 @@ class Helper {
 		$l10n = \OC::$server->getL10N('updater');
 		$currentVersionArray = \OCP\Util::getVersion();
 		$currentVersion = \OC_Util::getVersionString();
+		
+		// https://github.com/owncloud/core/issues/18880
+		// Always positive for versions >= 100.0.0.0
+		if (version_compare($newVersionString, '100.0.0.0', '>=')) {
+			return;
+		}
 
 		$difference = intval($newVersionArray[0]) - intval($currentVersionArray[0]);
 		if ($difference>1 || $difference<0 || version_compare($currentVersion, $newVersionString) > 0) {
