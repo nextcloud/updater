@@ -51,7 +51,7 @@ class Helper {
 	/**
 	 * Check permissions recursive
 	 * @param string $src  - path to check
-	 * @param string $src  - path to check
+	 * @param OCA\Updater\Collection $collection - object to store incorrect permissions
 	 */
 	public static function checkr($src, $collection) {
 		if (!is_writable($src)){
