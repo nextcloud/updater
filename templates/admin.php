@@ -23,12 +23,12 @@
 		   ng-init="newVersion='<?php p($_['version']) ?>'">
 			<?php print_unescaped($l->t('<strong>A new version is available: {{newVersion}}</strong>')) ?>
 		</p>
-		<p ng-show="!hasUpdate">
-			<?php p($l->t('Testing is everything: Therefore updates will be available here within a few days after the announcement.')) ?>
-		</p>
 		<p ng-show="!hasUpdate" ng-init="checkedAt='<?php p($_['checkedAt']) ?>'">
 			<?php print_unescaped($l->t('<strong>Your version is up to date.</strong>')) ?>
 			<span class="icon-info svg" title="<?php p($l->t('Checked on {{checkedAt}}')) ?>"></span>
+		</p>
+		<p ng-show="!hasUpdate">
+			<em><?php p($l->t('Updates will be available here within a few days after the announcement.')) ?></em>
 		</p>
 		<div class="upd-step-title" style="display:none;">
 			<ul class="track-progress" data-steps="3">
@@ -63,15 +63,13 @@
 			<span id="channel_save_msg"></span>
 		</p>
 		<p>
-			<?php print_unescaped($l->t('<em>Rule of thumb: You can always update to a newer version. But you can never downgrade to a lower version number. Keep that in mind while using experimental channels.')); ?>
+			<em><?php print_unescaped($l->t('You can always update to a newer version / experimental channel. But you can never downgrade to a more stable channel.')); ?></em>
 		</p>
 		<br>
 		<div ng-controller="backupCtrl">
 			<h3><?php p($l->t('Updater-Backups')) ?></h3>
 			<p>
-				<?php print_unescaped($l->t('Take your time for a backup strategy: <strong>This app will only backup core files (no personal data).</strong>')); ?>
-				<br>
-				<?php print_unescaped($l->t('<strong>Important: Please always do a separate backup of database and personal data before updating.</strong>')); ?>
+				<em><strong><?php print_unescaped($l->t('This app will only backup core files (no personal data).')); ?></strong> <?php print_unescaped($l->t('Please always do a separate backup of database and personal data before updating.')); ?></em>
 			</p>
 			<p ng-show="!entries.length"><?php p($l->t('No backups found.')) ?></p>
 			<table ng-hide="!entries.length" class="updater-backups-table">
