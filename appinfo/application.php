@@ -27,34 +27,7 @@ class Application extends App {
 		parent::__construct('updater', $urlParams);
 		
 		$container = $this->getContainer();
-		
-		/**
-		 * Controllers
-		 */
-		$container->registerService('UpdateController', function($c) {
-			return new UpdateController(
-				$c->query('AppName'),
-				$c->query('Request'),
-				$c->query('L10N')
-			);
-		});
-		$container->registerService('BackupController', function($c) {
-			return new BackupController(
-				$c->query('AppName'),
-				$c->query('Request'),
-				$c->query('Config'),
-				$c->query('L10N')
-			);
-		});
-		$container->registerService('AdminController', function($c) {
-			return new AdminController(
-				$c->query('AppName'),
-				$c->query('Request'),
-				$c->query('Config'),
-				$c->query('L10N')
-			);
-		});
-		
+			
 		$container->registerService('L10N', function($c) {
 			return $c->query('ServerContainer')->getL10N($c->query('AppName'));
 		});
