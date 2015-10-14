@@ -22,7 +22,6 @@ $TRANSLATIONS = array(
 "Make sure that your web server has write access to the following files and directories:" => "โปรดตรวจสอบให้แน่ใจว่าเว็บเซิร์ฟเวอร์ของคุณได้เข้าถึงการอ่านไฟล์และไดเรกทอรีต่อไปนี้:",
 "Updates" => "อัพเดท",
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>มีรุ่นใหม่ที่สามารถใช้ได้: {{newVersion}}</strong>",
-"Testing is everything: Therefore updates will be available here within a few days after the announcement." => "กำลังทดสอบทุกอย่าง: ดังนั้นการอัพเดทจะสามารถใช้ได้ภายในไม่กี่วันหลังจากการประกาศ",
 "<strong>Your version is up to date.</strong>" => "<strong>รุ่นของคุณใหม่ล่าสุดแล้ว</strong>",
 "Checked on {{checkedAt}}" => "ตรวจสอบบน {{checkedAt}}",
 "1. Check & Backup" => "1. ตรวจสอบและสำรองข้อมูล",
