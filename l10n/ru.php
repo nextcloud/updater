@@ -30,6 +30,7 @@ $TRANSLATIONS = array(
 "3. Replace" => "3. Замена",
 "Update" => "Обновить",
 "Update channel:" => "Канал обновлений:",
+"You can always update to a newer version / experimental channel. But you can never downgrade to a more stable channel." => "Вы всегда можете переключится на экспериментальный канал обновлений для получения новейшей версии. Но учтите, что вы не сможете переключиться обратно на канал обновлений для стабильных версий. ",
 "Updater-Backups" => "Обновление и Резервирование",
 "This app will only backup core files (no personal data)." => "Это приложение создает резервную копию только файлов ядра (исключая персональные данные).",
 "Please always do a separate backup of database and personal data before updating." => "Пожалуйста всегда создавайте резервные копии базы данных и персональных данных перед обновлением.",
