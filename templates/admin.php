@@ -28,7 +28,7 @@
 			<span class="icon-info svg" title="<?php p($l->t('Checked on {{checkedAt}}')) ?>"></span>
 		</p>
 		<p ng-show="!hasUpdate">
-			<em><?php p($l->t('Major new releases will be available with some delay, up to a month after the announcement.')) ?></em>
+			<em><?php p($l->t('Major updates are delayed up to one month until they are served by the updater application. Minor updates will be available here within a few days after the announcement.')) ?></em>
 		</p>
 		<div class="upd-step-title" style="display:none;">
 			<ul class="track-progress" data-steps="3">
