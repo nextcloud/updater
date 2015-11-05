@@ -34,6 +34,7 @@ $TRANSLATIONS = array(
 "Size" => "大小",
 "Download" => "下載",
 "Delete" => "刪除",
+"Are you sure you want to delete {{entry.title}}" => "您確定要刪除 {{entry.title}}",
 "Backup directory" => "備份目錄"
 );
 $PLURAL_FORMS = "nplurals=1; plural=0;";
