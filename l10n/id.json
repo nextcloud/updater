@@ -23,7 +23,6 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Versi baru tersedia: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Versi Anda sudah yang terbaru.</strong>",
     "Checked on {{checkedAt}}" : "Diperiksa pada {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "Pembaruan akan tersedia disini dalam beberapa hari setelah pengumuman.",
     "1. Check & Backup" : "1. Periksa & Cadangkan",
     "2. Download & Extract" : "2. Unduh dan Ekstrak",
     "3. Replace" : "3. Ganti",

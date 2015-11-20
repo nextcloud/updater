@@ -25,7 +25,6 @@ OC.L10N.register(
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Ka gati një version të ri: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Versioni juaj është i përditësuar.</strong>",
     "Checked on {{checkedAt}}" : "Kontrolluar më {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "Përditësimet do të gjenden të gatshme këtu, brenda pak ditësh pas njoftimit.",
     "1. Check & Backup" : "1. Kontrolloni & Kopjeruani",
     "2. Download & Extract" : "2. Shkarkoni & Përftoni",
     "3. Replace" : "3. Zëvendësoni",

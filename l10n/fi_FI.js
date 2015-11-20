@@ -25,7 +25,6 @@ OC.L10N.register(
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Uusi versio on saatavilla: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Versiosi on ajan tasalla.</strong>",
     "Checked on {{checkedAt}}" : "Tarkistettu {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "Päivitykset ovat saatavilla tätä kautta muutama päivä julkaistuksen jälkeen.",
     "1. Check & Backup" : "1. Tarkista ja varmuuskopioi",
     "2. Download & Extract" : "2. Lataa ja pura",
     "3. Replace" : "3. Korvaa",

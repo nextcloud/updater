@@ -25,7 +25,6 @@ OC.L10N.register(
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Una novèla version es disponibla : {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Vòstra version es a jorn.</strong>",
     "Checked on {{checkedAt}}" : "Verificat sus {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "Las mesas a jorn seràn disponiblas aicí qualques jorns aprèp l'anonci de lor disponibilitat.",
     "1. Check & Backup" : "1. Verificacion e salvament",
     "2. Download & Extract" : "2. Telecargament e extraccion",
     "3. Replace" : "3. Remplaçament",

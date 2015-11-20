@@ -23,7 +23,6 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Está disponivel uma versão nova: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>A sua versão está atualizada.</strong>",
     "Checked on {{checkedAt}}" : "Verificado em {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "As atualizações irão estar disponíveis aqui dentro de dias, depois do anúncio.",
     "1. Check & Backup" : "1. Verificar & Cópia de Segurança",
     "2. Download & Extract" : "2. Transferir e Extrair",
     "3. Replace" : "3. Substituir",

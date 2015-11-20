@@ -25,7 +25,6 @@ OC.L10N.register(
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Uma nova versão está disponível: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Sua versão está atualizada.</strong>",
     "Checked on {{checkedAt}}" : "Verificado em {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "As atualizações estarão disponíveis aqui dentro de poucos dias após o anúncio.",
     "1. Check & Backup" : "1. Verificação & Backup",
     "2. Download & Extract" : "2. Baixar & Extrair",
     "3. Replace" : "3. Substituir",

@@ -23,7 +23,6 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Je dostupná nová verze: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Používáte nejnovější verzi aplikace.</strong>",
     "Checked on {{checkedAt}}" : "Zkontrolováno {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "Aktualizace zde budou dostupné po pár dnech po jejich oznámení.",
     "1. Check & Backup" : "1. Ověřit & Zálohovat",
     "2. Download & Extract" : "2. Stáhnout & Rozbalit",
     "3. Replace" : "3. Nahradit",

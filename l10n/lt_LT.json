@@ -23,7 +23,6 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Yra nauja versija: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Naudojama naujausia versija.</strong>",
     "Checked on {{checkedAt}}" : "Atnaujinta {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "Atnaujinimai bus pranešami per keletą dienų nuo paskelbimo.",
     "1. Check & Backup" : "Patikrinti ir kurti kopiją",
     "2. Download & Extract" : "Parsiųsti ir išspausti",
     "3. Replace" : "Pakeisti",

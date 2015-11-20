@@ -25,7 +25,6 @@ OC.L10N.register(
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Μια νέα έκδοση είναι διαθέσιμη: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Έχετε την τελευταία έκδοση.</strong>",
     "Checked on {{checkedAt}}" : "Ελέγχθηκε την {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "Οι ενημερώσεις θα είναι διαθέσιμες εδώ μερικές ημέρες μετά την ανακοίνωση.",
     "1. Check & Backup" : "1. Έλεγχος και Δημιουργία Αντιγράφων Ασφαλείας",
     "2. Download & Extract" : "2. Λήψη και Εξαγωγή",
     "3. Replace" : "3. Αντικατάσταση",

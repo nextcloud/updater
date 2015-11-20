@@ -24,7 +24,6 @@ $TRANSLATIONS = array(
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>Доступна новая версия: {{newVersion}}</strong>",
 "<strong>Your version is up to date.</strong>" => "<strong>Версия не требуется обновления.</strong>",
 "Checked on {{checkedAt}}" => "Проверка {{checkedAt}}",
-"Updates will be available here within a few days after the announcement." => "Обновления будут доступны через несколько дней после объявления.",
 "1. Check & Backup" => "1. Проверка и резервная копия",
 "2. Download & Extract" => "2. Загрузка и извлечение",
 "3. Replace" => "3. Замена",

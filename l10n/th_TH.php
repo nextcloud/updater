@@ -24,7 +24,6 @@ $TRANSLATIONS = array(
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>มีรุ่นใหม่ที่สามารถใช้ได้: {{newVersion}}</strong>",
 "<strong>Your version is up to date.</strong>" => "<strong>รุ่นของคุณใหม่ล่าสุดแล้ว</strong>",
 "Checked on {{checkedAt}}" => "ตรวจสอบบน {{checkedAt}}",
-"Updates will be available here within a few days after the announcement." => "การอัพเดทจะสามารถใช้ได้ที่นี่ภายในไม่กี่วันหลังจากการประกาศ",
 "1. Check & Backup" => "1. ตรวจสอบและสำรองข้อมูล",
 "2. Download & Extract" => "2. ดาวน์โหลดและแยกไฟล์",
 "3. Replace" => "3. แทนที่",

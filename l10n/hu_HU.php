@@ -24,7 +24,6 @@ $TRANSLATIONS = array(
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>Új verzió érhető el: {{newVersion}}</strong>",
 "<strong>Your version is up to date.</strong>" => "<strong>A verziód naprakész.</strong>",
 "Checked on {{checkedAt}}" => "Ellenőrizve: {{checkedAt}}",
-"Updates will be available here within a few days after the announcement." => "A frissítések a bejelentést követően pár napon belül elérhetővé vállnak.",
 "1. Check & Backup" => "1. Ellenőrzés és biztonsági mentés",
 "2. Download & Extract" => "2. Letöltés és kibontás",
 "3. Replace" => "3. Felülírás",

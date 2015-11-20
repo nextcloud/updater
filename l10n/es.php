@@ -23,7 +23,6 @@ $TRANSLATIONS = array(
 "Updates" => "Actualizaciones",
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>Una nueva versión está disponible: {{newVersion}}</strong>",
 "<strong>Your version is up to date.</strong>" => "<strong>Su versión está actualizada.</strong>",
-"Updates will be available here within a few days after the announcement." => "Las actualizaciones estarán disponibles aquí unos días desupues de su anuncio.",
 "1. Check & Backup" => "1. Comprobar y resguardar",
 "2. Download & Extract" => "2. Descargar y extraer",
 "3. Replace" => "3. Reemplazar",

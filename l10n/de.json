@@ -22,7 +22,6 @@
     "Updates" : "Updates",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Es ist eine neue Version verfügbar: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Deine Version ist aktuell.</strong>",
-    "Updates will be available here within a few days after the announcement." : "Updates werden hier einige Tage nach ihrer Ankündigung verfügbar sein.",
     "1. Check & Backup" : "1. Prüfen & Sichern",
     "2. Download & Extract" : "2. Herunterladen & Entpacken",
     "3. Replace" : "3. Ersetzen",

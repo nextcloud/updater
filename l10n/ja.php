@@ -24,7 +24,6 @@ $TRANSLATIONS = array(
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>新しいバージョンが利用可能です: {{newVersion}}</strong>",
 "<strong>Your version is up to date.</strong>" => "<strong>最新版です。</strong>",
 "Checked on {{checkedAt}}" => "{{checkedAt}} で確認済",
-"Updates will be available here within a few days after the announcement." => "アップデートは、アナウンスから数日以内に利用できるようになります。",
 "1. Check & Backup" => "1. チェックとバックアップ",
 "2. Download & Extract" => "2. ダウンロードと展開",
 "3. Replace" => "3. 更新",

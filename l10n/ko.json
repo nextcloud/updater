@@ -23,7 +23,6 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>새 버전을 사용할 수 있습니다: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>최신 버전을 사용하고 있습니다.</strong>",
     "Checked on {{checkedAt}}" : "{{checkedAt}}에 확인함",
-    "Updates will be available here within a few days after the announcement." : "업데이트가 발표된 후 여기에 등록되기까지 며칠 정도 걸릴 수 있습니다.",
     "1. Check & Backup" : "1. 확인 및 백업",
     "2. Download & Extract" : "2. 다운로드 및 압축 풀기",
     "3. Replace" : "3. 재설치",

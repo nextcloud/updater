@@ -20,7 +20,6 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>有新版本可以使用了: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>你的版本式最新的了.</strong>",
     "Checked on {{checkedAt}}" : "檢查此處 {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "在官方公告的幾天後，新的更新內容將會在這裡可以使用",
     "1. Check & Backup" : "1. 檢查 & 備份",
     "2. Download & Extract" : "2. 下載 & 解壓縮",
     "3. Replace" : "3. 取代",

@@ -23,7 +23,6 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>En ny versjon er tilgjengelig: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Din versjon er oppdatert.</strong>",
     "Checked on {{checkedAt}}" : "Sjekket den {{checkedAt}}",
-    "Updates will be available here within a few days after the announcement." : "Oppdateringer vil bli gjort tilgjengelige her et par dager etter annonseringen.",
     "1. Check & Backup" : "1. Sjekk & Sikkerhetskopiering",
     "2. Download & Extract" : "2. Nedlasting & Utpakking",
     "3. Replace" : "3. Erstatt",
