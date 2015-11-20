@@ -23,7 +23,7 @@ class Core extends Location {
 	protected function getWhitelist(){
 		$strList = file_get_contents(dirname(__DIR__) . '/files.json');
 		$fullList = json_decode($strList, true);
-		$list = $fullList['8.1'];
+		$list = $fullList['8.2'];
 		return $list;
 	}
 
