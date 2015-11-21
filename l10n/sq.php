@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>Ka gati një version të ri: {{newVersion}}</strong>",
 "<strong>Your version is up to date.</strong>" => "<strong>Versioni juaj është i përditësuar.</strong>",
 "Checked on {{checkedAt}}" => "Kontrolluar më {{checkedAt}}",
+"Major updates are delayed up to one month until they are served by the updater application. Minor updates will be available here within a few days after the announcement." => "Hedhja në qarkullim e përditësimeve të rëndësishme shtyhet deri në një muaj, kur ato shërbehen përmes aplikacionit të përditësimeve. Përditësimet e vogla do t’i gjeni këtu brenda pak ditësh nga njoftimi i tyre.",
 "1. Check & Backup" => "1. Kontrolloni & Kopjeruani",
 "2. Download & Extract" => "2. Shkarkoni & Përftoni",
 "3. Replace" => "3. Zëvendësoni",

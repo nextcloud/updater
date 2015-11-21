@@ -25,6 +25,7 @@ OC.L10N.register(
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Una nuova versione è disponibile: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>La tua versione è aggiornata.</strong>",
     "Checked on {{checkedAt}}" : "Controllato il {{checkedAt}}",
+    "Major updates are delayed up to one month until they are served by the updater application. Minor updates will be available here within a few days after the announcement." : "Gli aggiornamenti principali sono disponibili tramite l'applicazione di aggiornamento con un ritardo che può arrivare al mese. Gli aggiornamenti minori saranno disponibili entro pochi giorni dall'annuncio.",
     "1. Check & Backup" : "1. Controlla e crea copie di sicurezza",
     "2. Download & Extract" : "2. Scarica ed estrai",
     "3. Replace" : "3. Sostituisci",
