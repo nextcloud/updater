@@ -23,6 +23,7 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Je dostupná nová verze: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Používáte nejnovější verzi aplikace.</strong>",
     "Checked on {{checkedAt}}" : "Zkontrolováno {{checkedAt}}",
+    "Major updates are delayed up to one month until they are served by the updater application. Minor updates will be available here within a few days after the announcement." : "Zobrazení aktualizace nové hlavní verze může být pozdrženo až o měsíc aplikací aktualizací. Opravné verze zde budou dostupné během několika dní po jejich oznámení.",
     "1. Check & Backup" : "1. Ověřit & Zálohovat",
     "2. Download & Extract" : "2. Stáhnout & Rozbalit",
     "3. Replace" : "3. Nahradit",

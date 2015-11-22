@@ -23,6 +23,7 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Yra nauja versija: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Naudojama naujausia versija.</strong>",
     "Checked on {{checkedAt}}" : "Atnaujinta {{checkedAt}}",
+    "Major updates are delayed up to one month until they are served by the updater application. Minor updates will be available here within a few days after the announcement." : "Pagrindiniai atnaujinimai uždelsiami iki mėnesio prieš jų paskelbimą atnaujinimo vedlyje. Smulkūs pataisymai galimi per keletą dienų.",
     "1. Check & Backup" : "Patikrinti ir kurti kopiją",
     "2. Download & Extract" : "Parsiųsti ir išspausti",
     "3. Replace" : "Pakeisti",

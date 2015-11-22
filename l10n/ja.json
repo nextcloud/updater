@@ -23,6 +23,7 @@
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>新しいバージョンが利用可能です: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>最新版です。</strong>",
     "Checked on {{checkedAt}}" : "{{checkedAt}} で確認済",
+    "Major updates are delayed up to one month until they are served by the updater application. Minor updates will be available here within a few days after the announcement." : "アップデーターアプリで新しいメジャーアップデートが提供されるには1ヶ月程度かかります。マイナーアップデートであれば、アナウンスから2,3日で利用できるようになります。",
     "1. Check & Backup" : "1. チェックとバックアップ",
     "2. Download & Extract" : "2. ダウンロードと展開",
     "3. Replace" : "3. 更新",
