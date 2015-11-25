@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>Une nouvelle version est disponible : {{newVersion}}</strong>",
 "<strong>Your version is up to date.</strong>" => "<strong>Votre version est à jour.</strong>",
 "Checked on {{checkedAt}}" => "Vérifié sur {{checkedAt}}",
+"Major updates are delayed up to one month until they are served by the updater application. Minor updates will be available here within a few days after the announcement." => "Les mises à jour majeures sont repoussées d'un mois avant d'être appliquées par l'application de mise à jour. Les mises à jour mineures seront disponibles ici dans les prochains jours suivants leur annonce.",
 "1. Check & Backup" => "1. Vérification et sauvegarde",
 "2. Download & Extract" => "2. Téléchargement et extraction",
 "3. Replace" => "3. Remplacement",
