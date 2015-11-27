@@ -24,6 +24,7 @@ $TRANSLATIONS = array(
 "<strong>A new version is available: {{newVersion}}</strong>" => "<strong>มีรุ่นใหม่ที่สามารถใช้ได้: {{newVersion}}</strong>",
 "<strong>Your version is up to date.</strong>" => "<strong>รุ่นของคุณใหม่ล่าสุดแล้ว</strong>",
 "Checked on {{checkedAt}}" => "ตรวจสอบบน {{checkedAt}}",
+"Major updates are delayed up to one month until they are served by the updater application. Minor updates will be available here within a few days after the announcement." => "การอัพเดทที่สำคัญอาจจะล่าช้าถึงหนึ่งเดือน ส่วนปัญหาที่เล็กน้อยจะไดรับการอัพเดทภายในไม่กี่วันหลังจากการประกาศ",
 "1. Check & Backup" => "1. ตรวจสอบและสำรองข้อมูล",
 "2. Download & Extract" => "2. ดาวน์โหลดและแยกไฟล์",
 "3. Replace" => "3. แทนที่",

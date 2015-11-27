@@ -25,6 +25,8 @@
     "Update" : "Update durchführen",
     "Update channel:" : "Update-Kanal:",
     "Updater-Backups" : "Updater-Backups",
+    "This app will only backup core files (no personal data)." : "Diese App sichert nur die Core Dateien (keine persönlichen Daten).",
+    "Please always do a separate backup of database and personal data before updating." : "Bitte machen Sie immer eine seperate Sicherungsdatei von Ihrer Datenbank und den persönlichen Daten bevor Sie ein Update ausführen. ",
     "No backups found." : "Keine Backups gefunden.",
     "Backup" : "Backup",
     "Done on" : "Abgeschlossen am",

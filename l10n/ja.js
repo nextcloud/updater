@@ -31,7 +31,7 @@ OC.L10N.register(
     "3. Replace" : "3. 更新",
     "Update" : "アップデート",
     "Update channel:" : "アップデートチャンネル:",
-    "You can always update to a newer version / experimental channel. But you can never downgrade to a more stable channel." : "開発版の新しいバージョンにアップデートできます.ただし,アップデート後は安定版にダウングレードできません．",
+    "You can always update to a newer version / experimental channel. But you can never downgrade to a more stable channel." : "開発版の新しいバージョンにアップデートできます。ただし、アップデート後は安定版にダウングレードできません。",
     "Updater-Backups" : "アップデータバックエンド",
     "This app will only backup core files (no personal data)." : "このアプリはコアファイルのみバックアップします。(個人データは含まれません)",
     "Please always do a separate backup of database and personal data before updating." : "アップデートの前に、常にデータベースと個人データのバックアップを別途取ってください。",
