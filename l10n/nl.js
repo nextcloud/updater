@@ -25,6 +25,7 @@ OC.L10N.register(
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Er is een nieuwe versie beschikbaar: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Uw versie is up to date.</strong>",
     "Checked on {{checkedAt}}" : "Gecontroleerd op {{checkedAt}}",
+    "Major updates are delayed up to one month until they are served by the updater application. Minor updates will be available here within a few days after the announcement." : "Belangrijke updates worden maximaal een maand uitgesteld totdat ze door de update applicatie worden geïnstalleerd. Kleinere updates komen hier binnen enkele dagen na de aankondiging beschikbaar.",
     "1. Check & Backup" : "1. Controleer en back-up",
     "2. Download & Extract" : "2. Download en pak uit",
     "3. Replace" : "3. Vervangen",
