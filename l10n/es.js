@@ -24,6 +24,7 @@ OC.L10N.register(
     "Updates" : "Actualizaciones",
     "<strong>A new version is available: {{newVersion}}</strong>" : "<strong>Una nueva versión está disponible: {{newVersion}}</strong>",
     "<strong>Your version is up to date.</strong>" : "<strong>Su versión está actualizada.</strong>",
+    "Checked on {{checkedAt}}" : "Comprobado el {{checkedAt}}",
     "1. Check & Backup" : "1. Comprobar y resguardar",
     "2. Download & Extract" : "2. Descargar y extraer",
     "3. Replace" : "3. Reemplazar",
