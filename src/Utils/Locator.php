@@ -48,11 +48,12 @@ class Locator {
 		return $this->owncloudRootPath;
 	}
 
-	public function getRootDirItems(){
-		/* 8.2. can not provide items so we list them here.
-		 * waiting for https://github.com/owncloud/core/pull/20285
-		 */
-		$items = [
+	/**
+	 * expected items in the core
+	 * @return array
+	 */
+	public function getRootDirContent(){
+		return [
 			"config/config.sample.php",
 			"core",
 			"l10n",
@@ -80,6 +81,14 @@ class Locator {
 			"status.php",
 			"version.php"
 		];
+	}
+
+	/**
+	 * Absolute path to core root dir content
+	 * @return array
+	 */
+	public function getRootDirItems(){
+		$items = $this->getRootDirContent();
 		$items = array_map(
 			function($item){ return $this->owncloudRootPath . "/" . $item;	},
 			$items

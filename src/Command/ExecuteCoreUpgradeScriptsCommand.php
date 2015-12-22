@@ -63,9 +63,10 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 				try{
 					$fsHelper->mkdir($fullExtractionPath, true);
 				} catch (\Exception $ex){
-
 					$output->writeln('Unable create directory ' . $fullExtractionPath);
 				}
+			} else {
+				$fsHelper->removeIfExists($fullExtractionPath);
 			}
 			$output->writeln('Extracting source into ' . $fullExtractionPath);
 
@@ -76,6 +77,23 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 				$output->writeln('Extraction has been failed');
 				$fsHelper->removeIfExists($locator->getExtractionBaseDir());
 				throw $e;
+			}
+			
+			$tmpDir = $locator->getExtractionBaseDir() . '/' . implode('.', $locator->getInstalledVersion());
+			$fsHelper->removeIfExists($tmpDir);
+			$fsHelper->mkdir($tmpDir);
+			$fsHelper->mkdir($tmpDir . '/config');
+			$oldSourcesDir = $locator->getOwncloudRootPath();
+			$newSourcesDir = $fullExtractionPath . '/owncloud';
+			$newSources = $locator->getRootDirContent();
+			foreach ($newSources as $dir){
+				$this->getApplication()->getLogger()->debug('Moving ' . $dir);
+				if (file_exists($oldSourcesDir . '/' . $dir)){
+					$fsHelper->move($oldSourcesDir . '/' . $dir, $tmpDir . '/' . $dir);
+				}
+				if (file_exists($newSourcesDir . '/' . $dir)){
+					$fsHelper->move($newSourcesDir . '/' . $dir, $oldSourcesDir . '/' . $dir);
+				}
 			}
 
 			$plain = $this->occRunner->run('upgrade');
