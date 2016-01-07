@@ -1,0 +1,10 @@
+{
+  "directories": ["src", "app", "vendor"],
+  "chmod": "0755",
+
+  "files": [ "application.php" ],
+  "main": "application.php",
+  "output": "setup.phar",
+  "stub": true,
+  "web": false
+}
