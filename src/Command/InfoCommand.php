@@ -38,7 +38,7 @@ class InfoCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output){
-		$message = sprintf('%s %s',
+		$message = sprintf('%s %s - CLI based ownCloud server upgrades',
 						$this->getApplication()->getName(),
 						$this->getApplication()->getVersion()
 		);
