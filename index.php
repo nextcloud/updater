@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Victor Dubiniuk <dubiniuk@owncloud.com>
  *
@@ -19,24 +20,10 @@
  *
  */
 
-set_time_limit(0);
+use Owncloud\Updater\Controller\IndexController;
 
-//  PHP versions below 5.4.0 are not supported
-if (version_compare(PHP_VERSION, '5.4.0') === -1){
-	echo 'This application requires at least PHP 5.4.0' . PHP_EOL;
-	echo 'You are currently running ' . PHP_VERSION . '. Please update your PHP version.' . PHP_EOL;
-	exit(50);
-}
+require __DIR__ . '/app/bootstrap.php';
 
-// symlinks are not resolved by PHP properly
-// getcwd always reports source and not target
-if (isset($_SERVER['PWD'])){
-	define('CURRENT_DIR', $_SERVER['PWD']);
-} elseif (isset($_SERVER['SCRIPT_FILENAME'])){
-	define('CURRENT_DIR', dirname($_SERVER['SCRIPT_FILENAME']));
-} else {
-	define('CURRENT_DIR', getcwd());
-}
-
-require dirname(__DIR__) . '/vendor/autoload.php';
-$container = require(__DIR__ . '/config/container.php');
+$controller = new IndexController($container);
+$response = $controller->dispatch();
+echo $response;

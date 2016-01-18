@@ -76,6 +76,7 @@ class Application extends \Symfony\Component\Console\Application {
 	public function doRun(InputInterface $input, OutputInterface $output){
 		if (!($this->diContainer['logger.output'] instanceof StreamOutput)){
 			$output->writeln('[Warning] Failed to init logger. Logging is disabled.');
+			$output->writeln(CURRENT_DIR . ' is not writable');
 		}
 		try {
 			// TODO: check if the current command needs a valid OC instance

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Victor Dubiniuk <dubiniuk@owncloud.com>
  *
@@ -19,24 +20,18 @@
  *
  */
 
-set_time_limit(0);
+namespace Owncloud\Updater\Http;
 
-//  PHP versions below 5.4.0 are not supported
-if (version_compare(PHP_VERSION, '5.4.0') === -1){
-	echo 'This application requires at least PHP 5.4.0' . PHP_EOL;
-	echo 'You are currently running ' . PHP_VERSION . '. Please update your PHP version.' . PHP_EOL;
-	exit(50);
+class Request {
+	protected $vars;
+
+	public function __construct($vars = []){
+		$this->vars = $vars;
+	}
+
+	public function postParameter($parameter){
+		return isset($this->vars['post'][$parameter]) ? $this->vars['post'][$parameter] : null;
+	}
+
 }
 
-// symlinks are not resolved by PHP properly
-// getcwd always reports source and not target
-if (isset($_SERVER['PWD'])){
-	define('CURRENT_DIR', $_SERVER['PWD']);
-} elseif (isset($_SERVER['SCRIPT_FILENAME'])){
-	define('CURRENT_DIR', dirname($_SERVER['SCRIPT_FILENAME']));
-} else {
-	define('CURRENT_DIR', getcwd());
-}
-
-require dirname(__DIR__) . '/vendor/autoload.php';
-$container = require(__DIR__ . '/config/container.php');
