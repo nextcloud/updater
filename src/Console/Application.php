@@ -78,7 +78,7 @@ class Application extends \Symfony\Component\Console\Application {
 		}
 		try {
 			// TODO: check if the current command needs a valid OC instance
-			$this->assertOwncloudFound();
+			$this->assertOwnCloudFound();
 			$this->initDirectoryStructure();
 
 			$configReader = $this->diContainer['utils.configReader'];
@@ -131,7 +131,7 @@ class Application extends \Symfony\Component\Console\Application {
 	 * Check for owncloud instance
 	 * @throws \RuntimeException
 	 */
-	protected function assertOwncloudFound(){
+	protected function assertOwnCloudFound(){
 		$container = $this->getContainer();
 		$locator = $container['utils.locator'];
 		$pathToVersionFile = $locator->getPathToVersionFile();
@@ -142,6 +142,13 @@ class Application extends \Symfony\Component\Console\Application {
 		$pathToOccFile = $locator->getPathToOccFile();
 		if (!file_exists($pathToOccFile) || !is_file($pathToOccFile)){
 			throw new \RuntimeException('ownCloud is not found in ' . dirname($pathToOccFile));
+		}
+
+		// assert minimum version
+		include $pathToVersionFile;
+		$installedVersion = implode('.', $OC_Version);
+		if (version_compare($installedVersion, '9.0.0', '<')) {
+			throw new \RuntimeException("Minimum ownCloud version 9.0.0 is required for the updater - $installedVersion was found in " . dirname($pathToVersionFile));
 		}
 	}
 
