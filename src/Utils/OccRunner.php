@@ -40,7 +40,9 @@ class OccRunner {
 	}
 
 	public function run($args){
-		$process = new Process($this->locator->getPathToOccFile() . ' ' . $args);
+		$occPath = $this->locator->getPathToOccFile();
+		$cmd = "php $occPath $args";
+		$process = new Process($cmd);
 		$process->run();
 
 		if (!$process->isSuccessful()){
