@@ -20,6 +20,7 @@
  */
 namespace Owncloud\Updater\Console;
 
+use Owncloud\Updater\Utils\Locator;
 use Pimple\Container;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -133,22 +134,24 @@ class Application extends \Symfony\Component\Console\Application {
 	 */
 	protected function assertOwnCloudFound(){
 		$container = $this->getContainer();
+		/** @var Locator $locator */
 		$locator = $container['utils.locator'];
-		$pathToVersionFile = $locator->getPathToVersionFile();
-		if (!file_exists($pathToVersionFile) || !is_file($pathToVersionFile)){
-			throw new \RuntimeException('ownCloud is not found in ' . dirname($pathToVersionFile));
-		}
 
-		$pathToOccFile = $locator->getPathToOccFile();
-		if (!file_exists($pathToOccFile) || !is_file($pathToOccFile)){
-			throw new \RuntimeException('ownCloud is not found in ' . dirname($pathToOccFile));
+		$file = $locator->getPathToVersionFile();
+		if (!file_exists($file) || !is_file($file)){
+			throw new \RuntimeException('ownCloud is not found in ' . dirname($file));
 		}
 
 		// assert minimum version
-		include $pathToVersionFile;
-		$installedVersion = implode('.', $OC_Version);
+		$installedVersion = implode('.', $locator->getInstalledVersion());
 		if (version_compare($installedVersion, '9.0.0', '<')) {
-			throw new \RuntimeException("Minimum ownCloud version 9.0.0 is required for the updater - $installedVersion was found in " . dirname($pathToVersionFile));
+			throw new \RuntimeException("Minimum ownCloud version 9.0.0 is required for the updater - $installedVersion was found in " . $locator->getOwncloudRootPath());
+		}
+
+		// has to be installed
+		$file = $locator->getPathtoConfigFile();
+		if (!file_exists($file) || !is_file($file)){
+			throw new \RuntimeException('ownCloud in ' . dirname($file) . ' is not installed.');
 		}
 	}
 
