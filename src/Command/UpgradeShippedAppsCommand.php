@@ -36,8 +36,35 @@ class UpgradeShippedAppsCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output){
-		$path = $this->container['utils.appmanager']->getAppPath('files');
-		$output->writeln($path);
-	}
+		$registry = $this->container['utils.registry'];
+		$feed = $registry->get('feed');
 
+		if ($feed){
+			$locator = $this->container['utils.locator'];
+			$appManager = $this->container['utils.appmanager'];
+			$fsHelper = $this->container['utils.filesystemhelper'];
+			
+			$fullExtractionPath = $locator->getExtractionBaseDir() . '/' . $feed->getVersion();
+			$newAppsDir = $fullExtractionPath . '/owncloud/apps';
+			$tmpAppsDir = $locator->getExtractionBaseDir()
+					. '/'
+					. implode('.', $locator->getInstalledVersion())
+					. '/apps'
+			;
+			$fsHelper->mkDir($tmpAppsDir);
+			$shippedApps =$appManager->getShippedApps();
+			foreach ($shippedApps as $appId){
+				$oldPath = $appManager->getAppPath($appId);
+				$output->writeln('Upgrading the application ' . $appId);
+				$newPath = $newAppsDir . '/' . $appId;
+				
+				if (file_exists($oldPath)){
+					$fsHelper->move($oldPath, $tmpAppsDir . '/' . $appId);
+				}
+				if (file_exists($newPath)){
+					$fsHelper->move($newPath, $oldPath);
+				}
+			}
+		}
+	}
 }

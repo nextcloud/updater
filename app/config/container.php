@@ -195,6 +195,7 @@ $c['application'] = function($c){
 	$application = new Application('ownCloud updater', '1.0');
 	$application->setContainer($c);
 	$application->addCommands($c['commands']);
+	$application->setDefaultCommand($c['command.start']->getName());
 	return $application;
 };
 
