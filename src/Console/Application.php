@@ -149,9 +149,9 @@ class Application extends \Symfony\Component\Console\Application {
 		}
 
 		// has to be installed
-		$file = $locator->getPathtoConfigFile();
+		$file = $locator->getPathToConfigFile();
 		if (!file_exists($file) || !is_file($file)){
-			throw new \RuntimeException('ownCloud in ' . dirname($file) . ' is not installed.');
+			throw new \RuntimeException('ownCloud in ' . dirname(dirname($file)) . ' is not installed.');
 		}
 	}
 
