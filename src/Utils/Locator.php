@@ -149,6 +149,10 @@ class Locator {
 		];
 	}
 
+	public function getPathToConfigFile(){
+		return $this->owncloudRootPath . '/config/config.php';
+	}
+
 	/**
 	 *
 	 * @return string

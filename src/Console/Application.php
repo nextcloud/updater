@@ -20,6 +20,7 @@
  */
 namespace Owncloud\Updater\Console;
 
+use Owncloud\Updater\Utils\Locator;
 use Pimple\Container;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -78,7 +79,7 @@ class Application extends \Symfony\Component\Console\Application {
 		}
 		try {
 			// TODO: check if the current command needs a valid OC instance
-			$this->assertOwncloudFound();
+			$this->assertOwnCloudFound();
 			$this->initDirectoryStructure();
 
 			$configReader = $this->diContainer['utils.configReader'];
@@ -131,17 +132,26 @@ class Application extends \Symfony\Component\Console\Application {
 	 * Check for owncloud instance
 	 * @throws \RuntimeException
 	 */
-	protected function assertOwncloudFound(){
+	protected function assertOwnCloudFound(){
 		$container = $this->getContainer();
+		/** @var Locator $locator */
 		$locator = $container['utils.locator'];
-		$pathToVersionFile = $locator->getPathToVersionFile();
-		if (!file_exists($pathToVersionFile) || !is_file($pathToVersionFile)){
-			throw new \RuntimeException('ownCloud is not found in ' . dirname($pathToVersionFile));
+
+		$file = $locator->getPathToVersionFile();
+		if (!file_exists($file) || !is_file($file)){
+			throw new \RuntimeException('ownCloud is not found in ' . dirname($file));
 		}
 
-		$pathToOccFile = $locator->getPathToOccFile();
-		if (!file_exists($pathToOccFile) || !is_file($pathToOccFile)){
-			throw new \RuntimeException('ownCloud is not found in ' . dirname($pathToOccFile));
+		// assert minimum version
+		$installedVersion = implode('.', $locator->getInstalledVersion());
+		if (version_compare($installedVersion, '9.0.0', '<')) {
+			throw new \RuntimeException("Minimum ownCloud version 9.0.0 is required for the updater - $installedVersion was found in " . $locator->getOwncloudRootPath());
+		}
+
+		// has to be installed
+		$file = $locator->getPathToConfigFile();
+		if (!file_exists($file) || !is_file($file)){
+			throw new \RuntimeException('ownCloud in ' . dirname(dirname($file)) . ' is not installed.');
 		}
 	}
 
