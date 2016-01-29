@@ -71,6 +71,9 @@ class Fetcher {
 	public function getOwncloud(Feed $feed, callable $onProgress){
 		if ($feed->isValid()){
 			$downloadPath = $this->getBaseDownloadPath($feed);
+			if (!is_writable(dirname($downloadPath))){
+				throw new \Exception(dirname($downloadPath) . ' is not writable.');
+			}
 			$url = $feed->getUrl();
 			$request = $this->httpClient->createRequest(
 					'GET',
