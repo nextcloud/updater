@@ -8,7 +8,7 @@
 		<meta name="referrer" content="never">
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="<?=$this->uri() . '/pub/' . $this->asset('css/main.css')?>" />
-		<script src="<?=$this->uri() . '/pub/' . $this->asset('js/jquery.min.js')?>"></script>
+		<script src="<?=$this->uri() . '/pub/' . $this->asset('js/vendor/jquery.min.js')?>"></script>
 		<script src="<?=$this->uri() . '/pub/' . $this->asset('js/main.js')?>"></script>
 	</head>
 	<body id="<?=$this->e($bodyId)?>">
