@@ -22,7 +22,6 @@
 namespace Owncloud\Updater\Utils;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Event\ProgressEvent;
 use Owncloud\Updater\Utils\Feed;
 
 class Fetcher {
@@ -85,9 +84,7 @@ class Fetcher {
 			);
 			$request->getEmitter()->on('progress', $onProgress);
 			$response = $this->httpClient->send($request);
-			if ($response->getStatusCode() !== 200){
-				throw new \UnexpectedValueException('Failed to download ' . $url . '. Server responded with ' . $response->getStatusCode() . ' instead of 200.');
-			}
+			$this->validateResponse($response);
 		}
 	}
 
@@ -136,6 +133,10 @@ class Fetcher {
 		return new Feed($tmp);
 	}
 
+	public function getUpdateChannel(){
+		return $this->configReader->getByPath('apps.core.OC_Channel');
+	}
+
 	/**
 	 * Produce complete feed URL
 	 * @return string
@@ -145,7 +146,7 @@ class Fetcher {
 		$version = explode('.', $currentVersion);
 		$version['installed'] = $this->configReader->getByPath('apps.core.installedat');
 		$version['updated'] = $this->configReader->getByPath('apps.core.lastupdatedat');
-		$version['updatechannel'] = $this->configReader->getByPath('apps.core.OC_Channel');
+		$version['updatechannel'] = $this->getUpdateChannel();
 		$version['edition'] = $this->configReader->getEdition();
 		$version['build'] = $this->locator->getBuild();
 
@@ -161,10 +162,19 @@ class Fetcher {
 	 */
 	protected function download($url){
 		$response = $this->httpClient->get($url, ['timeout' => 600]);
-		if ($response->getStatusCode() !== 200){
-			throw new \UnexpectedValueException('Failed to download ' . $url . '. Server responded with ' . $response->getStatusCode() . ' instead of 200.');
-		}
+		$this->validateResponse($response);
 		return $response->getBody()->getContents();
+	}
+	
+	protected function validateResponse($response){
+		if ($response->getStatusCode() !== 200){
+			throw new \UnexpectedValueException(
+					'Failed to download '
+					. $response->getUrl()
+					. '. Server responded with '
+					. $response->getStatusCode()
+					. ' instead of 200.');
+		}
 	}
 
 }

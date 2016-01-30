@@ -2,7 +2,7 @@ $(function() {
 	$.post(
 			'',
 			{
-				command : 'upgrade:detect'
+				command : 'upgrade:detect --only-check'
 			},
 			function (response){
 				$('#output').html(response.output);

@@ -51,6 +51,15 @@ class FilesystemHelper {
 	}
 
 	/**
+	 * Wrapper for md5_file function
+	 * @param string $path
+	 * @return string
+	 */
+	public function md5File($path){
+		return md5_file($path);
+	}
+
+	/**
 	 * Wrapper for mkdir
 	 * @param string $path
 	 * @param bool $isRecursive
