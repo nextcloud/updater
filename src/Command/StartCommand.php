@@ -40,7 +40,7 @@ class StartCommand extends Command {
 		[ 'command' => 'upgrade:dbUpgrade', 'simulation' => 'true'],
 		[ 'command' => 'upgrade:dbUpgrade'],
 		[ 'command' => 'upgrade:disableNotShippedApps'],
-		[ 'command' => 'upgrade:executeCoreUpgradeScript'],
+		[ 'command' => 'upgrade:executeCoreUpgradeScripts'],
 		[ 'command' => 'upgrade:upgradeShippedApps'],
 		[ 'command' => 'upgrade:enableNotShippedApps'],
 		[ 'command' => 'upgrade:cleanCache'],

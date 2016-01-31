@@ -38,5 +38,7 @@ if (isset($_SERVER['PWD'])){
 	define('CURRENT_DIR', getcwd());
 }
 
+session_start();
+
 require dirname(__DIR__) . '/vendor/autoload.php';
 $container = require(__DIR__ . '/config/container.php');

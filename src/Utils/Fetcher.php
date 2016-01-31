@@ -165,12 +165,17 @@ class Fetcher {
 		$this->validateResponse($response);
 		return $response->getBody()->getContents();
 	}
-	
+
+	/**
+	 * Check if request was successful
+	 * @param \GuzzleHttp\Message\ResponseInterface $response
+	 * @throws \UnexpectedValueException
+	 */
 	protected function validateResponse($response){
 		if ($response->getStatusCode() !== 200){
 			throw new \UnexpectedValueException(
 					'Failed to download '
-					. $response->getUrl()
+					. $response->getEffectiveUrl()
 					. '. Server responded with '
 					. $response->getStatusCode()
 					. ' instead of 200.');

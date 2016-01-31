@@ -83,17 +83,19 @@ class IndexController {
 		$output->setFormatter(new HtmlOutputFormatter($formatter));
 
 		$application->setAutoExit(false);
-// Some commands  dump things out instead of returning a value
+		// Some commands  dump things out instead of returning a value
 		ob_start();
 		$errorCode = $application->run($input, $output);
 		if (!$result = $output->fetch()){
 			$result = ob_get_contents(); // If empty, replace it by the catched output
 		}
 		ob_end_clean();
+		$result = nl2br($result);
+		$result = preg_replace('|<br />\r.*<br />(\r.*?)<br />|', '$1<br />', $result);
 
 		return [
 			'input' => $this->command,
-			'output' => nl2br($result),
+			'output' => $result,
 			'environment' => '',
 			'error_code' => $errorCode
 		];

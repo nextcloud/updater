@@ -641,7 +641,12 @@ label.infield {
 	padding: 10px 0;
 }
 
+#start-upgrade {
+	display: none;
+}
+
 #output {
+	display: none;
 	padding: 10px;
     border: 1px solid #292929;
 }

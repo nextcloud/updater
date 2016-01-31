@@ -28,7 +28,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use GuzzleHttp\Event\ProgressEvent;
 use Owncloud\Updater\Utils\Fetcher;
-use Owncloud\Updater\Utils\Feed;
 use Owncloud\Updater\Utils\ConfigReader;
 use \Owncloud\Updater\Controller\DownloadController;
 

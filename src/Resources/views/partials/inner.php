@@ -16,8 +16,14 @@
 <div id="content-wrapper">
 	<div id="content">
 		<div class="updater-admin">
+					<div id="error"></div>
+					<div id="progress">
+						<img src ="<?=$this->uri() . '/pub/' . $this->asset('img/loading-small.gif')?>" />
+						<span class="message">Initializing</span>
+					</div>
 					<div id="output"></div>
 					<button id="create-checkpoint">Create a checkpoint</button>
+					<button id="start-upgrade">Start</button>
 		</div>
 	</div>
 </div>
