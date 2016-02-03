@@ -161,7 +161,7 @@ $c['command.updateCoreCofig'] = function($c){
 	return new UpdateConfigCommand();
 };
 $c['command.upgradeShippedApps'] = function($c){
-	return new UpgradeShippedAppsCommand();
+	return new UpgradeShippedAppsCommand($c['utils.occrunner']);
 };
 $c['command.start'] = function($c){
 	return new StartCommand();

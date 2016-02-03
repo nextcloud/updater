@@ -126,6 +126,8 @@ class DetectCommand extends Command {
 
 			$this->output = $output;
 			$packageData = $downloadController->downloadOwncloud([$this, 'progress']);
+			//Empty line, in order not to overwrite the progress message
+			$this->output->writeln('');
 			if (!$packageData['success']){
 				$registry->set('feed', null);
 				throw $packageData['exception'];

@@ -36,6 +36,7 @@ class StartCommand extends Command {
 		//[ 'command' => 'upgrade:maintenanceMode', '--on' => '1'],
 		[ 'command' => 'upgrade:backupDb'],
 		[ 'command' => 'upgrade:backupData'],
+		[ 'command' => 'upgrade:checkpoint', '--create' => '1'],
 		[ 'command' => 'upgrade:preUpgradeRepair'],
 		[ 'command' => 'upgrade:dbUpgrade', 'simulation' => 'true'],
 		[ 'command' => 'upgrade:dbUpgrade'],
