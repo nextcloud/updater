@@ -52,10 +52,8 @@ class DownloadController {
 		$response = $this->getDefaultResponse();
 		try {
 			$feed = $this->fetcher->getFeed();
-			if ($feed->isValid()){
-				$response['success'] = true;
-				$response['data']['feed'] = $feed;
-			}
+			$response['success'] = true;
+			$response['data']['feed'] = $feed;
 		} catch (\Exception $e){
 			$response['exception'] = $e;
 		}

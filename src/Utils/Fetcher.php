@@ -134,7 +134,12 @@ class Fetcher {
 	}
 
 	public function getUpdateChannel(){
-		return $this->configReader->getByPath('apps.core.OC_Channel');
+		$channel = $this->configReader->getByPath('apps.core.OC_Channel');
+		if (is_null($channel)) {
+			return $this->locator->getChannelFromVersionsFile();
+		}
+
+		return $channel;
 	}
 
 	/**
