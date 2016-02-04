@@ -45,7 +45,7 @@ table, td, th { vertical-align:middle; }
 a { border:0; color:#000; text-decoration:none;}
 a, a *, input, input *, select, .button span, label { cursor:pointer; }
 ul { list-style:none; }
-
+h2 {font-size: 20px;font-weight: 300;margin-bottom: 12px; color: #555}
 body {
 	background-color: #ffffff;
 	font-weight: 400;
@@ -503,7 +503,6 @@ label.infield {
 	white-space: nowrap;
 }
 
-
 /* Log in and install button */
 #body-login input {
 	font-size: 20px;
@@ -556,19 +555,87 @@ label.infield {
 #content {
     position: relative;
     height: 100%;
-    width: 600px;
 	margin: 0 auto;
 }
 
+/* APP-NAVIGATION ------------------------------------------------------------*/
 
 
-
-.updater-progress {
-	margin: 2em 0;
+/* Navigation: folder like structure */
+#app-navigation {
+	width: 250px;
+	height: 100%;
+	float: left;
+	box-sizing: border-box;
+	background-color: #fff;
+	padding-bottom: 44px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	border-right: 1px solid #eee;
+}
+#app-navigation > ul {
+	position: relative;
+	height: 100%;
+	width: inherit;
+	overflow: auto;
+	box-sizing: border-box;
+}
+#app-navigation li {
+	position: relative;
+	width: 100%;
+	box-sizing: border-box;
 }
 
-.updater-admin p {
-	margin: 0.5em 0;
+#app-navigation .active.with-menu > a,
+#app-navigation .with-counter > a {
+	padding-right: 50px;
+}
+
+#app-navigation .active.with-menu.with-counter > a {
+	padding-right: 90px;
+}
+
+#app-navigation .with-icon a,
+#app-navigation .app-navigation-entry-loading a {
+	padding-left: 44px;
+	background-size: 16px 16px;
+	background-position: 14px center;
+	background-repeat: no-repeat;
+}
+
+#app-navigation li > a {
+	display: block;
+	width: 100%;
+	line-height: 44px;
+	min-height: 44px;
+	padding: 0 12px;
+	overflow: hidden;
+	box-sizing: border-box;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	color: #000;
+	opacity: .57;
+}
+#app-navigation .active,
+#app-navigation .active a,
+#app-navigation li:hover > a,
+#app-navigation li:focus > a,
+#app-navigation a:focus,
+#app-navigation .selected,
+#app-navigation .selected a {
+	opacity: 1;
+}
+
+#app-content {
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.section {
+	padding: 25px 30px;
 }
 
 .updater-backups-table {
@@ -587,6 +654,9 @@ label.infield {
 	padding: 10px 0;
 	cursor: pointer;
 }
+.updater-backups-table tr.template{
+	display:none;
+}
 
 .updater-backups-table .icon-delete {
 	cursor: pointer;
@@ -595,36 +665,12 @@ label.infield {
 	opacity: .5;
 }
 
-.track-progress li {
-	list-style-type: none;
-	display: inline-block;
-	position: relative;
-	margin: 0;
-	padding: 0 2.3em 0 1.2em;
-	text-align: left;
-	line-height: 30px;
-	height: 30px;
-	background-position: right;
-}
-
-.upd-step-title {
-	padding-bottom: 1em;
-}
-
 .updater-warning-p {
 	padding-left: 0.5em;
 }
 
 .updater-space-bottom {
 	padding-bottom: 1em;
-}
-
-.track-progress li:first-child {
-	padding-left: 0;
-}
-
-.track-progress li.current {
-	font-weight: bold;
 }
 
 .updater-spinner {
@@ -637,12 +683,16 @@ label.infield {
 	max-width: 750px;
 }
 
-.updater-admin{
-	padding: 10px 0;
+
+#progress{
+	width:600px;
 }
 
-#start-upgrade {
-	display: none;
+.side-button{
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+	cursor: pointer;
 }
 
 #output {
@@ -650,3 +700,43 @@ label.infield {
 	padding: 10px;
     border: 1px solid #292929;
 }
+
+li.step{
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=57)";
+	opacity: .57;
+}
+
+li.step h3 {
+	background-color: #f7f7f7;
+	padding: 5px 2px 5px 30px;
+	border: 1px solid #ddd;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=57)";
+	opacity: .57;
+}
+
+li.current-step, li.passed-step {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	opacity: 1;
+}
+
+li.current-step h3{
+	background-image: url(../img/loading-small.gif);
+	background-position:8px 50%;
+	background-repeat: no-repeat;
+}
+
+li.current-step h3, li.passed-step h3 {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	opacity: 1;
+}
+li.passed-step h3{
+	cursor : pointer;
+}
+
+li.step .output{
+	position:relative;
+	padding: 5px 20px;
+	border: 1px solid #ddd;
+	border-top-width: 0;
+}
+

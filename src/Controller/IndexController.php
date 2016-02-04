@@ -54,6 +54,12 @@ class IndexController {
 
 	public function dispatch(){
 		if (is_null($this->command)){
+			if (!isset($_SESSION['updater_ajax_token'])){
+				$_SESSION['updater_ajax_token'] = $this->gettoken();
+			}
+
+			$checkpoints = $this->container['utils.checkpoint']->getAll();
+
 			// strip index.php and query string (if any) to get a real base url
 			$baseUrl = preg_replace('/(index\.php.*|\?.*)$/', '', $_SERVER['REQUEST_URI']);
 
@@ -63,7 +69,15 @@ class IndexController {
 
 			// TODO: Check for user permissions
 			//$content = $templates->render('partials/login', ['title' => 'Login Required']);
-			$content = $templates->render('partials/inner', ['title' => 'Updater']);
+			$content = $templates->render(
+					'partials/inner',
+					[
+						'title' => 'Updater',
+						'token' => $_SESSION['updater_ajax_token'],
+						'version' => $this->container['application']->getVersion(),
+						'checkpoints' => $checkpoints
+					]
+			);
 		} else {
 			header('Content-Type: application/json');
 			$content = json_encode($this->ajaxAction(), JSON_UNESCAPED_SLASHES);
@@ -72,6 +86,13 @@ class IndexController {
 	}
 
 	public function ajaxAction(){
+		if (is_null($this->request->postParameter('token'))
+				|| $this->request->postParameter('token') !== $_SESSION['updater_ajax_token']
+		){
+			header( 'HTTP/1.0 401 Unauthorized' );
+			exit();
+		}
+
 		$application = $this->container['application'];
 
 		$input = new StringInput($this->command);
@@ -99,6 +120,18 @@ class IndexController {
 			'environment' => '',
 			'error_code' => $errorCode
 		];
+	}
+
+	protected function getToken(){
+		return base64_encode(
+				join(
+						'', array_map(
+								function($x){
+							return chr(mt_rand(1, 255));
+						}, range(1, 15)
+						)
+				)
+		);
 	}
 
 }
