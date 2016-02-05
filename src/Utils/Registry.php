@@ -26,15 +26,29 @@ class Registry {
 
 	protected $objects = array();
 
-	function set($name, $object){
+	public function set($name, $object){
 		$this->objects[$name] = $object;
+		$_SESSION[$name] = serialize($object);
 	}
 
-	function get($name){
+	public function get($name){
 		if (isset($this->objects[$name])){
+			return $this->objects[$name];
+		} else if (isset($_SESSION[$name])){
+			$this->objects[$name] = unserialize($_SESSION[$name]);
 			return $this->objects[$name];
 		}
 		return null;
 	}
 
+	public function clear($name){
+		unset($this->objects[$name]);
+		unset($_SESSION[$name]);
+	}
+
+	public function clearAll(){
+		foreach ($this->objects as $name=>$value){
+			$this->clear($name);
+		}
+	}
 }

@@ -135,6 +135,17 @@ class Locator {
 	 *
 	 * @return string
 	 */
+	public function getChannelFromVersionsFile(){
+		include $this->getPathToVersionFile();
+
+		/** @var $OC_Version string */
+		return $OC_Channel;
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
 	public function getBuild(){
 		include $this->getPathToVersionFile();
 

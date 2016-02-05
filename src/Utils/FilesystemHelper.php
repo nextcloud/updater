@@ -24,6 +24,42 @@ namespace Owncloud\Updater\Utils;
 class FilesystemHelper {
 
 	/**
+	 * Wrapper for scandir function
+	 * @param string $path
+	 * @return array
+	 */
+	public function scandir($path){
+		return scandir($path);
+	}
+
+	/**
+	 * Wrapper for file_exists function
+	 * @param string $path
+	 * @return bool
+	 */
+	public function fileExists($path){
+		return file_exists($path);
+	}
+
+	/**
+	 * Wrapper for is_writable function
+	 * @param string $path
+	 * @return bool
+	 */
+	public function isWritable($path){
+		return is_writable($path);
+	}
+
+	/**
+	 * Wrapper for md5_file function
+	 * @param string $path
+	 * @return string
+	 */
+	public function md5File($path){
+		return md5_file($path);
+	}
+
+	/**
 	 * Wrapper for mkdir
 	 * @param string $path
 	 * @param bool $isRecursive

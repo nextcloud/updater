@@ -72,7 +72,7 @@ class Feed {
 	 * @return string
 	 */
 	public function getDownloadedFileName(){
-		$extension = preg_replace('|.*?(\.[^.]*)$|s', '\1', $this->getUrl());
+		$extension = preg_replace('|.*?((\.tar)?\.[^.]*)$|s', '\1', $this->getUrl());
 		return $this->getVersion() . $extension;
 	}
 

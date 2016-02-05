@@ -26,8 +26,10 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Owncloud\Updater\Utils\OccRunner;
 use Owncloud\Updater\Utils\ZipExtractor;
+use Owncloud\Updater\Utils\BzipExtractor;
 
 class ExecuteCoreUpgradeScriptsCommand extends Command {
 
@@ -59,20 +61,24 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 			$path = $fetcher->getBaseDownloadPath($feed);
 			$fullExtractionPath = $locator->getExtractionBaseDir() . '/' . $feed->getVersion();
 
-			if (!file_exists($fullExtractionPath)){
-				try{
-					$fsHelper->mkdir($fullExtractionPath, true);
-				} catch (\Exception $ex){
-					$output->writeln('Unable create directory ' . $fullExtractionPath);
-				}
-			} else {
+			if (file_exists($fullExtractionPath)){
 				$fsHelper->removeIfExists($fullExtractionPath);
 			}
-			$output->writeln('Extracting source into ' . $fullExtractionPath);
-
-			$zipExtractor = new ZipExtractor($path, $fullExtractionPath);
 			try{
-				$zipExtractor->extract();
+				$fsHelper->mkdir($fullExtractionPath, true);
+			} catch (\Exception $e){
+					$output->writeln('Unable create directory ' . $fullExtractionPath);
+					throw $e;
+			}
+
+			$output->writeln('Extracting source into ' . $fullExtractionPath);
+			if (preg_match('|\.tar\.bz2$|', $path)){
+				$extractor = new BzipExtractor($path, $fullExtractionPath);
+			} else {
+				$extractor = new ZipExtractor($path, $fullExtractionPath);
+			}
+			try{
+				$extractor->extract();
 			} catch (\Exception $e){
 				$output->writeln('Extraction has been failed');
 				$fsHelper->removeIfExists($locator->getExtractionBaseDir());
@@ -96,8 +102,14 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 				}
 			}
 
-			$plain = $this->occRunner->run('upgrade');
-			$output->writeln($plain);
+			try {
+				$plain = $this->occRunner->run('upgrade');
+				$output->writeln($plain);
+			} catch (ProcessFailedException $e){
+				if ($e->getProcess()->getExitCode() != 3){
+					throw ($e);
+				}
+			}
 
 		}
 

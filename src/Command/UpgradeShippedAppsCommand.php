@@ -25,9 +25,20 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class UpgradeShippedAppsCommand extends Command {
 
+	/**
+	 * @var OccRunner $occRunner
+	 */
+	protected $occRunner;
+
+	public function __construct($occRunner){
+		parent::__construct();
+		$this->occRunner = $occRunner;
+	}
+	
 	protected function configure(){
 		$this
 				->setName('upgrade:upgradeShippedApps')
@@ -51,6 +62,7 @@ class UpgradeShippedAppsCommand extends Command {
 					. implode('.', $locator->getInstalledVersion())
 					. '/apps'
 			;
+			$fsHelper->removeIfExists($tmpAppsDir);
 			$fsHelper->mkDir($tmpAppsDir);
 			$shippedApps =$appManager->getShippedApps();
 			foreach ($shippedApps as $appId){
@@ -63,6 +75,14 @@ class UpgradeShippedAppsCommand extends Command {
 				}
 				if (file_exists($newPath)){
 					$fsHelper->move($newPath, $oldPath);
+				}
+				try {
+					$plain = $this->occRunner->run('upgrade');
+					$output->writeln($plain);
+				} catch (ProcessFailedException $e){
+					if ($e->getProcess()->getExitCode() !== 3){
+						throw ($e);
+					}
 				}
 			}
 		}

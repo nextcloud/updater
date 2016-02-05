@@ -3,7 +3,7 @@ imports:
     - php
 
 filter:
-    excluded_paths: [vendor/*]
+    excluded_paths: [vendor/*, pub/js/vendor/*, src/Tests/*]
 
 tools:
     external_code_coverage:

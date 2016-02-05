@@ -22,7 +22,6 @@
 namespace Owncloud\Updater\Utils;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Event\ProgressEvent;
 use Owncloud\Updater\Utils\Feed;
 
 class Fetcher {
@@ -71,6 +70,9 @@ class Fetcher {
 	public function getOwncloud(Feed $feed, callable $onProgress){
 		if ($feed->isValid()){
 			$downloadPath = $this->getBaseDownloadPath($feed);
+			if (!is_writable(dirname($downloadPath))){
+				throw new \Exception(dirname($downloadPath) . ' is not writable.');
+			}
 			$url = $feed->getUrl();
 			$request = $this->httpClient->createRequest(
 					'GET',
@@ -82,9 +84,7 @@ class Fetcher {
 			);
 			$request->getEmitter()->on('progress', $onProgress);
 			$response = $this->httpClient->send($request);
-			if ($response->getStatusCode() !== 200){
-				throw new \UnexpectedValueException('Failed to download ' . $url . '. Server responded with ' . $response->getStatusCode() . ' instead of 200.');
-			}
+			$this->validateResponse($response);
 		}
 	}
 
@@ -133,6 +133,15 @@ class Fetcher {
 		return new Feed($tmp);
 	}
 
+	public function getUpdateChannel(){
+		$channel = $this->configReader->getByPath('apps.core.OC_Channel');
+		if (is_null($channel)) {
+			return $this->locator->getChannelFromVersionsFile();
+		}
+
+		return $channel;
+	}
+
 	/**
 	 * Produce complete feed URL
 	 * @return string
@@ -142,7 +151,7 @@ class Fetcher {
 		$version = explode('.', $currentVersion);
 		$version['installed'] = $this->configReader->getByPath('apps.core.installedat');
 		$version['updated'] = $this->configReader->getByPath('apps.core.lastupdatedat');
-		$version['updatechannel'] = $this->configReader->getByPath('apps.core.OC_Channel');
+		$version['updatechannel'] = $this->getUpdateChannel();
 		$version['edition'] = $this->configReader->getEdition();
 		$version['build'] = $this->locator->getBuild();
 
@@ -158,10 +167,24 @@ class Fetcher {
 	 */
 	protected function download($url){
 		$response = $this->httpClient->get($url, ['timeout' => 600]);
-		if ($response->getStatusCode() !== 200){
-			throw new \UnexpectedValueException('Failed to download ' . $url . '. Server responded with ' . $response->getStatusCode() . ' instead of 200.');
-		}
+		$this->validateResponse($response);
 		return $response->getBody()->getContents();
+	}
+
+	/**
+	 * Check if request was successful
+	 * @param \GuzzleHttp\Message\ResponseInterface $response
+	 * @throws \UnexpectedValueException
+	 */
+	protected function validateResponse($response){
+		if ($response->getStatusCode() !== 200){
+			throw new \UnexpectedValueException(
+					'Failed to download '
+					. $response->getEffectiveUrl()
+					. '. Server responded with '
+					. $response->getStatusCode()
+					. ' instead of 200.');
+		}
 	}
 
 }

@@ -54,6 +54,9 @@ class Checkpoint {
 		$checkpointName = $this->getCheckpointName();
 		$checkpointPath = $this->locator->getCheckpointDir() . '/' . $checkpointName;
 		try{
+			if (!$this->fsHelper->isWritable($this->locator->getCheckpointDir())){
+				throw new \Exception($this->locator->getCheckpointDir() . ' is not writable.');
+			}
 			$this->fsHelper->mkdir($checkpointPath);
 
 			$checkpointCorePath = $checkpointPath . '/' . self::CORE_DIR;
@@ -82,15 +85,18 @@ class Checkpoint {
 				}
 			}
 
-		} catch (\Exception $ex){
-			//var_dump($ex->getMessage());
+		} catch (\Exception $e){
+			$application = Application::$container['application'];
+			$application->getLogger()->error($e->getMessage());
+			$this->fsHelper->removeIfExists($checkpointPath);
+			throw $e;
 		}
 		return $checkpointName;
 	}
 
 	public function restore($checkpointId){
 		$checkpointDir = $this->locator->getCheckpointDir() . '/' . $checkpointId;
-		if (!file_exists($checkpointDir)){
+		if (!$this->fsHelper->fileExists($checkpointDir)){
 			$message = sprintf('Checkpoint %s does not exist.', $checkpointId);
 			throw new \UnexpectedValueException($message);
 		}
@@ -101,7 +107,7 @@ class Checkpoint {
 
 	public function getAll(){
 		$checkpointDir = $this->locator->getCheckpointDir();
-		$content = scandir($checkpointDir);
+		$content = $this->fsHelper->scandir($checkpointDir);
 		$checkpoints = array_filter(
 				$content,
 				function($dir){
