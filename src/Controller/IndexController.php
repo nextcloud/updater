@@ -54,8 +54,8 @@ class IndexController {
 
 	public function dispatch(){
 		if (is_null($this->command)){
-			if (!isset($_SESSION['updater_ajax_token'])){
-				$_SESSION['updater_ajax_token'] = $this->gettoken();
+			if (!isset($_SESSION['updater_ajax_token']) || empty($_SESSION['updater_ajax_token'])){
+				$_SESSION['updater_ajax_token'] = $this->getToken();
 			}
 
 			$checkpoints = $this->container['utils.checkpoint']->getAll();
@@ -123,7 +123,7 @@ class IndexController {
 	}
 
 	protected function getToken(){
-		return base64_encode(
+		$token = base64_encode(
 				join(
 						'', array_map(
 								function($x){
@@ -132,6 +132,7 @@ class IndexController {
 						)
 				)
 		);
+		return preg_replace('|[^A-Za-z0-9]*|', '', $token);
 	}
 
 }
