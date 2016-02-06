@@ -36,6 +36,17 @@ class PostUpgradeCleanupCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output){
+		$registry = $this->container['utils.resgistry'];
+		$fsHelper = $this->container['utils.filesystemhelper'];
+		$locator = $this->container['utils.locator'];
+
+		//Cleanup Filesystem
+		$fsHelper->removeIfExists($locator->getExtractionBaseDir());
+
+		//Cleanup updater cache
+		$registry->clearAll();
+		
+		$output->writeln('Done');
 	}
 
 }
