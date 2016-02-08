@@ -27,6 +27,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use GuzzleHttp\Event\ProgressEvent;
+use GuzzleHttp\Exception\ClientException;
 use Owncloud\Updater\Utils\Fetcher;
 use Owncloud\Updater\Utils\ConfigReader;
 use \Owncloud\Updater\Controller\DownloadController;
@@ -136,8 +137,21 @@ class DetectCommand extends Command {
 				$output->writeln('Downloading has been completed. Exiting.');
 				return 64;
 			}
+		} catch (\GuzzleHttp\Exception\ClientException $e){
+			$this->getApplication()->getLogger()->error($e->getMessage());
+			$output->writeln('<error>Network error</error>');
+			$output->writeln(
+					sprintf(
+							'<error>Error %d: %s while fetching an URL %s</error>',
+							$e->getCode(),
+							$e->getResponse()->getReasonPhrase(),
+							$e->getResponse()->getEffectiveUrl()
+							)
+			);
+			return 2;
 		} catch (\Exception $e){
 			$this->getApplication()->getLogger()->error($e->getMessage());
+			$output->writeln('<error>'.$e->getMessage().'</error>');
 			return 2;
 		}
 	}
