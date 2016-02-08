@@ -91,7 +91,8 @@ $(function () {
 		{command: 'upgrade:executeCoreUpgradeScripts', onResponse: handleResponse, node: '#step-coreupgrade'},
 		{command: 'upgrade:upgradeShippedApps', onResponse: handleResponse, node: '#step-appupgrade'},
 		{command: 'upgrade:enableNotShippedApps', onResponse: handleResponse, node: "#step-finalize"},
-		{command: 'upgrade:restartWebServer', onResponse: handleResponse, node: "#step-finalize"}
+		{command: 'upgrade:restartWebServer', onResponse: handleResponse, node: "#step-finalize"},
+		{command: 'upgrade:postUpgradeCleanup', onResponse: handleResponse, node: "#step-finalize"}
 	],
 	
 	init = function(){

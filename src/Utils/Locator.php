@@ -79,7 +79,8 @@ class Locator {
 			"remote.php",
 			"robots.txt",
 			"status.php",
-			"version.php"
+			"version.php",
+			"updater"
 		];
 	}
 

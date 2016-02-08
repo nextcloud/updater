@@ -82,7 +82,6 @@ class DetectCommand extends Command {
 		$registry = $this->container['utils.registry'];
 		$registry->set('feed', false);
 
-		$locator = $this->container['utils.locator'];
 		$fsHelper = $this->container['utils.filesystemhelper'];
 		$downloadController = new DownloadController($this->fetcher, $registry, $fsHelper);
 		try {

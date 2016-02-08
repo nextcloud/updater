@@ -26,11 +26,21 @@ class Registry {
 
 	protected $objects = array();
 
+	/**
+	 *
+	 * @param string $name
+	 * @param mixed $object
+	 */
 	public function set($name, $object){
 		$this->objects[$name] = $object;
 		$_SESSION[$name] = serialize($object);
 	}
 
+	/**
+	 *
+	 * @param string $name
+	 * @return mixed
+	 */
 	public function get($name){
 		if (isset($this->objects[$name])){
 			return $this->objects[$name];
@@ -41,6 +51,10 @@ class Registry {
 		return null;
 	}
 
+	/**
+	 *
+	 * @param string $name
+	 */
 	public function clear($name){
 		unset($this->objects[$name]);
 		unset($_SESSION[$name]);

@@ -30,6 +30,10 @@ class ZipExtractor {
 	protected $file;
 	protected $path;
 
+	/**
+	 * @param string $file
+	 * @param string $path
+	 */
 	public function __construct($file, $path){
 		$this->file = $file;
 		$this->path = $path;
@@ -57,7 +61,7 @@ class ZipExtractor {
 		$zipArchive = new ZipArchive();
 
 		if (true !== ($retval = $zipArchive->open($this->file))){
-			throw new \UnexpectedValueException($this->getErrorMessage($retval, $this->file), $retval);
+			throw new \UnexpectedValueException($this->getErrorMessage($retval), $retval);
 		}
 
 		if (true !== $zipArchive->extractTo($this->path)){
