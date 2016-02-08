@@ -123,15 +123,7 @@ class IndexController {
 	}
 
 	protected function getToken(){
-		$token = base64_encode(
-				join(
-						'', array_map(
-								function($x){
-							return chr(mt_rand(1, 255));
-						}, range(1, 15)
-						)
-				)
-		);
+		$token = base64_encode(random_bytes(32));
 		return preg_replace('|[^A-Za-z0-9]*|', '', $token);
 	}
 
