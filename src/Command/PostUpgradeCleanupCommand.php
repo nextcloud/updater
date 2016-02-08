@@ -36,7 +36,7 @@ class PostUpgradeCleanupCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output){
-		$registry = $this->container['utils.resgistry'];
+		$registry = $this->container['utils.registry'];
 		$fsHelper = $this->container['utils.filesystemhelper'];
 		$locator = $this->container['utils.locator'];
 
