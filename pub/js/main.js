@@ -118,7 +118,7 @@ $(function () {
 		$.post(
 				'',
 				{
-					command: 'upgrade:checkpoint --create --exit-if-none'
+					command: 'upgrade:checkpoint --create'
 				},
 				function (response) {
 					$('#create-checkpoint').attr('disabled', false);

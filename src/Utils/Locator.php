@@ -79,8 +79,26 @@ class Locator {
 			"remote.php",
 			"robots.txt",
 			"status.php",
-			"version.php",
-			"updater"
+			"version.php"
+		];
+	}
+
+	public function getUpdaterContent(){
+		return [
+			'app',
+			'application.php',
+			'box.json',
+			'composer.json',
+			'composer.lock',
+			'CONTRIBUTING.md',
+			'COPYING-AGPL',
+			'index.php',
+			'pub',
+			'src',
+			'vendor',
+			'README.md',
+			'.travis.yml',
+			'.scrutinizer.yml',
 		];
 	}
 
