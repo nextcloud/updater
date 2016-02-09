@@ -22,5 +22,6 @@
 
 require __DIR__ . '/app/bootstrap.php';
 
+/** @var \Owncloud\Updater\Console\Application $application */
 $application = $container['application'];
 $application->run();

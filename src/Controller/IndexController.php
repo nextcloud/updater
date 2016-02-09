@@ -23,6 +23,7 @@
 namespace Owncloud\Updater\Controller;
 
 use League\Plates\Extension\URI;
+use Owncloud\Updater\Utils\Checkpoint;
 use Owncloud\Updater\Utils\ConfigReader;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -42,7 +43,12 @@ class IndexController {
 	/** @var string $command */
 	protected $command;
 
-	public function __construct(\Pimple\Container $container, $request = null){
+	/**
+	 * @param \Pimple\Container $container
+	 * @param Request|null $request
+	 */
+	public function __construct(\Pimple\Container $container,
+								Request $request = null) {
 		$this->container = $container;
 		if (is_null($request)){
 			$this->request = new Request(['post' => $_POST, 'headers' => $_SERVER]);
@@ -66,7 +72,9 @@ class IndexController {
 		}
 
 		if (is_null($this->command)){
-			$checkpoints = $this->container['utils.checkpoint']->getAll();
+			/** @var Checkpoint $checkpoint */
+			$checkpoint = $this->container['utils.checkpoint'];
+			$checkpoints = $checkpoint->getAll();
 			$content = $templates->render(
 					'partials/inner',
 					[
