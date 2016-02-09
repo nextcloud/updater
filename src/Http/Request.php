@@ -33,5 +33,14 @@ class Request {
 		return isset($this->vars['post'][$parameter]) ? $this->vars['post'][$parameter] : null;
 	}
 
+	/**
+	 * @param string$name
+	 * @return mixed
+	 */
+	public function header($name) {
+		$name = strtoupper($name);
+		return isset($this->vars['headers']['HTTP_'.$name]) ? $this->vars['headers']['HTTP_'.$name] : null;
+	}
+
 }
 
