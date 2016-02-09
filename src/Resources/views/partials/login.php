@@ -13,9 +13,7 @@
 				</header>
 
 				<br/>
-
-				<p style="text-align: left; display: none;" id="invalidPasswordWarning">Invalid password</p>
-				<p style="text-align: left">Please provide the "updater.secret" from your ownCloud's config/config.php:</p>
+				<p class="warning">Please provide the "updater.secret" from your ownCloud's config/config.php:</p>
 				<form method="post" name="login">
 					<fieldset>
 						<input type="password" name="password" id="password" value=""
@@ -23,8 +21,11 @@
 							   autocomplete="on" autocapitalize="off" autocorrect="off" required>
 						<label for="password" class="infield">Password</label>
 						<input type="submit" id="submit" class="login primary icon-confirm svg" title="Log in" value="" />
+						
 					</fieldset>
+					<p class="warning" id="invalidPasswordWarning">Invalid password</p>
 				</form>
+
 				<div class="push"></div><!-- for sticky footer -->
 			</div>
 		</div>
