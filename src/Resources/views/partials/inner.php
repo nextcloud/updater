@@ -1,5 +1,4 @@
-<?php $this->layout('base', ['title' => $title, 'bodyId' => 'body-settings', 'token' => $token]) ?>
-<?php $this->start('inner') ?>
+<script src="<?=$this->uri() . '/pub/' . $this->asset('js/main.js')?>"></script>
 <header role="banner"><div id="header">
 		<a href="#" id="owncloud" tabindex="1">
 			<div class="logo-icon svg">
@@ -95,4 +94,3 @@
 		</div>
 	</div>
 </div>
-<?php $this->stop() ?>

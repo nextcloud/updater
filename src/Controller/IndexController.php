@@ -23,6 +23,7 @@
 namespace Owncloud\Updater\Controller;
 
 use League\Plates\Extension\URI;
+use Owncloud\Updater\Utils\ConfigReader;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Owncloud\Updater\Formatter\HtmlOutputFormatter;
@@ -44,7 +45,7 @@ class IndexController {
 	public function __construct(\Pimple\Container $container, $request = null){
 		$this->container = $container;
 		if (is_null($request)){
-			$this->request = new Request(['post' => $_POST]);
+			$this->request = new Request(['post' => $_POST, 'headers' => $_SERVER]);
 		} else {
 			$this->request = $request;
 		}
@@ -52,28 +53,24 @@ class IndexController {
 		$this->command = $this->request->postParameter('command');
 	}
 
-	public function dispatch(){
+	public function dispatch() {
+		// strip index.php and query string (if any) to get a real base url
+		$baseUrl = preg_replace('/(index\.php.*|\?.*)$/', '', $_SERVER['REQUEST_URI']);
+		$templates = new Engine(CURRENT_DIR . '/src/Resources/views/');
+		$templates->loadExtension(new Asset(CURRENT_DIR . '/pub/', false));
+		$templates->loadExtension(new URI($baseUrl));
+
+		// Check if the user is logged-in
+		if(!$this->isLoggedIn()) {
+			return $this->showLogin($templates);
+		}
+
 		if (is_null($this->command)){
-			if (!isset($_SESSION['updater_ajax_token']) || empty($_SESSION['updater_ajax_token'])){
-				$_SESSION['updater_ajax_token'] = $this->getToken();
-			}
-
 			$checkpoints = $this->container['utils.checkpoint']->getAll();
-
-			// strip index.php and query string (if any) to get a real base url
-			$baseUrl = preg_replace('/(index\.php.*|\?.*)$/', '', $_SERVER['REQUEST_URI']);
-
-			$templates = new Engine(CURRENT_DIR . '/src/Resources/views/');
-			$templates->loadExtension(new Asset(CURRENT_DIR . '/pub/', false));
-			$templates->loadExtension(new URI($baseUrl));
-
-			// TODO: Check for user permissions
-			//$content = $templates->render('partials/login', ['title' => 'Login Required']);
 			$content = $templates->render(
 					'partials/inner',
 					[
 						'title' => 'Updater',
-						'token' => $_SESSION['updater_ajax_token'],
 						'version' => $this->container['application']->getVersion(),
 						'checkpoints' => $checkpoints
 					]
@@ -85,14 +82,40 @@ class IndexController {
 		return $content;
 	}
 
-	public function ajaxAction(){
-		if (is_null($this->request->postParameter('token'))
-				|| $this->request->postParameter('token') !== $_SESSION['updater_ajax_token']
-		){
-			header( 'HTTP/1.0 401 Unauthorized' );
-			exit();
+	protected function isLoggedIn() {
+		/** @var ConfigReader $configReader */
+		$configReader = $this->container['utils.configReader'];
+		$configReader->init();
+		$storedSecret = isset($configReader->get(['system'])['updater.secret']) ? $configReader->get(['system'])['updater.secret'] : null;
+		if(is_null($storedSecret)) {
+			die('updater.secret is undefined in config/config.php. Please define a secret.');
+		}
+		$sentAuthHeader = ($this->request->header('Authorization') !== null) ? $this->request->header('Authorization') : '';
+
+		if(hash_equals($storedSecret, $sentAuthHeader)) {
+			return true;
 		}
 
+		return false;
+	}
+
+	public function showLogin(Engine $templates) {
+		// If it is a request with invalid token just return "false" so that we can catch this
+		$token = ($this->request->header('Authorization') !== null) ? $this->request->header('Authorization') : '';
+		if($token !== '') {
+			return 'false';
+		}
+
+		$content = $templates->render(
+			'partials/login',
+			[
+				'title' => 'Login Required',
+			]
+		);
+		return $content;
+	}
+
+	public function ajaxAction() {
 		$application = $this->container['application'];
 
 		$input = new StringInput($this->command);
@@ -120,11 +143,6 @@ class IndexController {
 			'environment' => '',
 			'error_code' => $errorCode
 		];
-	}
-
-	protected function getToken(){
-		$token = base64_encode(random_bytes(32));
-		return preg_replace('|[^A-Za-z0-9]*|', '', $token);
 	}
 
 }

@@ -1,10 +1,7 @@
 $(function () {
-	//pass a token with any post request
-	$.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-		if (originalOptions.type !== 'post' || options.type !== 'post') {
-			return;
-		}
-		options.data = $.param($.extend(originalOptions.data, {token: $('head').attr('data-requesttoken')}));
+	// Pass the auth token with any request
+	$.ajaxSetup({
+		headers: { 'Authorization': loginToken }
 	});
 
 	// Setup a global AJAX error handler
