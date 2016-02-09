@@ -558,6 +558,27 @@ label.infield {
 	margin: 0 auto;
 }
 
+/* Warnings and errors are the same */
+#body-login .warning,
+#body-login .update,
+#body-login .error {
+	display: block;
+	padding: 10px;
+	background-color: rgba(0,0,0,.3);
+	color: #fff;
+	text-align: left;
+	border-radius: 3px;
+	cursor: default;
+}
+
+#body-login .warning {
+	margin: 0 7px 5px 4px;
+}
+
+#body-login #invalidPasswordWarning{
+	display:none;
+}
+
 /* APP-NAVIGATION ------------------------------------------------------------*/
 
 
