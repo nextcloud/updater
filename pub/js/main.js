@@ -75,7 +75,7 @@ $(function () {
 		if (typeof step.node !== 'undefined') {
 			accordion.setCurrent(step.node);
 		}
-		return $.post('', {command: step.command}, function (response) {
+		return $.post($('#meta-information').data('endpoint'), {command: step.command}, function (response) {
 			step.onResponse(response, null, node);
 		});
 	},
@@ -113,7 +113,7 @@ $(function () {
 	$(document).on('click', '#create-checkpoint', function () {
 		$(this).attr('disabled', true);
 		$.post(
-				'',
+				$('#meta-information').data('endpoint'),
 				{
 					command: 'upgrade:checkpoint --create'
 				},
