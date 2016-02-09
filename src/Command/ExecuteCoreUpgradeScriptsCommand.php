@@ -91,15 +91,20 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 			$fsHelper->mkdir($tmpDir . '/config');
 			$oldSourcesDir = $locator->getOwncloudRootPath();
 			$newSourcesDir = $fullExtractionPath . '/owncloud';
-			$newSources = $locator->getRootDirContent();
-			foreach ($newSources as $dir){
+
+			foreach ($locator->getRootDirContent() as $dir){
 				$this->getApplication()->getLogger()->debug('Moving ' . $dir);
-				if (file_exists($oldSourcesDir . '/' . $dir)){
-					$fsHelper->move($oldSourcesDir . '/' . $dir, $tmpDir . '/' . $dir);
-				}
-				if (file_exists($newSourcesDir . '/' . $dir)){
-					$fsHelper->move($newSourcesDir . '/' . $dir, $oldSourcesDir . '/' . $dir);
-				}
+				$fsHelper->tripleMove($oldSourcesDir, $newSourcesDir, $tmpDir, $dir);
+			}
+
+			//Update updater
+			$newUpdaterDir = $newSourcesDir . '/updater';
+			$oldUpdaterDir = $oldSourcesDir . '/updater';
+			$tmpUpdaterDir = $tmpDir . '/updater';
+
+			foreach ($locator->getUpdaterContent() as $dir){
+				$this->getApplication()->getLogger()->debug('Moving updater/' . $dir);
+				$fsHelper->tripleMove($oldUpdaterDir, $newUpdaterDir, $tmpUpdaterDir, $dir);
 			}
 
 			try {

@@ -169,4 +169,20 @@ class FilesystemHelper {
 		}
 	}
 
+	/**
+	 *
+	 * @param string $old
+	 * @param string $new
+	 * @param string $temp
+	 * @param string $dirName
+	 */
+	public function tripleMove($old, $new, $temp, $dirName){
+		if ($this->fileExists($old . '/' . $dirName)){
+			$this->move($old . '/' . $dirName, $temp . '/' . $dirName);
+		}
+		if ($this->fileExists($new . '/' . $dirName)){
+			$this->move($new . '/' . $dirName, $old . '/' . $dirName);
+		}
+	}
+
 }
