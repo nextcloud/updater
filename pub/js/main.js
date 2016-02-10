@@ -1,7 +1,7 @@
 $(function () {
 	// Pass the auth token with any request
 	$.ajaxSetup({
-		headers: { 'Authorization': loginToken }
+		headers: {'Authorization': loginToken}
 	});
 
 	// Setup a global AJAX error handler
@@ -28,8 +28,12 @@ $(function () {
 			}
 		},
 		setDone: function (stepId) {
-			$(stepId).removeClass('current-step');
+			$(stepId).removeClass('current-step, failed-step');
 			$(stepId).addClass('passed-step');
+		},
+		setFailed: function (stepId) {
+			$(stepId).removeClass('current-step,passed-step');
+			$(stepId).addClass('failed-step');
 		},
 		setContent: function (stepId, content, append) {
 			var oldContent;
@@ -50,64 +54,41 @@ $(function () {
 			$(stepId).find('.output').toggle();
 		}
 	},
-	
 	handleResponse = function (response, callback, node) {
-		if (response.error_code !== 0) {
-			$('#error').text('Error ' + response.error_code).show();
-		} else {
-			$('#start-upgrade').show();
-			$('#error').hide();
-			if (typeof callback === 'function') {
-				callback();
+		if (typeof node === 'undefined') {
+			if (response.error_code !== 0) {
+				node.text('Error ' + response.error_code).show();
+			} else {
+				$('#error').hide();
 			}
-		}
-		if (typeof node !== 'undefined') {
+			$('#output').html($('#output').html() + response.output).show();
+		} else {
 			accordion.setContent(node, response.output);
 			accordion.showContent(node);
-			accordion.setDone(node);
-		} else {
-			$('#output').html($('#output').html() + response.output).show();
-		}
-	},
-	
-	execute = function (step) {
-		var node = step.node;
-		if (typeof step.node !== 'undefined') {
-			accordion.setCurrent(step.node);
-		}
-		return $.post($('#meta-information').data('endpoint'), {command: step.command}, function (response) {
-			step.onResponse(response, null, node);
-		});
-	},
-	
-	operationStack = [
-		{command: 'upgrade:checkSystem', onResponse: handleResponse, node: '#step-check'},
-		{command: 'upgrade:checkpoint --create', onResponse: handleResponse, node: '#step-checkpoint'},
-		{command: 'upgrade:detect', onResponse: handleResponse, node: '#step-download'},
-		{command: 'upgrade:disableNotShippedApps', onResponse: handleResponse, node: '#step-coreupgrade'},
-		{command: 'upgrade:executeCoreUpgradeScripts', onResponse: handleResponse, node: '#step-coreupgrade'},
-		{command: 'upgrade:upgradeShippedApps', onResponse: handleResponse, node: '#step-appupgrade'},
-		{command: 'upgrade:enableNotShippedApps', onResponse: handleResponse, node: "#step-finalize"},
-		{command: 'upgrade:restartWebServer', onResponse: handleResponse, node: "#step-finalize"},
-		{command: 'upgrade:postUpgradeCleanup', onResponse: handleResponse, node: "#step-finalize"}
-	],
-	
-	init = function(){
-		execute({
-			command: 'upgrade:detect --only-check',
-			onResponse: function (response, callback, node) {
-				handleResponse(response, null, node);
+			if (response.error_code !== 0) {
+				accordion.setFailed(node);
+			} else {
 				accordion.setDone(node);
-				accordion.setCurrent();
-				if (!response.error_code) {
-					accordion.setContent(node, '<button id="start-upgrade" class="side-button">Start</button>', true);
-				} else {
-					accordion.setContent(node, '<button id="recheck" class="side-button">Recheck</button>', true);
-				}
-			},
-		node: '#step-init'
-		});
-	};
+			}
+		}
+		if (typeof callback === 'function') {
+			callback();
+		}
+	},
+			init = function () {
+				accordion.setCurrent('#step-init');
+				$.post($('#meta-information').data('endpoint'), {command: 'upgrade:detect --only-check'})
+						.then(function (response) {
+							handleResponse(response, function () {}, '#step-init');
+							accordion.setDone('#step-init');
+							accordion.setCurrent();
+							if (!response.error_code) {
+								accordion.setContent('#step-init', '<button id="start-upgrade" class="side-button">Start</button>', true);
+							} else {
+								accordion.setContent('#step-init', '<button id="recheck" class="side-button">Recheck</button>', true);
+							}
+						});
+			};
 
 	//setup handlers
 	$(document).on('click', '#create-checkpoint', function () {
@@ -132,18 +113,76 @@ $(function () {
 
 	$(document).on('click', '#start-upgrade', function () {
 		$('#output').html('');
-		var looper = $.Deferred().resolve();
 		$(this).attr('disabled', true);
-		$.each(operationStack, function (i, step) {
-			looper = looper.then(
-					function () {
-						return execute(step);
-					}
-			);
-		});
+		$.post($('#meta-information').data('endpoint'), {command: 'upgrade:checkSystem'})
+				.then(function (response) {
+					accordion.setCurrent('#step-checkpoint');
+					handleResponse(response, function () {}, '#step-check');
+					return response.error_code === 0
+							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:checkpoint --create'})
+							: $.Deferred()
+							;
+				})
+				.then(function (response) {
+					accordion.setCurrent('#step-download');
+					handleResponse(response, function () {}, '#step-checkpoint');
+					return response.error_code === 0
+							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:detect'})
+							: $.Deferred()
+							;
+				})
+				.then(function (response) {
+					accordion.setCurrent('#step-coreupgrade');
+					handleResponse(response, function () {}, '#step-download');
+					return response.error_code === 0
+							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:disableNotShippedApps'})
+							: $.Deferred()
+							;
+				})
+				.then(function (response) {
+					handleResponse(response, function () {}, '#step-coreupgrade');
+					return response.error_code === 0
+							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:executeCoreUpgradeScripts'})
+							: $.Deferred()
+							;
+				})
+				.then(function (response) {
+					handleResponse(response, function () {}, '#step-coreupgrade');
+					return response.error_code === 0
+							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:upgradeShippedApps'})
+							: $.Deferred()
+							;
+				})
+				.then(function (response) {
+					accordion.setCurrent('#step-appupgrade');
+					handleResponse(response, function () {}, '#step-appupgrade');
+					return response.error_code === 0
+							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:enableNotShippedApps'})
+							: $.Deferred()
+							;
+				})
+				.then(function (response) {
+					accordion.setCurrent('#step-finalize');
+					handleResponse(response, function () {}, '#step-finalize');
+					return response.error_code === 0
+							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:restartWebServer'})
+							: $.Deferred()
+							;
+				})
+				.then(function (response) {
+					handleResponse(response, function () {}, '#step-finalize');
+					return response.error_code === 0
+							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:postUpgradeCleanup'})
+							: $.Deferred()
+							;
+				})
+				.then(function (response) {
+					handleResponse(response, function () {}, '#step-finalize');
+					accordion.setCurrent('#step-done');
+					accordion.setContent('#step-done', 'All done!');
+				});
 	});
 
 	$(document).on('click', '#recheck', init);
-	
 	init();
 });
