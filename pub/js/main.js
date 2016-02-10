@@ -24,16 +24,20 @@ $(function () {
 		setCurrent: function (stepId) {
 			$('#progress .step').removeClass('current-step');
 			if (typeof stepId !== 'undefined') {
-				$(stepId).addClass('current-step');
+				$(stepId).addClass('current-step')
+					.removeClass('passed-step')
+					.removeClass('failed-step');
 			}
 		},
 		setDone: function (stepId) {
-			$(stepId).removeClass('current-step, failed-step');
-			$(stepId).addClass('passed-step');
+			$(stepId).removeClass('current-step')
+					.removeClass('failed-step')
+					.addClass('passed-step');
 		},
 		setFailed: function (stepId) {
-			$(stepId).removeClass('current-step,passed-step');
-			$(stepId).addClass('failed-step');
+			$(stepId).removeClass('current-step')
+					.removeClass('passed-step')
+					.addClass('failed-step');
 		},
 		setContent: function (stepId, content, append) {
 			var oldContent;
@@ -77,7 +81,7 @@ $(function () {
 	},
 			init = function () {
 				accordion.setCurrent('#step-init');
-				$.post($('#meta-information').data('endpoint'), {command: 'upgrade:detect --only-check'})
+				$.post($('#meta-information').data('endpoint'), {command: 'upgrade:detect --only-check --exit-if-none'})
 						.then(function (response) {
 							handleResponse(response, function () {}, '#step-init');
 							accordion.setDone('#step-init');
@@ -116,7 +120,9 @@ $(function () {
 		$(this).attr('disabled', true);
 		$.post($('#meta-information').data('endpoint'), {command: 'upgrade:checkSystem'})
 				.then(function (response) {
-					accordion.setCurrent('#step-checkpoint');
+					if (response.error_code === 0){
+						accordion.setCurrent('#step-checkpoint');
+					}
 					handleResponse(response, function () {}, '#step-check');
 					return response.error_code === 0
 							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:checkpoint --create'})
@@ -124,7 +130,9 @@ $(function () {
 							;
 				})
 				.then(function (response) {
-					accordion.setCurrent('#step-download');
+					if (response.error_code === 0){
+						accordion.setCurrent('#step-download');
+					}
 					handleResponse(response, function () {}, '#step-checkpoint');
 					return response.error_code === 0
 							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:detect'})
@@ -132,7 +140,9 @@ $(function () {
 							;
 				})
 				.then(function (response) {
-					accordion.setCurrent('#step-coreupgrade');
+					if (response.error_code === 0){
+						accordion.setCurrent('#step-coreupgrade');
+					}
 					handleResponse(response, function () {}, '#step-download');
 					return response.error_code === 0
 							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:disableNotShippedApps'})
@@ -154,7 +164,9 @@ $(function () {
 							;
 				})
 				.then(function (response) {
-					accordion.setCurrent('#step-appupgrade');
+					if (response.error_code === 0){
+						accordion.setCurrent('#step-appupgrade');
+					}
 					handleResponse(response, function () {}, '#step-appupgrade');
 					return response.error_code === 0
 							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:enableNotShippedApps'})
@@ -162,7 +174,9 @@ $(function () {
 							;
 				})
 				.then(function (response) {
-					accordion.setCurrent('#step-finalize');
+					if (response.error_code === 0){
+						accordion.setCurrent('#step-finalize');
+					}
 					handleResponse(response, function () {}, '#step-finalize');
 					return response.error_code === 0
 							? $.post($('#meta-information').data('endpoint'), {command: 'upgrade:restartWebServer'})
@@ -178,8 +192,10 @@ $(function () {
 				})
 				.then(function (response) {
 					handleResponse(response, function () {}, '#step-finalize');
-					accordion.setCurrent('#step-done');
-					accordion.setContent('#step-done', 'All done!');
+					if (response.error_code === 0){
+						accordion.setCurrent('#step-done');
+						accordion.setContent('#step-done', 'All done!');
+					}
 				});
 	});
 
