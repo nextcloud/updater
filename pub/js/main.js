@@ -24,16 +24,20 @@ $(function () {
 		setCurrent: function (stepId) {
 			$('#progress .step').removeClass('current-step');
 			if (typeof stepId !== 'undefined') {
-				$(stepId).addClass('current-step');
+				$(stepId).addClass('current-step')
+					.removeClass('passed-step')
+					.removeClass('failed-step');
 			}
 		},
 		setDone: function (stepId) {
-			$(stepId).removeClass('current-step, failed-step');
-			$(stepId).addClass('passed-step');
+			$(stepId).removeClass('current-step')
+					.removeClass('failed-step')
+					.addClass('passed-step');
 		},
 		setFailed: function (stepId) {
-			$(stepId).removeClass('current-step,passed-step');
-			$(stepId).addClass('failed-step');
+			$(stepId).removeClass('current-step')
+					.removeClass('passed-step')
+					.addClass('failed-step');
 		},
 		setContent: function (stepId, content, append) {
 			var oldContent;
