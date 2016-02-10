@@ -88,11 +88,11 @@ class IndexController {
 		$configReader->init();
 		$storedSecret = isset($configReader->get(['system'])['updater.secret']) ? $configReader->get(['system'])['updater.secret'] : null;
 		if(is_null($storedSecret)) {
-			die('updater.secret is undefined in config/config.php. Please define a secret.');
+			die('updater.secret is undefined in config/config.php. Please define a strong secret using bcrypt("SecretToken").');
 		}
 		$sentAuthHeader = ($this->request->header('Authorization') !== null) ? $this->request->header('Authorization') : '';
 
-		if(hash_equals($storedSecret, $sentAuthHeader)) {
+		if(password_verify($sentAuthHeader, $storedSecret)) {
 			return true;
 		}
 
