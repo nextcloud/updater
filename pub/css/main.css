@@ -740,22 +740,28 @@ li.current-step, li.passed-step, li.failed-step{
 	opacity: 1;
 }
 
-li.current-step h3{
-	background-image: url(../img/loading-small.gif);
+li.step h3{
 	background-position:8px 50%;
 	background-repeat: no-repeat;
+}
+
+li.current-step h3{
+	background-image: url(../img/loading-small.gif);
 }
 
 li.current-step h3, li.passed-step h3 {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	opacity: 1;
 }
+
 li.passed-step h3{
 	cursor : pointer;
+	background-image: url(../img/actions/checkmark-color.svg);
 }
 
 li.failed-step h3{
 	background-color: #ffb0b0;
+	background-image: url(../img/actions/error-color.svg);
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	opacity: 1;
 }
