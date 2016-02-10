@@ -96,17 +96,7 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 				$this->getApplication()->getLogger()->debug('Moving ' . $dir);
 				$fsHelper->tripleMove($oldSourcesDir, $newSourcesDir, $tmpDir, $dir);
 			}
-
-			//Update updater
-			$newUpdaterDir = $newSourcesDir . '/updater';
-			$oldUpdaterDir = $oldSourcesDir . '/updater';
-			$tmpUpdaterDir = $tmpDir . '/updater';
-
-			foreach ($locator->getUpdaterContent() as $dir){
-				$this->getApplication()->getLogger()->debug('Moving updater/' . $dir);
-				$fsHelper->tripleMove($oldUpdaterDir, $newUpdaterDir, $tmpUpdaterDir, $dir);
-			}
-
+			
 			try {
 				$plain = $this->occRunner->run('upgrade');
 				$output->writeln($plain);
