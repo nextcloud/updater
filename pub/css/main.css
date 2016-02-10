@@ -735,7 +735,7 @@ li.step h3 {
 	opacity: .57;
 }
 
-li.current-step, li.passed-step {
+li.current-step, li.passed-step, li.failed-step{
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	opacity: 1;
 }
@@ -752,6 +752,12 @@ li.current-step h3, li.passed-step h3 {
 }
 li.passed-step h3{
 	cursor : pointer;
+}
+
+li.failed-step h3{
+	background-color: #ffb0b0;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	opacity: 1;
 }
 
 li.step .output{
