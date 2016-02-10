@@ -193,7 +193,7 @@ $(function () {
 				.then(function (response) {
 					handleResponse(response, function () {}, '#step-finalize');
 					if (response.error_code === 0){
-						accordion.setCurrent('#step-done');
+						accordion.setDone('#step-done');
 						accordion.setContent('#step-done', 'All done!');
 					}
 				});

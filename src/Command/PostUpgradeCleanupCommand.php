@@ -40,6 +40,22 @@ class PostUpgradeCleanupCommand extends Command {
 		$fsHelper = $this->container['utils.filesystemhelper'];
 		$locator = $this->container['utils.locator'];
 
+		//Update updater
+		$feed = $registry->get('feed');
+		$fullExtractionPath = $locator->getExtractionBaseDir() . '/' . $feed->getVersion();
+		$tmpDir = $locator->getExtractionBaseDir() . '/' . implode('.', $locator->getInstalledVersion());
+		$oldSourcesDir = $locator->getOwncloudRootPath();
+		$newSourcesDir = $fullExtractionPath . '/owncloud';
+		$newUpdaterDir = $newSourcesDir . '/updater';
+		$oldUpdaterDir = $oldSourcesDir . '/updater';
+		$tmpUpdaterDir = $tmpDir . '/updater';
+		$fsHelper->mkdir($tmpUpdaterDir);
+
+		foreach ($locator->getUpdaterContent() as $dir){
+			$this->getApplication()->getLogger()->debug('Moving updater/' . $dir);
+			$fsHelper->tripleMove($oldUpdaterDir, $newUpdaterDir, $tmpUpdaterDir, $dir);
+		}
+		
 		//Cleanup Filesystem
 		$fsHelper->removeIfExists($locator->getExtractionBaseDir());
 
