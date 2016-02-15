@@ -51,6 +51,15 @@ class FilesystemHelper {
 	}
 
 	/**
+	 * Wrapper for is_dir function
+	 * @param string $path
+	 * @return bool
+	 */
+	public function isDir($path){
+		return is_dir($path);
+	}
+
+	/**
 	 * Wrapper for md5_file function
 	 * @param string $path
 	 * @return string

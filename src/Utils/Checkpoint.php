@@ -107,7 +107,7 @@ class Checkpoint {
 
 	public function getAll(){
 		$checkpointDir = $this->locator->getCheckpointDir();
-		$content = $this->fsHelper->scandir($checkpointDir);
+		$content = $this->fsHelper->isDir($checkpointDir) ? $this->fsHelper->scandir($checkpointDir) : [];
 		$checkpoints = array_filter(
 				$content,
 				function($dir){
