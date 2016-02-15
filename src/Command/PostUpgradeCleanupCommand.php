@@ -43,7 +43,7 @@ class PostUpgradeCleanupCommand extends Command {
 		//Update updater
 		$feed = $registry->get('feed');
 		$fullExtractionPath = $locator->getExtractionBaseDir() . '/' . $feed->getVersion();
-		$tmpDir = $locator->getExtractionBaseDir() . '/' . implode('.', $locator->getInstalledVersion());
+		$tmpDir = $locator->getExtractionBaseDir() . '/' . $registry->get('installedVersion');
 		$oldSourcesDir = $locator->getOwncloudRootPath();
 		$newSourcesDir = $fullExtractionPath . '/owncloud';
 		$newUpdaterDir = $newSourcesDir . '/updater';

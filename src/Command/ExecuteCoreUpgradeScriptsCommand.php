@@ -55,6 +55,9 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 		$registry = $this->container['utils.registry'];
 		$fetcher = $this->container['utils.fetcher'];
 
+		$installedVersion = implode('.', $locator->getInstalledVersion());
+		$registry->set('installedVersion', $installedVersion);
+		
 		$feed = $registry->get('feed');
 
 		if ($feed){
@@ -84,8 +87,8 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 				$fsHelper->removeIfExists($locator->getExtractionBaseDir());
 				throw $e;
 			}
-			
-			$tmpDir = $locator->getExtractionBaseDir() . '/' . implode('.', $locator->getInstalledVersion());
+
+			$tmpDir = $locator->getExtractionBaseDir() . '/' . $installedVersion;
 			$fsHelper->removeIfExists($tmpDir);
 			$fsHelper->mkdir($tmpDir);
 			$fsHelper->mkdir($tmpDir . '/config');

@@ -19,9 +19,9 @@
  *
  */
 
-use \Owncloud\Updater\Console\Application;
-
 namespace Owncloud\Updater\Utils;
+
+use \Owncloud\Updater\Console\Application;
 
 class Locator {
 
@@ -123,7 +123,7 @@ class Locator {
 	 * @throws \Exception
 	 */
 	public function getDataDir(){
-		$container = \Owncloud\Updater\Console\Application::$container;
+		$container = Application::$container;
 		if ($container['utils.configReader']->getIsLoaded()){
 			return $container['utils.configReader']->getByPath('system.datadirectory');
 		}
