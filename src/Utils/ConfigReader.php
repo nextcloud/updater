@@ -34,6 +34,11 @@ class ConfigReader {
 	protected $occRunner;
 
 	/**
+	 * @var bool
+	 */
+	protected $isLoaded = false;
+
+	/**
 	 *
 	 * @param OccRunner $occRunner
 	 */
@@ -43,6 +48,13 @@ class ConfigReader {
 
 	public function init(){
 		$this->load();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getIsLoaded(){
+		return $this->isLoaded;
 	}
 
 	/**
@@ -92,6 +104,7 @@ class ConfigReader {
 	 */
 	private function load(){
 		$this->cache = $this->occRunner->runJson('config:list --private');
+		$this->isLoaded = true;
 	}
 
 }

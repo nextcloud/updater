@@ -19,6 +19,8 @@
  *
  */
 
+use \Owncloud\Updater\Console\Application;
+
 namespace Owncloud\Updater\Utils;
 
 class Locator {
@@ -115,16 +117,49 @@ class Locator {
 		return $items;
 	}
 
+	/**
+	 * Absolute path
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function getDataDir(){
-		return $this->updaterRootPath . '/data';
+		$container = \Owncloud\Updater\Console\Application::$container;
+		if ($container['utils.configReader']->getIsLoaded()){
+			return $container['utils.configReader']->getByPath('system.datadirectory');
+		}
+
+		// Fallback case
+		include_once $this->getPathToConfigFile();
+		if (isset($CONFIG['datadirectory'])){
+			return $CONFIG['datadirectory'];
+		}
+
+		// Something went wrong
+		throw new \Exception('Unable to detect datadirectory');
 	}
 
+	/**
+	 * Absolute path to updater root dir
+	 * @return string
+	 */
+	public function getUpdaterBaseDir(){
+		return $this->getDataDir() . '/updater-data';
+	}
+
+	/**
+	 * Absolute path to create a core and apps backups
+	 * @return string
+	 */
 	public function getCheckpointDir(){
-		return $this->getDataDir() . '/checkpoint';
+		return $this->getUpdaterBaseDir() . '/checkpoint';
 	}
 
+	/**
+	 * Absolute path to store downloaded packages
+	 * @return string
+	 */
 	public function getDownloadBaseDir(){
-		return $this->getDataDir() . '/download';
+		return $this->getUpdaterBaseDir() . '/download';
 	}
 
 	public function getExtractionBaseDir(){
