@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Victor Dubiniuk <dubiniuk@owncloud.com>
  *
@@ -18,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  *
  */
+
 namespace Owncloud\Updater\Console;
 
 use Owncloud\Updater\Utils\Locator;
@@ -34,9 +36,17 @@ class Application extends \Symfony\Component\Console\Application {
 	/** @var Container */
 	public static $container;
 
-
 	/** @var Container */
 	protected $diContainer;
+
+	/** @var array */
+	protected $allowFailure = [
+		'upgrade:executeCoreUpgradeScripts',
+		'upgrade:checkpoint',
+		'upgrade:maintenanceMode',
+		'help',
+		'list'
+	];
 
 	/**
 	 * Pass Pimple container into application
@@ -68,9 +78,9 @@ class Application extends \Symfony\Component\Console\Application {
 	 * @param \Exception $e
 	 */
 	public function logException($e){
-			$buffer = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE);
-			$this->renderException($e, $buffer);
-			$this->getLogger()->error($buffer->fetch());
+		$buffer = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE);
+		$this->renderException($e, $buffer);
+		$this->getLogger()->error($buffer->fetch());
 	}
 
 	public function doRun(InputInterface $input, OutputInterface $output){
@@ -78,21 +88,14 @@ class Application extends \Symfony\Component\Console\Application {
 			$output->writeln('[Warning] Failed to init logger. Logging is disabled.');
 			$output->writeln(CURRENT_DIR . ' is not writable');
 		}
-		try {
-			// TODO: check if the current command needs a valid OC instance
-			$this->assertOwnCloudFound();
-			$this->initDirectoryStructure();
-
+		try{
 			$configReader = $this->diContainer['utils.configReader'];
 			$commandName = $this->getCommandName($input);
-			if (!in_array(
-					$commandName,
-					['upgrade:executeCoreUpgradeScripts', 'upgrade:checkpoint', 'upgrade:maintenanceMode', 'help', 'list']
-				)
-			){
-				try {
-					$configReader->init();
-				} catch (ProcessFailedException $e){
+
+			try{
+				$configReader->init();
+			} catch (ProcessFailedException $e){
+				if (!in_array($commandName, $this->allowFailure)){
 					$this->logException($e);
 					$output->writeln("<error>Initialization failed with message:</error>");
 					$output->writeln($e->getProcess()->getOutput());
@@ -101,10 +104,12 @@ class Application extends \Symfony\Component\Console\Application {
 					$output->writeln('Please attach your update.log to the issues you reporting.');
 					return 1;
 				}
-				
 			}
+			// TODO: check if the current command needs a valid OC instance
+			$this->assertOwnCloudFound();
+			
 			return parent::doRun($input, $output);
-		} catch (\Exception $e) {
+		} catch (\Exception $e){
 			$this->logException($e);
 			throw $e;
 		}
@@ -137,15 +142,11 @@ class Application extends \Symfony\Component\Console\Application {
 		$container = $this->getContainer();
 		/** @var Locator $locator */
 		$locator = $container['utils.locator'];
-
-		$file = $locator->getPathToVersionFile();
-		if (!file_exists($file) || !is_file($file)){
-			throw new \RuntimeException('ownCloud is not found in ' . dirname($file));
-		}
+		$fsHelper = $container['utils.filesystemhelper'];
 
 		// assert minimum version
 		$installedVersion = implode('.', $locator->getInstalledVersion());
-		if (version_compare($installedVersion, '9.0.0', '<')) {
+		if (version_compare($installedVersion, '9.0.0', '<')){
 			throw new \RuntimeException("Minimum ownCloud version 9.0.0 is required for the updater - $installedVersion was found in " . $locator->getOwncloudRootPath());
 		}
 
@@ -154,22 +155,32 @@ class Application extends \Symfony\Component\Console\Application {
 		if (!file_exists($file) || !is_file($file)){
 			throw new \RuntimeException('ownCloud in ' . dirname(dirname($file)) . ' is not installed.');
 		}
-	}
 
-	/**
-	 * Create proper directory structure to store data
-	 */
-	protected function initDirectoryStructure(){
-		$container = $this->getContainer();
-		$locator = $container['utils.locator'];
-		$fsHelper = $container['utils.filesystemhelper'];
-		if (!file_exists($locator->getDataDir())){
-			$fsHelper->mkdir($locator->getDataDir());
+		// version.php should exist
+		$file = $locator->getPathToVersionFile();
+		if (!file_exists($file) || !is_file($file)){
+			throw new \RuntimeException('ownCloud is not found in ' . dirname($file));
 		}
-		if (!file_exists($locator->getDownloadBaseDir())){
+
+		// datadir should exist
+		$dataDir = $locator->getDataDir();
+		if (!$fsHelper->fileExists($dataDir)){
+			throw new \RuntimeException('Datadirectory ' . $dataDir . ' does not exist.');
+		}
+
+		// datadir should be writable
+		if (!$fsHelper->isWritable($dataDir)){
+			throw new \RuntimeException('Datadirectory ' . $dataDir . ' is not writable.');
+		}
+
+		if (!$fsHelper->fileExists($locator->getUpdaterBaseDir())){
+			$fsHelper->mkdir($locator->getUpdaterBaseDir());
+		}
+
+		if (!$fsHelper->fileExists($locator->getDownloadBaseDir())){
 			$fsHelper->mkdir($locator->getDownloadBaseDir());
 		}
-		if (!file_exists($locator->getCheckpointDir())){
+		if (!$fsHelper->fileExists($locator->getCheckpointDir())){
 			$fsHelper->mkdir($locator->getCheckpointDir());
 		}
 	}

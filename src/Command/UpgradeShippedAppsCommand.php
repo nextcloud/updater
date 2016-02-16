@@ -59,7 +59,7 @@ class UpgradeShippedAppsCommand extends Command {
 			$newAppsDir = $fullExtractionPath . '/owncloud/apps';
 			$tmpAppsDir = $locator->getExtractionBaseDir()
 					. '/'
-					. implode('.', $locator->getInstalledVersion())
+					. $registry->get('installedVersion')
 					. '/apps'
 			;
 			$fsHelper->removeIfExists($tmpAppsDir);
