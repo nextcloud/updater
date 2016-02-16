@@ -4,6 +4,15 @@ $(function () {
 		headers: {'Authorization': loginToken}
 	});
 
+	
+	$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
+		//disallow requests that don't match endpoint
+		var endpoint = $('#meta-information').data('endpoint');
+		if (endpoint && originalOptions.url.match(endpoint)===null){
+			jqXHR.abort();
+		}
+	});
+
 	// Setup a global AJAX error handler
 	$(document).ajaxError(
 			function (event, xhr, options, thrownError) {
@@ -195,6 +204,7 @@ $(function () {
 					if (response.error_code === 0){
 						accordion.setDone('#step-done');
 						accordion.setContent('#step-done', 'All done!');
+						accordion.showContent('#step-done');
 					}
 				});
 	});
