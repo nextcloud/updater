@@ -124,7 +124,7 @@ class Locator {
 	 */
 	public function getDataDir(){
 		$container = Application::$container;
-		if ($container['utils.configReader']->getIsLoaded()){
+		if (isset($container['utils.configReader']) && $container['utils.configReader']->getIsLoaded()){
 			return $container['utils.configReader']->getByPath('system.datadirectory');
 		}
 
