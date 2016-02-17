@@ -52,6 +52,7 @@ class ZipExtractor {
 	private function extractShell(){
 		$command = 'unzip ' . ProcessUtils::escapeArgument($this->file) . ' -d ' . ProcessUtils::escapeArgument($this->path) . ' && chmod -R u+w ' . ProcessUtils::escapeArgument($this->path);
 		$process = new Process($command);
+		$process->setTimeout(null);
 		$process->run();
 		echo $process->getErrorOutput();
 		return $process->isSuccessful();

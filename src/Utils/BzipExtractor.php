@@ -44,6 +44,7 @@ class BzipExtractor {
 	private function extractShell(){
 		$command = 'tar -jxvf  ' . ProcessUtils::escapeArgument($this->file) . ' -C ' . ProcessUtils::escapeArgument($this->path) . ' && chmod -R u+w ' . ProcessUtils::escapeArgument($this->path);
 		$process = new Process($command);
+		$process->setTimeout(null);
 		$process->run();
 		echo $process->getErrorOutput();
 		return $process->isSuccessful();
