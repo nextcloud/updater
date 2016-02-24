@@ -96,9 +96,9 @@ $(function () {
 							accordion.setDone('#step-init');
 							accordion.setCurrent();
 							if (!response.error_code) {
-								accordion.setContent('#step-init', '<button id="start-upgrade" class="side-button">Start</button>', true);
+								accordion.setContent('#step-init', '<button id="start-upgrade" class="button">Start</button>', true);
 							} else {
-								accordion.setContent('#step-init', '<button id="recheck" class="side-button">Recheck</button>', true);
+								accordion.setContent('#step-init', '<button id="recheck" class="button">Recheck</button>', true);
 							}
 						});
 			};
@@ -118,7 +118,7 @@ $(function () {
 		);
 	});
 
-	$(document).on('click', '#progress h3', function () {
+	$(document).on('click', '#progress h2', function () {
 		if ($(this).parent('li').hasClass('passed-step')) {
 			accordion.toggleContent('#' + $(this).parent('li').attr('id'));
 		}

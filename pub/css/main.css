@@ -719,7 +719,6 @@ label.infield {
 #output {
 	display: none;
 	padding: 10px;
-    border: 1px solid #292929;
 }
 
 li.step{
@@ -727,12 +726,14 @@ li.step{
 	opacity: .57;
 }
 
-li.step h3 {
-	background-color: #f7f7f7;
+li.step h2 {
 	padding: 5px 2px 5px 30px;
-	border: 1px solid #ddd;
+	margin-top: 12px;
+	margin-bottom: 0;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=57)";
 	opacity: .57;
+	background-position:8px 50%;
+	background-repeat: no-repeat;
 }
 
 li.current-step, li.passed-step, li.failed-step{
@@ -740,26 +741,21 @@ li.current-step, li.passed-step, li.failed-step{
 	opacity: 1;
 }
 
-li.step h3{
-	background-position:8px 50%;
-	background-repeat: no-repeat;
-}
-
-li.current-step h3{
+li.current-step h2{
 	background-image: url(../img/loading-small.gif);
 }
 
-li.current-step h3, li.passed-step h3 {
+li.current-step h2, li.passed-step h2 {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	opacity: 1;
 }
 
-li.passed-step h3{
+li.passed-step h2{
 	cursor : pointer;
 	background-image: url(../img/actions/checkmark-color.svg);
 }
 
-li.failed-step h3{
+li.failed-step h2{
 	background-color: #ffb0b0;
 	background-image: url(../img/actions/error-color.svg);
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
@@ -768,8 +764,6 @@ li.failed-step h3{
 
 li.step .output{
 	position:relative;
-	padding: 5px 20px;
-	border: 1px solid #ddd;
-	border-top-width: 0;
+	padding: 5px 5px 5px 32px;
 }
 
