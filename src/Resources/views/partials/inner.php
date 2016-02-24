@@ -10,7 +10,7 @@
 		</a>
 
 		<a href="#" class="header-appname-container" tabindex="2">
-			<h1 class="header-appname">Updater <?= $this->e($version) ?></h1>
+			<h1 class="header-appname">Updater</h1>
 		</a>
 
 		<div id="logo-claim" style="display:none;"></div>
@@ -20,7 +20,7 @@
 
 		<div id="app-navigation">
 			<ul>
-				<li><a href="#progress">Upgrade</a></li>
+				<li><a href="#progress">Update</a></li>
 				<li><a href="#backup">Backups</a></li>
 			</ul>
 		</div>
@@ -30,35 +30,35 @@
 
 			<ul id="progress" class="section">
 				<li id="step-init" class="step icon-loading current-step">
-					<h3>Initializing</h3>
+					<h2>Initializing</h2>
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-check" class="step">
-					<h3>Checking system</h3>
+					<h2>Checking system</h2>
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-checkpoint" class="step">
-					<h3>Creating a checkpoint</h3>
+					<h2>Creating a checkpoint</h2>
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-download" class="step">
-					<h3>Downloading</h3>
+					<h2>Downloading</h2>
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-coreupgrade" class="step">
-					<h3>Upgrading core</h3>
+					<h2>Updating core</h2>
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-appupgrade" class="step">
-					<h3>Upgrading apps</h3>
+					<h2>Updating apps</h2>
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-finalize" class="step">
-					<h3>Finishing the upgrade</h3>
+					<h2>Finishing the update</h2>
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-done" class="step">
-					<h3>Done</h3>
+					<h2>Done</h2>
 					<div class="output hidden"></div>
 				</li>
 			</ul>
@@ -71,7 +71,6 @@
 						<tr>
 							<th>Backup</th>
 							<th>Done on</th>
-							<th>Size</th>
 							<th>&nbsp;</th>
 						</tr>
 					</thead>
@@ -80,12 +79,10 @@
 							<td class="item"></td>
 							<td class="item"></td>
 							<td class="item"></td>
-							<td class="item"></td>
 						</tr>
 						<?php foreach ($checkpoints as $checkpoint){ ?>
 						<tr>
 							<td class="item"><?= $this->e($checkpoint) ?></td>
-							<td class="item"></td>
 							<td class="item"></td>
 							<td class="item"></td>
 						</tr>
