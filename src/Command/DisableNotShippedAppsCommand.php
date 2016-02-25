@@ -36,7 +36,10 @@ class DisableNotShippedAppsCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output){
-		$this->container['utils.appmanager']->disableNotShippedApps($output);
+		$registry = $this->container['utils.registry'];
+		$appManager = $this->container['utils.appmanager'];
+		$appManager->disableNotShippedApps($output);
+		$registry->set('appManager', $appManager);
 	}
 
 }
