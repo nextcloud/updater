@@ -101,7 +101,11 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 			}
 			
 			try {
+				$fsHelper->move($oldSourcesDir . '/apps', $oldSourcesDir . '/__apps');
+				$fsHelper->mkdir($oldSourcesDir . '/apps');
 				$plain = $this->occRunner->run('upgrade');
+				$fsHelper->removeIfExists($oldSourcesDir . '/apps');
+				$fsHelper->move($oldSourcesDir . '/__apps', $oldSourcesDir . '/apps');
 				$output->writeln($plain);
 			} catch (ProcessFailedException $e){
 				if ($e->getProcess()->getExitCode() != 3){
