@@ -96,7 +96,7 @@ class IndexController {
 		$configReader->init();
 		$storedSecret = isset($configReader->get(['system'])['updater.secret']) ? $configReader->get(['system'])['updater.secret'] : null;
 		if(is_null($storedSecret)) {
-			die('updater.secret is undefined in config/config.php. Please define a strong secret using bcrypt("SecretToken").');
+			die('updater.secret is undefined in config/config.php. Either browse the admin settings in your ownCloud and click "Open updater" or define a strong secret using <pre>php -r \'echo password_hash("MyStrongSecretDoUseYourOwn!", PASSWORD_DEFAULT)."\n";\'</pre> and set this in the config.php.');
 		}
 		$sentAuthHeader = ($this->request->header('Authorization') !== null) ? $this->request->header('Authorization') : '';
 
