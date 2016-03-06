@@ -1,7 +1,7 @@
 $(function () {
 	// Pass the auth token with any request
 	$.ajaxSetup({
-		headers: {'Authorization': loginToken}
+		headers: {'X-Updater-Auth': loginToken}
 	});
 
 	
