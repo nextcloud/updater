@@ -17,7 +17,7 @@ var loginToken;
 			$.ajax({
 				url: '.',
 				headers: {
-					'Authorization': loginToken,
+					'X-Updater-Auth': loginToken,
 				},
 				method: 'POST',
 				success: function(data){
