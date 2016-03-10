@@ -117,7 +117,7 @@ class Checkpoint {
 			$checkpoints[] = [
 				'title' => $dir,
 				'date' => date(
-					"F d Y H:i:s.", 
+					"F d Y H:i", 
 					$this->fsHelper->filemtime(
 						$this->locator->getCheckpointDir() . '/' . $dir
 					)
