@@ -24,6 +24,15 @@ namespace Owncloud\Updater\Utils;
 class FilesystemHelper {
 
 	/**
+	 * Wrapper for filemtime function
+	 * @param string $path
+	 * @return array
+	 */
+	public function filemtime($path){
+		return filemtime($path);
+	}
+
+	/**
 	 * Wrapper for scandir function
 	 * @param string $path
 	 * @return array

@@ -45,6 +45,7 @@ class CheckpointCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output){
+		clearstatcache();
 		$checkpoint = $this->container['utils.checkpoint'];
 		if ($input->getOption('create')){
 			$checkpointName = $checkpoint->create();
@@ -55,7 +56,9 @@ class CheckpointCommand extends Command {
 		} else {
 			$checkpoints = $checkpoint->getAll();
 			if (count($checkpoints)){
-				$output->writeln(implode(PHP_EOL, $checkpoints));
+				foreach ($checkpoints as $checkpoint){
+					$output->writeln(sprintf('%s  - %s', $checkpoint['title'], $checkpoint['date']));
+				}
 			} else {
 				$output->writeln('No checkpoints found');
 			}

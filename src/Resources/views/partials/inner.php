@@ -82,8 +82,8 @@
 						</tr>
 						<?php foreach ($checkpoints as $checkpoint){ ?>
 						<tr>
-							<td class="item"><?= $this->e($checkpoint) ?></td>
-							<td class="item"></td>
+							<td class="item"><?= $this->e($checkpoint['title']) ?></td>
+							<td class="item"><?= $this->e($checkpoint['date']) ?></td>
 							<td class="item"></td>
 						</tr>
 						<?php } ?>
