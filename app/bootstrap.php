@@ -30,12 +30,15 @@ if (version_compare(PHP_VERSION, '5.4.0') === -1){
 
 // symlinks are not resolved by PHP properly
 // getcwd always reports source and not target
-if (isset($_SERVER['PWD'])){
+ if(getcwd()){
+	define('CURRENT_DIR', getcwd());
+} elseif (isset($_SERVER['PWD'])){
 	define('CURRENT_DIR', $_SERVER['PWD']);
 } elseif (isset($_SERVER['SCRIPT_FILENAME'])){
 	define('CURRENT_DIR', dirname($_SERVER['SCRIPT_FILENAME']));
 } else {
-	define('CURRENT_DIR', getcwd());
+	echo 'Failed to detect current directory';
+	exit(1);
 }
 
 session_start();
