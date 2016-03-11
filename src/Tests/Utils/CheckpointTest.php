@@ -19,13 +19,23 @@ class CheckpointTest extends \PHPUnit_Framework_TestCase {
 		$fsHelper->method('isDir')
 			->willReturn(true)
 		;
+		$fsHelper->method('filemtime')
+			->willReturn(199)
+		;
 		$locator = $this->getMockBuilder('Owncloud\Updater\Utils\Locator')
 				->disableOriginalConstructor()
 				->getMock()
 		;
 		$checkpointMock = $this->getCheckpointInstance($locator, $fsHelper);
 		$actual = $checkpointMock->getAll();
-		$this->assertEquals($checkpointList, $actual);
+		$this->assertEquals(			
+			[
+				[ 'title'=>'a', 'date' => 'January 01 1970 00:03'],
+				[ 'title'=>'b', 'date' => 'January 01 1970 00:03'],
+				[ 'title'=>'c', 'date' => 'January 01 1970 00:03'],
+			], 
+			$actual
+		);
 	}
 
 	public function testGetAllWithNotExistingFolder() {
