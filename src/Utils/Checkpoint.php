@@ -106,14 +106,24 @@ class Checkpoint {
 	}
 
 	public function getAll(){
+		$checkpoints = [];
 		$checkpointDir = $this->locator->getCheckpointDir();
 		$content = $this->fsHelper->isDir($checkpointDir) ? $this->fsHelper->scandir($checkpointDir) : [];
-		$checkpoints = array_filter(
-				$content,
-				function($dir){
-					return !in_array($dir, ['.', '..']);
-				}
-		);
+
+		foreach ($content as $dir){
+			if (in_array($dir, ['.', '..'])){
+				continue;
+			}
+			$checkpoints[] = [
+				'title' => $dir,
+				'date' => date(
+					"F d Y H:i", 
+					$this->fsHelper->filemtime(
+						$this->locator->getCheckpointDir() . '/' . $dir
+					)
+				)
+			];
+		}
 		return $checkpoints;
 	}
 

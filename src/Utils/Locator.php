@@ -129,7 +129,7 @@ class Locator {
 		}
 
 		// Fallback case
-		include_once $this->getPathToConfigFile();
+		include $this->getPathToConfigFile();
 		if (isset($CONFIG['datadirectory'])){
 			return $CONFIG['datadirectory'];
 		}
