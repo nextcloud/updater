@@ -41,6 +41,9 @@ class CheckpointCommand extends Command {
 				->addOption(
 						'list', null, InputOption::VALUE_OPTIONAL, 'show all checkpoints'
 				)
+				->addOption(
+						'remove', null, InputOption::VALUE_REQUIRED, 'remove a checkpoint'
+				)
 		;
 	}
 
@@ -48,11 +51,33 @@ class CheckpointCommand extends Command {
 		clearstatcache();
 		$checkpoint = $this->container['utils.checkpoint'];
 		if ($input->getOption('create')){
-			$checkpointName = $checkpoint->create();
-			$output->writeln('Created checkpoint ' . $checkpointName);
+			try {
+				$checkpointId = $checkpoint->create();
+				$output->writeln('Created checkpoint ' . $checkpointId);
+			} catch (\Exception $e){
+				$output->writeln('Error while creating a checkpoint ' . $checkpointId);
+			}
+		} elseif ($input->getOption('remove')){
+			$checkpointId = stripslashes($input->getOption('remove'));
+			try {
+				$checkpoint->remove($checkpointId);
+				$output->writeln('Removed checkpoint ' . $checkpointId);
+			} catch (\UnexpectedValueException $e){
+				$output->writeln($e->getMessage());
+			} catch (\Exception $e){
+				$output->writeln('Error while removing a checkpoint ' . $checkpointId);
+			}
 		} elseif ($input->getOption('restore')) {
 			$checkpointId = stripslashes($input->getOption('restore'));
-			$checkpoint->restore($checkpointId);
+			try {
+				$checkpoint->restore($checkpointId);
+				$checkpoint->remove($checkpointId);
+				$output->writeln('Restored checkpoint ' . $checkpointId);
+			} catch (\UnexpectedValueException $e){
+				$output->writeln($e->getMessage());
+			} catch (\Exception $e){
+				$output->writeln('Error while restoring a checkpoint ' . $checkpointId);
+			}
 		} else {
 			$checkpoints = $checkpoint->getAll();
 			if (count($checkpoints)){
@@ -64,5 +89,4 @@ class CheckpointCommand extends Command {
 			}
 		}
 	}
-
 }
