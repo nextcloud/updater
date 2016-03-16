@@ -108,6 +108,8 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 				$fsHelper->move($oldSourcesDir . '/__apps', $oldSourcesDir . '/apps');
 				$output->writeln($plain);
 			} catch (ProcessFailedException $e){
+				$fsHelper->removeIfExists($oldSourcesDir . '/apps');
+				$fsHelper->move($oldSourcesDir . '/__apps', $oldSourcesDir . '/apps');
 				if ($e->getProcess()->getExitCode() != 3){
 					throw ($e);
 				}
