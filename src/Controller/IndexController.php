@@ -109,7 +109,7 @@ class IndexController {
 
 	public function showLogin(Engine $templates) {
 		// If it is a request with invalid token just return "false" so that we can catch this
-		$token = ($this->request->header('Authorization') !== null) ? $this->request->header('Authorization') : '';
+		$token = ($this->request->header('X_Updater_Auth') !== null) ? $this->request->header('X_Updater_Auth') : '';
 		if($token !== '') {
 			return 'false';
 		}
