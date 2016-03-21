@@ -104,12 +104,11 @@ class DownloadController {
 	 */
 	protected function checkIntegrity($path, $md5){
 			$fileExists = $this->fsHelper->fileExists($path);
-			$checksumMatch = $md5 === $this->fsHelper->md5File($path);
-			if ($fileExists && !$checksumMatch){
+			$checksumMatch = $fileExists && $md5 === $this->fsHelper->md5File($path);
+			if (!$checksumMatch){
 				$this->fsHelper->removeIfExists($path);
-				$fileExists = false;
 			}
-			return $fileExists;
+			return $checksumMatch;
 	}
 
 	/**
