@@ -112,7 +112,13 @@ class DetectCommand extends Command {
 			}
 
 			$registry->set('feed', $feed);
-			$output->writeln($feed->getVersionString() . ' is found online');
+			$output->writeln(
+				sprintf(
+					'Online version is %s [%s]',
+					$feed->getVersion(),
+					$this->fetcher->getUpdateChannel()
+				)
+			);
 
 			if ($input->getOption('only-check')){
 				return;
