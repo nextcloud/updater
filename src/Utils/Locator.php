@@ -52,7 +52,7 @@ class Locator {
 
 	/**
 	 * expected items in the core
-	 * @return array
+	 * @return string[]
 	 */
 	public function getRootDirContent(){
 		return [
