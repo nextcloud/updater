@@ -62,7 +62,7 @@ class Fetcher {
 	}
 
 	/**
-	 * Download new owncloud package
+	 * Download new ownCloud package
 	 * @param Feed $feed
 	 * @param Callable $onProgress
 	 * @throws \UnexpectedValueException

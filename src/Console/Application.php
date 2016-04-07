@@ -135,7 +135,7 @@ class Application extends \Symfony\Component\Console\Application {
 	}
 
 	/**
-	 * Check for owncloud instance
+	 * Check for ownCloud instance
 	 * @throws \RuntimeException
 	 */
 	protected function assertOwnCloudFound(){
@@ -147,7 +147,7 @@ class Application extends \Symfony\Component\Console\Application {
 		// assert minimum version
 		$installedVersion = implode('.', $locator->getInstalledVersion());
 		if (version_compare($installedVersion, '9.0.0', '<')){
-			throw new \RuntimeException("Minimum ownCloud version 9.0.0 is required for the updater - $installedVersion was found in " . $locator->getOwncloudRootPath());
+			throw new \RuntimeException("Minimum ownCloud version 9.0.0 is required for the updater - $installedVersion was found in " . $locator->getOwnCloudRootPath());
 		}
 
 		// has to be installed
