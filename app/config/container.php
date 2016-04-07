@@ -28,7 +28,6 @@ use Symfony\Component\Console\Logger\ConsoleLogger;
 use Owncloud\Updater\Utils\AppManager;
 use Owncloud\Updater\Utils\Checkpoint;
 use Owncloud\Updater\Utils\ConfigReader;
-use Owncloud\Updater\Utils\ConfigWriter;
 use Owncloud\Updater\Utils\Fetcher;
 use Owncloud\Updater\Utils\FilesystemHelper;
 use Owncloud\Updater\Utils\Locator;
@@ -101,9 +100,6 @@ $c['logger'] = function($c){
 };
 $c['utils.configReader'] = function($c){
 	return new ConfigReader($c['utils.occrunner']);
-};
-$c['utils.configWriter'] = function($c){
-	return new ConfigWriter($c['utils.locator']);
 };
 $c['utils.fetcher'] = function($c){
 	return new Fetcher($c['guzzle.httpClient'], $c['utils.locator'], $c['utils.configReader']);
