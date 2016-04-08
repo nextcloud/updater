@@ -64,12 +64,18 @@ class AppManager {
 		return true;
 	}
 
+	/**
+	 * @param OutputInterface|null $output
+	 */
 	public function disableNotShippedApps(OutputInterface $output = null){
 		$notShippedApps = $this->occRunner->runJson('app:list --shipped false');
 		$appsToDisable = array_keys($notShippedApps['enabled']);
 		foreach ($appsToDisable as $appId){
 			$result = $this->disableApp($appId);
 			$status = $result ? '<info>success</info>' : '<error>failed</error>';
+			if ($result){
+				$this->disabledApps[] = $appId;
+			}
 			if (!is_null($output)){
 				$message = sprintf('Disable app %s: [%s]', $appId, $status);
 				$output->writeln($message);
