@@ -26,7 +26,7 @@ class FilesystemHelper {
 	/**
 	 * Wrapper for filemtime function
 	 * @param string $path
-	 * @return array
+	 * @return integer
 	 */
 	public function filemtime($path){
 		return filemtime($path);
@@ -156,6 +156,9 @@ class FilesystemHelper {
 		}
 	}
 
+	/**
+	 * @param string $path
+	 */
 	public function removeIfExists($path) {
 		if (!file_exists($path)) {
 			return;
