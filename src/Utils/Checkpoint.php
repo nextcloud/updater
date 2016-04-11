@@ -73,12 +73,12 @@ class Checkpoint {
 				$this->fsHelper->copyr($coreItem, $cpItemPath, true);
 			}
 			//copy config.php
-			$configDirSrc = $this->locator->getOwncloudRootPath() . '/config';
+			$configDirSrc = $this->locator->getOwnCloudRootPath() . '/config';
 			$configDirDst = $checkpointCorePath . '/config';
 			$this->fsHelper->copyr($configDirSrc, $configDirDst, true);
 
 			//copy 3rdparty
-			$this->fsHelper->copyr($this->locator->getOwncloudRootPath() . '/' . self::THIRDPARTY_DIR, $checkpointCorePath . '/' . self::THIRDPARTY_DIR, true);
+			$this->fsHelper->copyr($this->locator->getOwnCloudRootPath() . '/' . self::THIRDPARTY_DIR, $checkpointCorePath . '/' . self::THIRDPARTY_DIR, true);
 
 			$checkpointAppPath = $checkpointPath . '/' . self::APP_DIR;
 			$this->fsHelper->mkdir($checkpointAppPath);
@@ -109,7 +109,7 @@ class Checkpoint {
 	public function restore($checkpointId){
 		$this->assertCheckpointExists($checkpointId);
 		$checkpointDir = $this->locator->getCheckpointDir() . '/' . $checkpointId;
-		$ocRoot = $this->locator->getOwncloudRootPath();
+		$ocRoot = $this->locator->getOwnCloudRootPath();
 		$this->fsHelper->copyr($checkpointDir . '/' . self::CORE_DIR, $ocRoot, false);
 		$this->fsHelper->copyr($checkpointDir . '/' . self::APP_DIR, $ocRoot . '/' . self::APP_DIR, false);
 	}
