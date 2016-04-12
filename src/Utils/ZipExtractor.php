@@ -21,24 +21,35 @@
 
 namespace Owncloud\Updater\Utils;
 
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessUtils;
-use \ZipArchive;
+use ZipArchive;
 
 class ZipExtractor {
 
 	protected $file;
 	protected $path;
+	
+	/** @var  OutputInterface */
+	protected $output;
 
 	/**
 	 * @param string $file
 	 * @param string $path
+	 * @param OutputInterface $output
 	 */
-	public function __construct($file, $path){
+	public function __construct($file, $path, OutputInterface $output = null){
 		$this->file = $file;
 		$this->path = $path;
+		if (!is_null($output)){
+			$this->output = $output;
+		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function extract(){
 		if ($this->extractShell()){
 			return true;
@@ -54,15 +65,20 @@ class ZipExtractor {
 		$process = new Process($command);
 		$process->setTimeout(null);
 		$process->run();
-		echo $process->getErrorOutput();
+		if ($this->output) {
+			$this->output->writeln($process->getErrorOutput());
+		}
 		return $process->isSuccessful();
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function extractZipArchive(){
 		$zipArchive = new ZipArchive();
 
-		if (true !== ($retval = $zipArchive->open($this->file))){
-			throw new \UnexpectedValueException($this->getErrorMessage($retval), $retval);
+		if (true !== ($exitCode = $zipArchive->open($this->file))){
+			throw new \UnexpectedValueException($this->getErrorMessage($exitCode), $exitCode);
 		}
 
 		if (true !== $zipArchive->extractTo($this->path)){
@@ -73,8 +89,12 @@ class ZipExtractor {
 		return true;
 	}
 
-	protected function getErrorMessage($retval){
-		switch ($retval){
+	/**
+	 * @param int $exitCode
+	 * @return string
+	 */
+	protected function getErrorMessage($exitCode){
+		switch ($exitCode){
 			case ZipArchive::ER_EXISTS:
 				return sprintf("File '%s' already exists.", $this->file);
 			case ZipArchive::ER_INCONS:
@@ -94,8 +114,7 @@ class ZipExtractor {
 			case ZipArchive::ER_SEEK:
 				return sprintf("Zip seek error (%s)", $this->file);
 			default:
-				return sprintf("'%s' is not a valid zip archive, got error code: %s", $this->file, $retval);
+				return sprintf("'%s' is not a valid zip archive, got error code: %s", $this->file, $exitCode);
 		}
 	}
-
 }

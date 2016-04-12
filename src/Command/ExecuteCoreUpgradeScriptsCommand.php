@@ -27,7 +27,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Owncloud\Updater\Utils\OccRunner;
 use Owncloud\Updater\Utils\ZipExtractor;
-use Owncloud\Updater\Utils\BzipExtractor;
 
 class ExecuteCoreUpgradeScriptsCommand extends Command {
 
@@ -73,11 +72,8 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 			}
 
 			$output->writeln('Extracting source into ' . $fullExtractionPath);
-			if (preg_match('|\.tar\.bz2$|', $path)){
-				$extractor = new BzipExtractor($path, $fullExtractionPath);
-			} else {
-				$extractor = new ZipExtractor($path, $fullExtractionPath);
-			}
+			$extractor = new ZipExtractor($path, $fullExtractionPath, $output);
+
 			try{
 				$extractor->extract();
 			} catch (\Exception $e){
@@ -112,9 +108,6 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 					throw ($e);
 				}
 			}
-
 		}
-
 	}
-
 }
