@@ -22,6 +22,7 @@
 
 namespace Owncloud\Updater\Console;
 
+use Owncloud\Updater\Utils\DocLink;
 use Owncloud\Updater\Utils\Locator;
 use Pimple\Container;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -118,6 +119,11 @@ class Application extends \Symfony\Component\Console\Application {
 			$commandName = $this->getCommandName($input);
 			try{
 				$configReader->init();
+				$this->diContainer['utils.docLink'] = function($c){
+					$locator = $c['utils.locator'];
+					$installedVersion = implode('.', $locator->getInstalledVersion());
+					return new DocLink($installedVersion);
+				};
 			} catch (ProcessFailedException $e){
 				if (!in_array($commandName, $this->allowFailure)){
 					$this->logException($e);
