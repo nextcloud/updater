@@ -28,7 +28,6 @@ use Owncloud\Updater\Utils\Locator;
 class Checkpoint {
 
 	const CORE_DIR = 'core';
-	const THIRDPARTY_DIR = '3rdparty';
 	const APP_DIR = 'apps';
 
 	/**
@@ -76,10 +75,7 @@ class Checkpoint {
 			$configDirSrc = $this->locator->getOwnCloudRootPath() . '/config';
 			$configDirDst = $checkpointCorePath . '/config';
 			$this->fsHelper->copyr($configDirSrc, $configDirDst, true);
-
-			//copy 3rdparty
-			$this->fsHelper->copyr($this->locator->getOwnCloudRootPath() . '/' . self::THIRDPARTY_DIR, $checkpointCorePath . '/' . self::THIRDPARTY_DIR, true);
-
+			
 			$checkpointAppPath = $checkpointPath . '/' . self::APP_DIR;
 			$this->fsHelper->mkdir($checkpointAppPath);
 			$appManager = Application::$container['utils.appmanager'];
