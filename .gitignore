@@ -6,3 +6,4 @@
 /data
 /update.log
 /src/Tests/clover.xml
+*.exe
