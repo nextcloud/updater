@@ -21,10 +21,7 @@
 
 use Pimple\Container;
 use GuzzleHttp\Client;
-use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\Console\Output\StreamOutput;
 use Owncloud\Updater\Console\Application;
-use Symfony\Component\Console\Logger\ConsoleLogger;
 use Owncloud\Updater\Utils\AppManager;
 use Owncloud\Updater\Utils\Checkpoint;
 use Owncloud\Updater\Utils\ConfigReader;
@@ -86,18 +83,6 @@ $c['utils.filesystemhelper'] = function($c){
 };
 $c['utils.checkpoint'] = function($c){
 	return new Checkpoint($c['utils.locator'], $c['utils.filesystemhelper']);
-};
-
-$c['logger.output'] = function($c){
-	$stream = fopen(CURRENT_DIR . '/update.log', 'a+');
-	if ($stream === false){
-		return new NullOutput();
-	} else {
-		return new StreamOutput($stream, StreamOutput::VERBOSITY_DEBUG, false);
-	}
-};
-$c['logger'] = function($c){
-	return new ConsoleLogger($c['logger.output']);
 };
 $c['utils.configReader'] = function($c){
 	return new ConfigReader($c['utils.occrunner']);

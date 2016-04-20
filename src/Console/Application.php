@@ -24,6 +24,8 @@ namespace Owncloud\Updater\Console;
 
 use Owncloud\Updater\Utils\Locator;
 use Pimple\Container;
+use Symfony\Component\Console\Logger\ConsoleLogger;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -31,6 +33,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 use \Symfony\Component\Process\Exception\ProcessFailedException;
 
+/**
+ * Class Application
+ *
+ * @package Owncloud\Updater\Console
+ */
 class Application extends \Symfony\Component\Console\Application {
 
 	/** @var Container */
@@ -38,6 +45,10 @@ class Application extends \Symfony\Component\Console\Application {
 
 	/** @var Container */
 	protected $diContainer;
+
+	/** @var ConsoleLogger */
+	protected $fallbackLogger;
+
 
 	/** @var array */
 	protected $allowFailure = [
@@ -70,7 +81,17 @@ class Application extends \Symfony\Component\Console\Application {
 	 * @return \Psr\Log\LoggerInterface
 	 */
 	public function getLogger(){
-		return $this->diContainer['logger'];
+		if (isset($this->diContainer['logger'])) {
+			return $this->diContainer['logger'];
+		}
+
+		// Logger is not available yet, fallback to stdout
+		if (is_null($this->fallbackLogger)){
+			$output = new ConsoleOutput();
+			$this->fallbackLogger = new ConsoleLogger($output);
+		}
+
+		return $this->fallbackLogger;
 	}
 
 	/**
@@ -83,15 +104,18 @@ class Application extends \Symfony\Component\Console\Application {
 		$this->getLogger()->error($buffer->fetch());
 	}
 
+	/**
+	 * Runs the current application.
+	 *
+	 * @param InputInterface $input An Input instance
+	 * @param OutputInterface $output An Output instance
+	 * @return int 0 if everything went fine, or an error code
+	 * @throws \Exception
+	 */
 	public function doRun(InputInterface $input, OutputInterface $output){
-		if (!($this->diContainer['logger.output'] instanceof StreamOutput)){
-			$output->writeln('[Warning] Failed to init logger. Logging is disabled.');
-			$output->writeln(CURRENT_DIR . ' is not writable');
-		}
 		try{
 			$configReader = $this->diContainer['utils.configReader'];
 			$commandName = $this->getCommandName($input);
-
 			try{
 				$configReader->init();
 			} catch (ProcessFailedException $e){
@@ -115,6 +139,13 @@ class Application extends \Symfony\Component\Console\Application {
 		}
 	}
 
+	/**
+	 * @param Command $command
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
+	 * @return int
+	 * @throws \Exception
+	 */
 	protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output){
 		if ($command instanceof \Owncloud\Updater\Command\Command){
 			$command->setContainer($this->getContainer());
@@ -135,7 +166,24 @@ class Application extends \Symfony\Component\Console\Application {
 	}
 
 	/**
-	 * Check for owncloud instance
+	 * @param string $baseDir
+	 */
+	protected function initLogger($baseDir){
+		$container = $this->getContainer();
+		$container['logger.output'] = function($c) use ($baseDir) {
+			$stream = @fopen($baseDir . '/update.log', 'a+');
+			if ($stream === false){
+				$stream = @fopen('php://stderr', 'a');
+			}
+			return new StreamOutput($stream, StreamOutput::VERBOSITY_DEBUG, false);
+		};
+		$container['logger'] = function($c){
+			return new ConsoleLogger($c['logger.output']);
+		};
+	}
+
+	/**
+	 * Check for ownCloud instance
 	 * @throws \RuntimeException
 	 */
 	protected function assertOwnCloudFound(){
@@ -173,6 +221,10 @@ class Application extends \Symfony\Component\Console\Application {
 			throw new \RuntimeException('Datadirectory ' . $dataDir . ' is not writable.');
 		}
 
+		if (!isset($this->diContainer['logger'])) {
+			$this->initLogger($dataDir);
+		}
+
 		if (!$fsHelper->fileExists($locator->getUpdaterBaseDir())){
 			$fsHelper->mkdir($locator->getUpdaterBaseDir());
 		}
@@ -184,5 +236,4 @@ class Application extends \Symfony\Component\Console\Application {
 			$fsHelper->mkdir($locator->getCheckpointDir());
 		}
 	}
-
 }
