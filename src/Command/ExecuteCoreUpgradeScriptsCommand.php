@@ -96,7 +96,7 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 			$newSourcesDir = $fullExtractionPath . '/owncloud';
 
 			foreach ($locator->getRootDirContent() as $dir){
-				$this->getApplication()->getLogger()->debug('Moving ' . $dir);
+				$this->getApplication()->getLogger()->debug('Replacing ' . $dir);
 				$fsHelper->tripleMove($oldSourcesDir, $newSourcesDir, $tmpDir, $dir);
 			}
 			

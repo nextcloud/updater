@@ -71,10 +71,12 @@ class UpgradeShippedAppsCommand extends Command {
 				$newPath = $newAppsDir . '/' . $appId;
 				
 				if (file_exists($oldPath)){
-					$fsHelper->move($oldPath, $tmpAppsDir . '/' . $appId);
+					$fsHelper->copyr($oldPath, $tmpAppsDir . '/' . $appId, false);
+					$fsHelper->rmdirr($oldPath);
 				}
 				if (file_exists($newPath)){
-					$fsHelper->move($newPath, $oldPath);
+					$fsHelper->copyr($newPath, $oldPath, false);
+					$fsHelper->rmdirr($newPath);
 				}
 				try {
 					$plain = $this->occRunner->run('upgrade');
