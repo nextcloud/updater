@@ -163,8 +163,13 @@ class Locator {
 		return $this->getUpdaterBaseDir() . '/download';
 	}
 
+	/**
+	 * Absolute path to a temporary directory
+	 * to extract downloaded packages into
+	 * @return string
+	 */
 	public function getExtractionBaseDir(){
-		 return $this->ownCloudRootPath . "/_oc_upgrade";
+		 return $this->getUpdaterBaseDir() . "/_oc_upgrade";
 	}
 
 	/**
