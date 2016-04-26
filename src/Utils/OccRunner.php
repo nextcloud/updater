@@ -41,7 +41,7 @@ class OccRunner {
 
 	public function run($args){
 		$occPath = $this->locator->getPathToOccFile();
-		$cmd = "php $occPath $args";
+		$cmd = "php $occPath --no-warnings $args";
 		$process = new Process($cmd);
 		$process->setTimeout(null);
 		$process->run();
@@ -53,7 +53,7 @@ class OccRunner {
 	}
 
 	public function runJson($args){
-		$plain = $this->run('--no-warnings ' . $args . '  --output "json"');
+		$plain = $this->run($args . '  --output "json"');
 		$decoded = json_decode($plain, true);
 		if (!is_array($decoded)){
 			throw new \UnexpectedValueException('Could not parse a response for ' . $args . '. Please check if the current shell user can run occ command. Raw output: ' . PHP_EOL . $plain);
