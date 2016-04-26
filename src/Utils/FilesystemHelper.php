@@ -171,7 +171,7 @@ class FilesystemHelper {
 		}
 	}
 
-	protected function rmdirr($dir) {
+	public function rmdirr($dir) {
 		if(is_dir($dir)) {
 			$files = scandir($dir);
 			foreach($files as $file) {
