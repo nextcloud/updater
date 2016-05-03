@@ -94,6 +94,12 @@ class AppManager {
 		return $allApps;
 	}
 
+	public function getNotShippedApps(){
+		$shippedApps = $this->occRunner->runJson('app:list --shipped false');
+		$allApps = array_merge(array_keys($shippedApps['enabled']), array_keys($shippedApps['disabled']));
+		return $allApps;
+	}
+
 	public function getShippedApps(){
 		$shippedApps = $this->occRunner->runJson('app:list --shipped true');
 		$allApps = array_merge(array_keys($shippedApps['enabled']), array_keys($shippedApps['disabled']));
