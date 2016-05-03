@@ -155,7 +155,7 @@ class Checkpoint {
 	 * Return array of all checkpoint ids
 	 * @return array
 	 */
-	protected function getAllCheckpointIds(){
+	public function getAllCheckpointIds(){
 		$checkpointDir = $this->locator->getCheckpointDir();
 		$content = $this->fsHelper->isDir($checkpointDir) ? $this->fsHelper->scandir($checkpointDir) : [];
 		$checkpoints = array_filter(
@@ -182,7 +182,7 @@ class Checkpoint {
 	 * @param string $checkpointId id of checkpoint
 	 * @return string
 	 */
-	protected function getCheckpointPath($checkpointId){
+	public function getCheckpointPath($checkpointId){
 		return $this->locator->getCheckpointDir() . '/' . $checkpointId;
 	}
 

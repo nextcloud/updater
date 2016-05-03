@@ -57,7 +57,7 @@ class Locator {
 	public function getRootDirContent(){
 		return [
 			"3rdparty",
-			"config/config.sample.php",
+			"config",
 			"core",
 			"l10n",
 			"lib",
