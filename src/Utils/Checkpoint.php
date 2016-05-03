@@ -153,7 +153,7 @@ class Checkpoint {
 
 	/**
 	 * Get the most recent checkpoint Id
-	 * @return bool
+	 * @return string|bool
 	 */
 	public function getLastCheckpointId(){
 		$allCheckpointIds = $this->getAllCheckpointIds();

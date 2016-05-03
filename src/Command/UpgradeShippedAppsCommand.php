@@ -52,39 +52,22 @@ class UpgradeShippedAppsCommand extends Command {
 
 		if ($feed){
 			$locator = $this->container['utils.locator'];
-			$appManager = $this->container['utils.appmanager'];
 			$fsHelper = $this->container['utils.filesystemhelper'];
 			
 			$fullExtractionPath = $locator->getExtractionBaseDir() . '/' . $feed->getVersion();
 			$newAppsDir = $fullExtractionPath . '/owncloud/apps';
-			$tmpAppsDir = $locator->getExtractionBaseDir()
-					. '/'
-					. $registry->get('installedVersion')
-					. '/apps'
-			;
-			$fsHelper->removeIfExists($tmpAppsDir);
-			$fsHelper->mkDir($tmpAppsDir);
-			$shippedApps =$appManager->getShippedApps();
-			foreach ($shippedApps as $appId){
-				$oldPath = $appManager->getAppPath($appId);
-				$output->writeln('Upgrading the application ' . $appId);
-				$newPath = $newAppsDir . '/' . $appId;
-				
-				if (file_exists($oldPath)){
-					$fsHelper->copyr($oldPath, $tmpAppsDir . '/' . $appId, false);
-					$fsHelper->rmdirr($oldPath);
-				}
-				if (file_exists($newPath)){
-					$fsHelper->copyr($newPath, $oldPath, false);
-					$fsHelper->rmdirr($newPath);
-				}
-				try {
-					$plain = $this->occRunner->run('upgrade');
-					$output->writeln($plain);
-				} catch (ProcessFailedException $e){
-					if ($e->getProcess()->getExitCode() !== 3){
-						throw ($e);
-					}
+			$newAppsList = $fsHelper->scandirFiltered($newAppsDir);
+			foreach ($newAppsList as $appId){
+				$output->writeln('Copying the application ' . $appId);
+				$fsHelper->copyr($newAppsDir . '/' . $appId, $locator->getOwnCloudRootPath() . '/apps/' . $appId, false);
+			}
+
+			try {
+				$plain = $this->occRunner->run('upgrade');
+				$output->writeln($plain);
+			} catch (ProcessFailedException $e){
+				if ($e->getProcess()->getExitCode() !== 3){
+					throw ($e);
 				}
 			}
 		}
