@@ -33,6 +33,20 @@ class FilesystemHelper {
 	}
 
 	/**
+	 * Wrapper for scandir function. 
+	 * Filters current and parent directories
+	 * @param string $path
+	 * @return array
+	 */
+	public function scandirFiltered($path){
+		$content = $this->scandir($path);
+		if (is_array($content)){
+			return array_diff($content, ['.', '..']);
+		}
+		return [];
+	}
+
+	/**
 	 * Wrapper for scandir function
 	 * @param string $path
 	 * @return array
