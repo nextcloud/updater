@@ -39,6 +39,14 @@ class CheckSystemCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output){
 		$locator = $this->container['utils.locator'];
 		$fsHelper = $this->container['utils.filesystemhelper'];
+		/** @var \Owncloud\Updater\Utils\Registry $registry */
+		$registry = $this->container['utils.registry'];
+		/** @var  \Owncloud\Updater\Utils\AppManager  $occRunner */
+		$appManager = $this->container['utils.appmanager'];
+		$registry->set(
+			'shippedApps',
+			$appManager->getShippedApps()
+		);
 		$occRunner = $this->container['utils.occrunner'];
 
 		$collection = new Collection();
