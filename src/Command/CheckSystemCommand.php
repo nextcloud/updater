@@ -44,8 +44,8 @@ class CheckSystemCommand extends Command {
 		/** @var  \Owncloud\Updater\Utils\AppManager  $occRunner */
 		$appManager = $this->container['utils.appmanager'];
 		$registry->set(
-			'shippedApps',
-			$appManager->getShippedApps()
+			'notShippedApps',
+			$appManager->getNotShippedApps()
 		);
 		$occRunner = $this->container['utils.occrunner'];
 
