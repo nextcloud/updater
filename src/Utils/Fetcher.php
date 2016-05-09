@@ -155,7 +155,13 @@ class Fetcher {
 		$version['edition'] = $this->configReader->getEdition();
 		$version['build'] = $this->locator->getBuild();
 
-		$url = self::DEFAULT_BASE_URL . '?version=' . implode('x', $version);
+		// Read updater server URL from config
+		$updaterServerUrl = isset($this->configReader->get(['system'])['updater.server.url']) ? $this->configReader->get(['system'])['updater.server.url'] : '';
+		if($updaterServerUrl === '') {
+			$updaterServerUrl = self::DEFAULT_BASE_URL;
+		}
+
+		$url = $updaterServerUrl . '?version=' . implode('x', $version);
 		return $url;
 	}
 
