@@ -36,11 +36,31 @@ class EnableNotShippedAppsCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output){
+		/** @var \Owncloud\Updater\Utils\Locator $locator */
+		$locator = $this->container['utils.locator'];
+		/** @var \Owncloud\Updater\Utils\Checkpoint $checkpoint */
+		$checkpoint = $this->container['utils.checkpoint'];
+		/** @var \Owncloud\Updater\Utils\FilesystemHelper $fsHelper */
+		$fsHelper = $this->container['utils.filesystemhelper'];
+
 		$registry = $this->container['utils.registry'];
+
+		$notShippedApps = $registry->get('notShippedApps');
+		$notShippedApps = is_array($notShippedApps) ? $notShippedApps : [];
+
+		$lastCheckpointId = $checkpoint->getLastCheckpointId();
+		$lastCheckpointPath = $checkpoint->getCheckpointPath($lastCheckpointId);
+		if ($lastCheckpointId){
+			$oldSourcesDir = $locator->getOwnCloudRootPath();
+			foreach ($notShippedApps as $notShippedApp) {
+				$fsHelper->copyr($lastCheckpointPath . '/apps/' . $notShippedApp, $oldSourcesDir . '/apps/' . $notShippedApp, false);
+			}
+		}
+
+		/** @var \Owncloud\Updater\Utils\AppManager $appManager */
 		$appManager = $registry->get('appManager');
 		if (!is_null($appManager)){
 			$appManager->reenableNotShippedApps($output);
 		}
 	}
-
 }
