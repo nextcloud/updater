@@ -156,8 +156,8 @@ class Fetcher {
 		$version['build'] = $this->locator->getBuild();
 
 		// Read updater server URL from config
-		$updaterServerUrl = isset($this->configReader->get(['system'])['updater.server.url']) ? $this->configReader->get(['system'])['updater.server.url'] : '';
-		if($updaterServerUrl === '') {
+		$updaterServerUrl = $this->configReader->get(['system', 'updater.server.url']);
+		if ((bool) $updaterServerUrl === false){
 			$updaterServerUrl = self::DEFAULT_BASE_URL;
 		}
 
