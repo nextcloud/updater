@@ -22,9 +22,9 @@
 
 namespace Owncloud\Updater\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
+use Owncloud\Updater\Utils\Checkpoint;
+use Owncloud\Updater\Utils\FilesystemHelper;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Owncloud\Updater\Utils\OccRunner;
@@ -51,9 +51,12 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output){
 		$locator = $this->container['utils.locator'];
+		/** @var FilesystemHelper $fsHelper */
 		$fsHelper = $this->container['utils.filesystemhelper'];
 		$registry = $this->container['utils.registry'];
 		$fetcher = $this->container['utils.fetcher'];
+		/** @var Checkpoint $checkpoint */
+		$checkpoint = $this->container['utils.checkpoint'];
 
 		$installedVersion = implode('.', $locator->getInstalledVersion());
 		$registry->set('installedVersion', $installedVersion);
@@ -91,7 +94,6 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 			$tmpDir = $locator->getExtractionBaseDir() . '/' . $installedVersion;
 			$fsHelper->removeIfExists($tmpDir);
 			$fsHelper->mkdir($tmpDir);
-			$fsHelper->mkdir($tmpDir . '/config');
 			$oldSourcesDir = $locator->getOwncloudRootPath();
 			$newSourcesDir = $fullExtractionPath . '/owncloud';
 
@@ -100,16 +102,21 @@ class ExecuteCoreUpgradeScriptsCommand extends Command {
 				$fsHelper->tripleMove($oldSourcesDir, $newSourcesDir, $tmpDir, $dir);
 			}
 			
+			$fsHelper->copyr($tmpDir . '/config/config.php', $oldSourcesDir . '/config/config.php');
+			
 			try {
-				$fsHelper->move($oldSourcesDir . '/apps', $oldSourcesDir . '/__apps');
-				$fsHelper->mkdir($oldSourcesDir . '/apps');
+				$appDirectories = $fsHelper->scandirFiltered($oldSourcesDir . '/apps');
+				foreach ($appDirectories as $appDirectory){
+					$fsHelper->rmdirr($oldSourcesDir . '/apps/' . $appDirectory);
+				}
 				$plain = $this->occRunner->run('upgrade');
-				$fsHelper->removeIfExists($oldSourcesDir . '/apps');
-				$fsHelper->move($oldSourcesDir . '/__apps', $oldSourcesDir . '/apps');
 				$output->writeln($plain);
 			} catch (ProcessFailedException $e){
-				$fsHelper->removeIfExists($oldSourcesDir . '/apps');
-				$fsHelper->move($oldSourcesDir . '/__apps', $oldSourcesDir . '/apps');
+				$lastCheckpointId = $checkpoint->getLastCheckpointId();
+				if ($lastCheckpointId){
+					$lastCheckpointPath = $checkpoint->getCheckpointPath($lastCheckpointId);
+					$fsHelper->copyr($lastCheckpointPath . '/apps', $oldSourcesDir . '/apps', false);
+				}
 				if ($e->getProcess()->getExitCode() != 3){
 					throw ($e);
 				}

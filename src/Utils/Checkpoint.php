@@ -152,10 +152,19 @@ class Checkpoint {
 	}
 
 	/**
+	 * Get the most recent checkpoint Id
+	 * @return string|bool
+	 */
+	public function getLastCheckpointId(){
+		$allCheckpointIds = $this->getAllCheckpointIds();
+		return count($allCheckpointIds) > 0 ? end($allCheckpointIds) : false;
+	}
+
+	/**
 	 * Return array of all checkpoint ids
 	 * @return array
 	 */
-	protected function getAllCheckpointIds(){
+	public function getAllCheckpointIds(){
 		$checkpointDir = $this->locator->getCheckpointDir();
 		$content = $this->fsHelper->isDir($checkpointDir) ? $this->fsHelper->scandir($checkpointDir) : [];
 		$checkpoints = array_filter(
@@ -182,14 +191,14 @@ class Checkpoint {
 	 * @param string $checkpointId id of checkpoint
 	 * @return string
 	 */
-	protected function getCheckpointPath($checkpointId){
+	public function getCheckpointPath($checkpointId){
 		return $this->locator->getCheckpointDir() . '/' . $checkpointId;
 	}
 
 	/**
 	 * Produce an error on non-existing checkpoints
 	 * @param string $checkpointId id of checkpoint
-	 * @throws UnexpectedValueException if there is no checkpoint with this id
+	 * @throws \UnexpectedValueException if there is no checkpoint with this id
 	 */
 	private function assertCheckpointExists($checkpointId){
 		if (!$this->checkpointExists($checkpointId) || $checkpointId === ''){

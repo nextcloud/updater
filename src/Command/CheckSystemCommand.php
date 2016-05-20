@@ -21,11 +21,8 @@
 
 namespace Owncloud\Updater\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use Owncloud\Updater\Utils\Collection;
 
 class CheckSystemCommand extends Command {
@@ -42,6 +39,14 @@ class CheckSystemCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output){
 		$locator = $this->container['utils.locator'];
 		$fsHelper = $this->container['utils.filesystemhelper'];
+		/** @var \Owncloud\Updater\Utils\Registry $registry */
+		$registry = $this->container['utils.registry'];
+		/** @var  \Owncloud\Updater\Utils\AppManager  $occRunner */
+		$appManager = $this->container['utils.appmanager'];
+		$registry->set(
+			'notShippedApps',
+			$appManager->getNotShippedApps()
+		);
 		$occRunner = $this->container['utils.occrunner'];
 
 		$collection = new Collection();
