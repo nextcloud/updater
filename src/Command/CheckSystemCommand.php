@@ -69,7 +69,7 @@ class CheckSystemCommand extends Command {
 		}
 
 		if (count($notReadableFiles) || count($notWritableFiles)){
-			$output->writeln('<info>Please check if owner and permissions fot these files are correct.</info>');
+			$output->writeln('<info>Please check if owner and permissions for these files are correct.</info>');
 			$output->writeln('<info>See https://doc.owncloud.org/server/9.0/admin_manual/installation/installation_wizard.html#strong-perms-label for details.</info>');
 			return 2;
 		} else {
