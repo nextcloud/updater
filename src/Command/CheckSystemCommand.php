@@ -41,13 +41,13 @@ class CheckSystemCommand extends Command {
 		$fsHelper = $this->container['utils.filesystemhelper'];
 		/** @var \Owncloud\Updater\Utils\Registry $registry */
 		$registry = $this->container['utils.registry'];
-		/** @var  \Owncloud\Updater\Utils\AppManager  $occRunner */
+		/** @var  \Owncloud\Updater\Utils\AppManager  $appManager */
 		$appManager = $this->container['utils.appmanager'];
 		$registry->set(
 			'notShippedApps',
 			$appManager->getNotShippedApps()
 		);
-		$occRunner = $this->container['utils.occrunner'];
+		$docLink = $this->container['utils.docLink'];
 
 		$collection = new Collection();
 
@@ -70,7 +70,12 @@ class CheckSystemCommand extends Command {
 
 		if (count($notReadableFiles) || count($notWritableFiles)){
 			$output->writeln('<info>Please check if owner and permissions for these files are correct.</info>');
-			$output->writeln('<info>See https://doc.owncloud.org/server/9.0/admin_manual/installation/installation_wizard.html#strong-perms-label for details.</info>');
+			$output->writeln(
+				sprintf(
+					'<info>See %s for details.</info>',
+					$docLink->getAdminManualUrl('installation/installation_wizard.html#strong-perms-label')
+				)
+			);
 			return 2;
 		} else {
 			$output->writeln(' - file permissions are ok.');
