@@ -26,7 +26,7 @@ use Owncloud\Updater\Utils\Feed;
 
 class Fetcher {
 
-	const DEFAULT_BASE_URL = 'https://updates.owncloud.com/server/';
+	const DEFAULT_BASE_URL = 'https://updates.nextcloud.org/server/';
 
 	/**
 	 * @var Locator $locator
