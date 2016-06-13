@@ -59,7 +59,6 @@ body {
 #body-login {
 	text-align: center;
 	background-color: #0082c9; /* Old browsers */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#35537a', endColorstr='#1d2d44',GradientType=0 ); /* IE6-9 */
 }
 
 .float-spinner {
