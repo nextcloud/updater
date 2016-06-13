@@ -5,7 +5,7 @@
 <header role="banner"><div id="header">
 		<a href="#" id="owncloud" tabindex="1">
 			<div class="logo-icon svg">
-				<h1 class="hidden-visually">ownCloud</h1>
+				<h1 class="hidden-visually">Nextcloud</h1>
 			</div>
 		</a>
 

@@ -3,7 +3,7 @@
 <!--[if (gt IE 9)|!(IE)]><!--><html class="ng-csp" data-placeholder-focus="false" lang="en" ><!--<![endif]-->
 	<head>
 		<meta charset="utf-8">
-		<title>ownCloud	Updater - <?=$this->e($title)?></title>
+		<title>Nextcloud Updater - <?=$this->e($title)?></title>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="referrer" content="never">
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">

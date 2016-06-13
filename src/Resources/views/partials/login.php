@@ -6,14 +6,14 @@
 				<header role="banner">
 					<div id="header">
 						<div class="logo svg">
-							<h1 class="hidden-visually">ownCloud</h1>
+							<h1 class="hidden-visually">Nextcloud</h1>
 						</div>
 						<div id="logo-claim" style="display:none;"></div>
 					</div>
 				</header>
 
 				<br/>
-				<p class="warning">Please provide the "updater.secret" from your ownCloud's config/config.php:</p>
+				<p class="warning">Please provide the "updater.secret" from your Nextcloud's config/config.php:</p>
 				<form method="post" name="login">
 					<fieldset>
 						<input type="password" name="password" id="password" value=""
@@ -31,7 +31,7 @@
 		</div>
 		<footer role="contentinfo">
 			<p class="info">
-				<a href="https://owncloud.org" target="_blank" rel="noreferrer">ownCloud</a> – web services under your control
+				<a href="https://nextcloud.com" target="_blank" rel="noreferrer">Nextcloud</a> – web services under your control
 			</p>
 		</footer>
 <?php $this->stop() ?>
