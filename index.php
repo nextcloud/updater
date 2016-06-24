@@ -634,71 +634,101 @@ Starting update process. Please be patient...
 			document.getElementById('progress').innerHTML = previousValue + "\r" + text;
 		}
 
-		function performStep(number) {
+		function performStep(number, callback) {
 			var httpRequest = new XMLHttpRequest();
-			httpRequest.open("POST", window.location.href, false);
+			httpRequest.open("POST", window.location.href);
 			httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			httpRequest.onreadystatechange = function () {
+				if (httpRequest.readyState != 4) { // 4 - request done
+					return;
+				}
+
+				if (httpRequest.status != 200) {
+					// failure
+				}
+
+				callback(JSON.parse(httpRequest.responseText));
+			};
 			httpRequest.send("step="+number);
-			var data = httpRequest.responseText;
-			return JSON.parse(data);
 		}
 
-		// Step 1: Check for expected files
-		addStepText('Start: Check for expected files');
-		var response = performStep(1);
-		if(response.proceed === true) {
-			addStepText('Success: Check for expected files has succeeded');
 
-			// Step 2: Check for write permissions
-			addStepText('Start: Check for write permissions');
-			response = performStep(2);
-			if(response.proceed === true) {
-				addStepText('Success: Check for write permissions');
-
-				response = performStep(3);
+		var performStepCallbacks = {
+			1: function(response) {
 				if(response.proceed === true) {
-					// TODO: Put into loop and make non-rendering blocking
+					addStepText('Success: Check for expected files has succeeded');
+
+					// Step 2: Check for write permissions
+					addStepText('Start: Check for write permissions');
+					performStep(2, performStepCallbacks[2])
+				} else {
+					addStepText('Error: Check for all expected files failed. The following extra files have been found:');
+					response['response'].forEach(function(file) {
+						addStepText("\t"+file);
+					});
+				}
+			},
+			2: function(response) {
+				if(response.proceed === true) {
+					addStepText('Success: Check for write permissions');
+
+					performStep(3, performStepCallbacks[3]);
+				} else {
+					addStepText('Error: Check for all write permissions failed. The following places can not be written to:');
+					response['response'].forEach(function(file) {
+						addStepText("\t"+file);
+					});
+				}
+			},
+			3: function(response) {
+				if(response.proceed === true) {
 					addStepText('Enabled maintenance mode');
 
 					addStepText('Start: Create backup');
-					performStep(4);
-					addStepText('Done: Create backup');
-
-					addStepText('Start: Download update');
-					performStep(5);
-					addStepText('Done: Download update');
-
-					addStepText('Start: Extract update');
-					performStep(6);
-					addStepText('Done: Extract update');
-
-					addStepText('Start: Replace Entry Points');
-					performStep(7);
-					addStepText('Done: Replace Entry Points');
-
-					addStepText('Start: Delete old files');
-					performStep(8);
-					addStepText('Done: Delete old files');
-
-					addStepText('Start: Move new files in place');
-					performStep(9);
-					addStepText('Done: Move new files in place');
-					addStepText('!!! Update done !!!');
+					performStep(4, performStepCallbacks[4]);
 				} else {
 					addStepText('Error: Could not enable maintenance mode in config.php');
 				}
-			} else {
-				addStepText('Error: Check for all write permissions failed. The following places can not be written to:');
-				response['response'].forEach(function(file) {
-					addStepText("\t"+file);
-				});
+			},
+			4: function(response) {
+				addStepText('Done: Create backup');
+
+				addStepText('Start: Download update');
+				performStep(5, performStepCallbacks[5]);
+			},
+			5: function(response) {
+				addStepText('Done: Download update');
+
+				addStepText('Start: Extract update');
+				performStep(6, performStepCallbacks[6]);
+			},
+			6: function(response) {
+				addStepText('Done: Extract update');
+
+				addStepText('Start: Replace Entry Points');
+				performStep(7, performStepCallbacks[7]);
+			},
+			7: function(response) {
+				addStepText('Done: Replace Entry Points');
+
+				addStepText('Start: Delete old files');
+				performStep(8, performStepCallbacks[8]);
+			},
+			8: function(response) {
+				addStepText('Done: Delete old files');
+
+				addStepText('Start: Move new files in place');
+				performStep(9, performStepCallbacks[9]);
+			},
+			9: function(response) {
+				addStepText('Done: Move new files in place');
+				addStepText('!!! Update done !!!');
 			}
-		} else {
-			addStepText('Error: Check for all expected files failed. The following extra files have been found:');
-			response['response'].forEach(function(file) {
-				addStepText("\t"+file);
-			});
-		}
+		};
+
+		// Step 1: Check for expected files
+		addStepText('Start: Check for expected files');
+		performStep(1, performStepCallbacks[1]);
 	</script>
 <?php endif; ?>
 
