@@ -19,6 +19,18 @@
  *
  */
 
+class UpdateException extends \Exception {
+	protected $data;
+
+	public function __construct($data) {
+		$this->data = $data;
+	}
+
+	public function getData() {
+		return $this->data;
+	}
+}
+
 class Updater {
 	/** @var array */
 	private $configValues = [];
@@ -79,6 +91,7 @@ class Updater {
 			'updater',
 			// Files
 			'index.html',
+			'indie.json',
 			'.user.ini',
 			'console.php',
 			'cron.php',
@@ -102,7 +115,10 @@ class Updater {
 	 * @param string $folder
 	 * @return RecursiveIteratorIterator
 	 */
-	private function getRecursiveDirectoryIterator($folder = __DIR__ . '/../') {
+	private function getRecursiveDirectoryIterator($folder = null) {
+		if ($folder === null) {
+			$folder = __DIR__ . '/../';
+		}
 		return new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator($folder, RecursiveDirectoryIterator::SKIP_DOTS),
 			RecursiveIteratorIterator::CHILD_FIRST
@@ -110,10 +126,7 @@ class Updater {
 	}
 
 	/**
-	 * Returns the files are are unexpected. If none unexpected files are found
-	 * an empty array is returned.
-	 *
-	 * @return array
+	 * Checks for files that are unexpected.
 	 */
 	public function checkForExpectedFilesAndFolders() {
 		$expectedElements = $this->getExpectedElementsList();
@@ -124,13 +137,13 @@ class Updater {
 			}
 		}
 
-		return $unexpectedElements;
+		if (count($unexpectedElements) !== 0) {
+			throw new UpdateException($unexpectedElements);
+		}
 	}
 
 	/**
-	 * Returns the files that are not writable
-	 *
-	 * @return array
+	 * Checks for files that are not writable
 	 */
 	public function checkWritePermissions() {
 		// TODO: Exclude data folder
@@ -140,14 +153,15 @@ class Updater {
 				$notWriteablePaths[] = $path;
 			}
 		}
-		return $notWriteablePaths;
+		if(count($notWriteablePaths) > 0) {
+			throw new UpdateException($notWriteablePaths);
+		}
 	}
 
 	/**
 	 * Sets the maintenance mode to the defined value
 	 *
 	 * @param bool $state
-	 * @return bool Whether it was possible to write to the config file or not
 	 */
 	public function setMaintenanceMode($state) {
 		/** @var array $CONFIG */
@@ -159,7 +173,9 @@ class Updater {
 		$content .= var_export($CONFIG, true);
 		$content .= ";\n";
 		$state = file_put_contents($configFileName, $content);
-		return $state !== false;
+		if ($state === false) {
+			throw new \Exception('Could not write to config.php');
+		}
 	}
 
 	/**
@@ -545,81 +561,44 @@ try {
 // TODO: Note when a step started and when one ended, also to prevent multiple people at the same time accessing the updater
 if(isset($_POST['step'])) {
 	set_time_limit(0);
-	switch($_POST['step']) {
-		case '1':
-			$unexpectedElements = $updater->checkForExpectedFilesAndFolders();
-			if(count($unexpectedElements) !== 0) {
-				echo(json_encode(['proceed' => false, 'response' => $unexpectedElements]));
-			} else {
-				echo(json_encode(['proceed' => true]));
-			}
-			break;
-		case '2':
-			$notWriteableFiles = $updater->checkWritePermissions();
-			if(count($notWriteableFiles) > 0) {
-				echo(json_encode(['proceed' => false, 'response' => $notWriteableFiles]));
-			} else {
-				echo(json_encode(['proceed' => true]));
-			}
-			break;
-		case '3':
-			$success = $updater->setMaintenanceMode(true);
-			if($success === true) {
-				echo(json_encode(['proceed' => true]));
-			} else {
-				echo(json_encode(['proceed' => false]));
-			}
-			break;
-		case '4':
-			try {
+	try {
+
+		switch ($_POST['step']) {
+			case '1':
+				$updater->checkForExpectedFilesAndFolders();
+				break;
+			case '2':
+				$updater->checkWritePermissions();
+				break;
+			case '3':
+				$updater->setMaintenanceMode(true);
+				break;
+			case '4':
 				$updater->createBackup();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '5':
-			try {
+				break;
+			case '5':
 				$updater->downloadUpdate();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '6':
-			try {
+				break;
+			case '6':
 				$updater->extractDownload();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '7':
-			// TODO: If it fails after step 7: Rollback
-			try {
+				break;
+			case '7':
+				// TODO: If it fails after step 7: Rollback
 				$updater->replaceEntryPoints();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '8':
-			try {
+				break;
+			case '8':
 				$updater->deleteOldFiles();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '9':
-			try {
+				break;
+			case '9':
 				$updater->moveNewVersionInPlace();
 				$updater->setMaintenanceMode(false);
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
+				break;
+		}
+		echo(json_encode(['proceed' => true]));
+	} catch (UpdateException $e) {
+		echo(json_encode(['proceed' => false, 'response' => $e->getData()]));
+	} catch (\Exception $e) {
+		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
 	}
 
 	die();
