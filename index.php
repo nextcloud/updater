@@ -19,6 +19,18 @@
  *
  */
 
+class UpdateException extends \Exception {
+	protected $data;
+
+	public function __construct($data) {
+		$this->data = $data;
+	}
+
+	public function getData() {
+		return $this->data;
+	}
+}
+
 class Updater {
 	/** @var array */
 	private $configValues = [];
@@ -79,6 +91,7 @@ class Updater {
 			'updater',
 			// Files
 			'index.html',
+			'indie.json',
 			'.user.ini',
 			'console.php',
 			'cron.php',
@@ -102,7 +115,10 @@ class Updater {
 	 * @param string $folder
 	 * @return RecursiveIteratorIterator
 	 */
-	private function getRecursiveDirectoryIterator($folder = __DIR__ . '/../') {
+	private function getRecursiveDirectoryIterator($folder = null) {
+		if ($folder === null) {
+			$folder = __DIR__ . '/../';
+		}
 		return new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator($folder, RecursiveDirectoryIterator::SKIP_DOTS),
 			RecursiveIteratorIterator::CHILD_FIRST
@@ -110,10 +126,7 @@ class Updater {
 	}
 
 	/**
-	 * Returns the files are are unexpected. If none unexpected files are found
-	 * an empty array is returned.
-	 *
-	 * @return array
+	 * Checks for files that are unexpected.
 	 */
 	public function checkForExpectedFilesAndFolders() {
 		$expectedElements = $this->getExpectedElementsList();
@@ -124,13 +137,13 @@ class Updater {
 			}
 		}
 
-		return $unexpectedElements;
+		if (count($unexpectedElements) !== 0) {
+			throw new UpdateException($unexpectedElements);
+		}
 	}
 
 	/**
-	 * Returns the files that are not writable
-	 *
-	 * @return array
+	 * Checks for files that are not writable
 	 */
 	public function checkWritePermissions() {
 		// TODO: Exclude data folder
@@ -140,14 +153,15 @@ class Updater {
 				$notWriteablePaths[] = $path;
 			}
 		}
-		return $notWriteablePaths;
+		if(count($notWriteablePaths) > 0) {
+			throw new UpdateException($notWriteablePaths);
+		}
 	}
 
 	/**
 	 * Sets the maintenance mode to the defined value
 	 *
 	 * @param bool $state
-	 * @return bool Whether it was possible to write to the config file or not
 	 */
 	public function setMaintenanceMode($state) {
 		/** @var array $CONFIG */
@@ -159,7 +173,9 @@ class Updater {
 		$content .= var_export($CONFIG, true);
 		$content .= ";\n";
 		$state = file_put_contents($configFileName, $content);
-		return $state !== false;
+		if ($state === false) {
+			throw new \Exception('Could not write to config.php');
+		}
 	}
 
 	/**
@@ -545,81 +561,44 @@ try {
 // TODO: Note when a step started and when one ended, also to prevent multiple people at the same time accessing the updater
 if(isset($_POST['step'])) {
 	set_time_limit(0);
-	switch($_POST['step']) {
-		case '1':
-			$unexpectedElements = $updater->checkForExpectedFilesAndFolders();
-			if(count($unexpectedElements) !== 0) {
-				echo(json_encode(['proceed' => false, 'response' => $unexpectedElements]));
-			} else {
-				echo(json_encode(['proceed' => true]));
-			}
-			break;
-		case '2':
-			$notWriteableFiles = $updater->checkWritePermissions();
-			if(count($notWriteableFiles) > 0) {
-				echo(json_encode(['proceed' => false, 'response' => $notWriteableFiles]));
-			} else {
-				echo(json_encode(['proceed' => true]));
-			}
-			break;
-		case '3':
-			$success = $updater->setMaintenanceMode(true);
-			if($success === true) {
-				echo(json_encode(['proceed' => true]));
-			} else {
-				echo(json_encode(['proceed' => false]));
-			}
-			break;
-		case '4':
-			try {
+	try {
+
+		switch ($_POST['step']) {
+			case '1':
+				$updater->checkForExpectedFilesAndFolders();
+				break;
+			case '2':
+				$updater->checkWritePermissions();
+				break;
+			case '3':
+				$updater->setMaintenanceMode(true);
+				break;
+			case '4':
 				$updater->createBackup();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '5':
-			try {
+				break;
+			case '5':
 				$updater->downloadUpdate();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '6':
-			try {
+				break;
+			case '6':
 				$updater->extractDownload();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '7':
-			// TODO: If it fails after step 7: Rollback
-			try {
+				break;
+			case '7':
+				// TODO: If it fails after step 7: Rollback
 				$updater->replaceEntryPoints();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '8':
-			try {
+				break;
+			case '8':
 				$updater->deleteOldFiles();
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
-		case '9':
-			try {
+				break;
+			case '9':
 				$updater->moveNewVersionInPlace();
 				$updater->setMaintenanceMode(false);
-				echo(json_encode(['proceed' => true]));
-			} catch (\Exception $e) {
-				echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
-			}
-			break;
+				break;
+		}
+		echo(json_encode(['proceed' => true]));
+	} catch (UpdateException $e) {
+		echo(json_encode(['proceed' => false, 'response' => $e->getData()]));
+	} catch (\Exception $e) {
+		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
 	}
 
 	die();
@@ -655,71 +634,101 @@ Starting update process. Please be patient...
 			document.getElementById('progress').innerHTML = previousValue + "\r" + text;
 		}
 
-		function performStep(number) {
+		function performStep(number, callback) {
 			var httpRequest = new XMLHttpRequest();
-			httpRequest.open("POST", window.location.href, false);
+			httpRequest.open("POST", window.location.href);
 			httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			httpRequest.onreadystatechange = function () {
+				if (httpRequest.readyState != 4) { // 4 - request done
+					return;
+				}
+
+				if (httpRequest.status != 200) {
+					// failure
+				}
+
+				callback(JSON.parse(httpRequest.responseText));
+			};
 			httpRequest.send("step="+number);
-			var data = httpRequest.responseText;
-			return JSON.parse(data);
 		}
 
-		// Step 1: Check for expected files
-		addStepText('Start: Check for expected files');
-		var response = performStep(1);
-		if(response.proceed === true) {
-			addStepText('Success: Check for expected files has succeeded');
 
-			// Step 2: Check for write permissions
-			addStepText('Start: Check for write permissions');
-			response = performStep(2);
-			if(response.proceed === true) {
-				addStepText('Success: Check for write permissions');
-
-				response = performStep(3);
+		var performStepCallbacks = {
+			1: function(response) {
 				if(response.proceed === true) {
-					// TODO: Put into loop and make non-rendering blocking
+					addStepText('Success: Check for expected files has succeeded');
+
+					// Step 2: Check for write permissions
+					addStepText('Start: Check for write permissions');
+					performStep(2, performStepCallbacks[2])
+				} else {
+					addStepText('Error: Check for all expected files failed. The following extra files have been found:');
+					response['response'].forEach(function(file) {
+						addStepText("\t"+file);
+					});
+				}
+			},
+			2: function(response) {
+				if(response.proceed === true) {
+					addStepText('Success: Check for write permissions');
+
+					performStep(3, performStepCallbacks[3]);
+				} else {
+					addStepText('Error: Check for all write permissions failed. The following places can not be written to:');
+					response['response'].forEach(function(file) {
+						addStepText("\t"+file);
+					});
+				}
+			},
+			3: function(response) {
+				if(response.proceed === true) {
 					addStepText('Enabled maintenance mode');
 
 					addStepText('Start: Create backup');
-					performStep(4);
-					addStepText('Done: Create backup');
-
-					addStepText('Start: Download update');
-					performStep(5);
-					addStepText('Done: Download update');
-
-					addStepText('Start: Extract update');
-					performStep(6);
-					addStepText('Done: Extract update');
-
-					addStepText('Start: Replace Entry Points');
-					performStep(7);
-					addStepText('Done: Replace Entry Points');
-
-					addStepText('Start: Delete old files');
-					performStep(8);
-					addStepText('Done: Delete old files');
-
-					addStepText('Start: Move new files in place');
-					performStep(9);
-					addStepText('Done: Move new files in place');
-					addStepText('!!! Update done !!!');
+					performStep(4, performStepCallbacks[4]);
 				} else {
 					addStepText('Error: Could not enable maintenance mode in config.php');
 				}
-			} else {
-				addStepText('Error: Check for all write permissions failed. The following places can not be written to:');
-				response['response'].forEach(function(file) {
-					addStepText("\t"+file);
-				});
+			},
+			4: function(response) {
+				addStepText('Done: Create backup');
+
+				addStepText('Start: Download update');
+				performStep(5, performStepCallbacks[5]);
+			},
+			5: function(response) {
+				addStepText('Done: Download update');
+
+				addStepText('Start: Extract update');
+				performStep(6, performStepCallbacks[6]);
+			},
+			6: function(response) {
+				addStepText('Done: Extract update');
+
+				addStepText('Start: Replace Entry Points');
+				performStep(7, performStepCallbacks[7]);
+			},
+			7: function(response) {
+				addStepText('Done: Replace Entry Points');
+
+				addStepText('Start: Delete old files');
+				performStep(8, performStepCallbacks[8]);
+			},
+			8: function(response) {
+				addStepText('Done: Delete old files');
+
+				addStepText('Start: Move new files in place');
+				performStep(9, performStepCallbacks[9]);
+			},
+			9: function(response) {
+				addStepText('Done: Move new files in place');
+				addStepText('!!! Update done !!!');
 			}
-		} else {
-			addStepText('Error: Check for all expected files failed. The following extra files have been found:');
-			response['response'].forEach(function(file) {
-				addStepText("\t"+file);
-			});
-		}
+		};
+
+		// Step 1: Check for expected files
+		addStepText('Start: Check for expected files');
+		performStep(1, performStepCallbacks[1]);
 	</script>
 <?php endif; ?>
 
