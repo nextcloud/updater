@@ -606,12 +606,264 @@ if(isset($_POST['step'])) {
 ?>
 
 <html>
+<head>
+	<style>
+		html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, dialog, figure, footer, header, hgroup, nav, section {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			outline: 0;
+			font-weight: inherit;
+			font-size: 100%;
+			font-family: inherit;
+			vertical-align: baseline;
+			cursor: default;
+		}
+		body {
+			font-family: 'Open Sans', Frutiger, Calibri, 'Myriad Pro', Myriad, sans-serif;
+			background-color: #ffffff;
+			font-weight: 400;
+			font-size: .8em;
+			line-height: 1.6em;
+			color: #000;
+			height: auto;
+		}
+		a {
+			border: 0;
+			color: #000;
+			text-decoration: none;
+			cursor: pointer;
+		}
+		ul {
+			list-style: none;
+		}
+		#header {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 45px;
+			line-height: 2.5em;
+			background-color: #0082c9;
+			box-sizing: border-box;
+		}
+		.header-appname {
+			color: #fff;
+			font-size: 20px;
+			font-weight: 300;
+			line-height: 45px;
+			padding: 0;
+			margin: 0;
+			display: inline-block;
+			position: absolute;
+			margin-left: 5px;
+		}
+		#header svg {
+			margin: 5px;
+		}
+
+		#content-wrapper {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			overflow-x: hidden;
+			padding-top: 45px;
+			box-sizing: border-box;
+		}
+
+		#content {
+			position: relative;
+			height: 100%;
+			margin: 0 auto;
+		}
+		#app-navigation {
+			width: 250px;
+			height: 100%;
+			float: left;
+			box-sizing: border-box;
+			background-color: #fff;
+			padding-bottom: 44px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			border-right: 1px solid #eee;
+		}
+		#app-navigation > ul {
+			position: relative;
+			height: 100%;
+			width: inherit;
+			overflow: auto;
+			box-sizing: border-box;
+		}
+		#app-navigation li {
+			position: relative;
+			width: 100%;
+			box-sizing: border-box;
+		}
+		#app-navigation li > a {
+			display: block;
+			width: 100%;
+			line-height: 44px;
+			min-height: 44px;
+			padding: 0 12px;
+			overflow: hidden;
+			box-sizing: border-box;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			color: #000;
+			opacity: .57;
+		}
+		#app-navigation li:hover > a, #app-navigation li:focus > a {
+			opacity: 1;
+		}
+
+
+		#app-content {
+			position: relative;
+			height: 100%;
+			overflow-y: auto;
+		}
+		#progress {
+			width: 600px;
+		}
+		.section {
+			padding: 25px 30px;
+		}
+		.hidden {
+			display: none;
+		}
+
+		li.step{
+			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=57)";
+			opacity: .57;
+		}
+
+		li.step h2 {
+			padding: 5px 2px 5px 30px;
+			margin-top: 12px;
+			margin-bottom: 0;
+			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=57)";
+			opacity: .57;
+			background-position:8px 50%;
+			background-repeat: no-repeat;
+		}
+
+		li.current-step, li.passed-step, li.failed-step{
+			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+			opacity: 1;
+		}
+
+		li.current-step h2 {
+			background-image: url(data:image/gif;base64,R0lGODlhEAAQAOMAAP///zMzM9HR0ZycnMTExK6url5eXnd3d9/f3+np6cnJyUpKSjY2Nv///////////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJCgAPACwAAAAAEAAQAAAETvDJ+UqhWA7JmCSZtIDdo4ChsTwlkWDG9Szb9yQEehgGkuUKGCpE/AEHyJqRECxKfBjEkJJ7fZhRycmHkwhA4CmG4EORQyfb4xuyPsSSCAAh+QQJCgAPACwAAAAAEAAQAAAEUvDJ+QqhWBa5lmSZZChPV4LhYZQLwmzUQD7GMIEJcT3EMCQZ3WwyEISORx1BoVAmhcgJIoPYYXRAic5ImT6a05xEcClbg9MdwYtpasfnSZYXigAAIfkECQoADwAsAAAAABAAEAAABFDwyfkIoVgqaYxcmTQgT1eCYTGURrJcTyIR5DPAD1gwjCRYMgwPNaGFaqGMhaBQLJPLTXKCpOIowCJBgKk5SQnYr1K5YowwY8Y585klQXImAgAh+QQJCgAPACwAAAAAEAAQAAAEUPDJ+YSgWCI5hjSZRCRP9xxgqBDlkBjsQz7ERtsPSCyLJBCjDC81qYVmoQxjuVgBk0tGLznBVWMYIBJ4odhWm0TsR6NhM8aYMbMS+c6TbSgCACH5BAkKAA8ALAAAAAAQABAAAARQ8Mn5EKJY3leKHJlEJJw3gKFClMmwkQ+xyRNIGIYkEGOGHxhaBhbKLI4GFa94XOSKtQxilWEwPCKCALNZMEAJ6i4Wo4ZoVCFGJdKZKcT3JAIAIfkECQoADwAsAAAAABAAEAAABFDwyflSolgiSYgsGXd1DwGGitclxVZxLuGWDzIMkrBmN07JoUsoZCgeUiSicUjxURCezGIRLREEmAHWsMAlojoag8EERhlOSoojMZAzQlomAgAh+QQJCgAPACwAAAAAEAAQAAAEUPDJ+VKiWCJJCM/c1T2KB5ZPlxBXxW0pnFbjI6hZp2CETLWgzGBYKNWExCBlkEGYMAbDsyPAFKoHQ4EmuT0Yj8VC2ftKFswMyvw4jDNAcCYCACH5BAkKAA8ALAAAAAAQABAAAARQ8Mn5UqJYIkkIz9zVPYoHlk+XEFfFbSmcVuMjqFmnYIRMtaCcrlQTEnbBiYmCWFIGA1lHwNtAdyuJgfFYPAyGJGPQ1RZAC275cQhnzhJvJgIAIfkECQoADwAsAAAAABAAEAAABFHwyflSolgiSQjP3NU9igeWT5cQV8VtKZxW4yOoWadghEy1oJyuVBMSdsGJTzJggHASBsOAEVxKm4LzcVg8qINBciGmPgZIjMH7lRTEuYkZEwEAIfkECQoADwAsAAAAABAAEAAABE/wyflSolgiSQjP3NU9igeWT5cQV8VtKZxW4yOoWadghEy1oJyOQWQEO4RdcOKTDBYgnGSxOGAQl9KGAH0cDI9BygQyFMKvMhhtI1PI4kwEACH5BAkKAA8ALAAAAAAQABAAAARQ8Mn5UqJYIkkIz9zVPYoHlk+XEFclMQO3fatpMIyQdQoGgy3QjofDCTuEnnAyoxQMINXEYDhgEJfShgB9FGKekXDQMxGalEEsJRGYrpM3JQIAIfkEAQoADwAsAAAAABAAEAAABFHwyflSolgOSQjPEuN1j+KBC/N0CXFV0rI9zDF57XksC5J1CsyiAHqBfkCD0nDsEILHiQ+jmGFYk8GASEFcTD7ETDBanUAE3ykNMn0e5OINFAEAOw==);
+		}
+
+		li.current-step h2, li.passed-step h2 {
+			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+			opacity: 1;
+		}
+
+		li.passed-step h2 {
+			cursor : pointer;
+			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAWlBMVEUAAAAAqgAAvwAA1QAA3wAAxgAA0QAA1QAAzgAA0QAA1gAA1gAA1wAA1gAA0gAA1QAA1AAA1AAA1AAA1QAA0wAA1AAA1AAA1QAA0wAA1AAA1AAA1QAA1AAA1ACEAd/9AAAAHXRSTlMAAwQGCAkLDBUWGR8gLC2osrO3uru9v9LT1Nfq+K5OpOQAAABPSURBVBiVpYq3EYAwEMBEfnJONr//mhSYI5SgTifBPyLv5UPtP11tAZDI4b3aEiCeTAYErdoKAFl0TQk71wGZ1eTN2d2zXd09tw4gY8l3dg+HBDK71PO7AAAAAElFTkSuQmCC);
+		}
+
+		li.failed-step h2 {
+			background-color: #ffb0b0;
+			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAACqAADMAADVAADVAADVAADVAADWAADWAADUAADUAADUAADVAADUAADTAADVAADUAADVAADUAADUAACCP69rAAAAE3RSTlMAAwUGDCorMjiHpaeosdPk6ervRw2uZQAAAERJREFUeAFjIA4w8QoDgRA7jM/ILQwGgmxQPheQw8HAJywswAoW4BSGCQjzM4MEeBACwizECiAAC4ah6NZiOgzT6YQBABtYB8QyiY2BAAAAAElFTkSuQmCC);
+			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+			opacity: 1;
+		}
+
+		li.step .output {
+			position: relative;
+			padding: 5px 5px 5px 32px;
+		}
+
+		h2 {
+			font-size: 20px;
+			font-weight: 300;
+			margin-bottom: 12px;
+			color: #555;
+		}
+
+
+	</style>
+</head>
 <body>
-<h1>Nextcloud Updater</h1>
+<div id="header">
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xml:space="preserve" height="34" width="62" enable-background="new 0 0 196.6 72" y="0px" x="0px" viewBox="0 0 62.000002 34"><path style="color-rendering:auto;text-decoration-color:#000000;color:#000000;isolation:auto;mix-blend-mode:normal;shape-rendering:auto;solid-color:#000000;block-progression:tb;text-decoration-line:none;image-rendering:auto;white-space:normal;text-indent:0;enable-background:accumulate;text-transform:none;text-decoration-style:solid" fill="#fff" d="m31.6 4.0001c-5.95 0.0006-10.947 4.0745-12.473 9.5549-1.333-2.931-4.266-5.0088-7.674-5.0092-4.6384 0.0005-8.4524 3.8142-8.453 8.4532-0.0008321 4.6397 3.8137 8.4544 8.4534 8.455 3.4081-0.000409 6.3392-2.0792 7.6716-5.011 1.5261 5.4817 6.5242 9.5569 12.475 9.5569 5.918 0.000457 10.89-4.0302 12.448-9.4649 1.3541 2.8776 4.242 4.9184 7.6106 4.9188 4.6406 0.000828 8.4558-3.8144 8.4551-8.455-0.000457-4.6397-3.8154-8.454-8.4551-8.4533-3.3687 0.0008566-6.2587 2.0412-7.6123 4.9188-1.559-5.4338-6.528-9.4644-12.446-9.464zm0 4.9623c4.4687-0.000297 8.0384 3.5683 8.0389 8.0371 0.000228 4.4693-3.5696 8.0391-8.0389 8.0388-4.4687-0.000438-8.0375-3.5701-8.0372-8.0388 0.000457-4.4682 3.5689-8.0366 8.0372-8.0371zm-20.147 4.5456c1.9576 0.000226 3.4908 1.5334 3.4911 3.491 0.000343 1.958-1.533 3.4925-3.4911 3.4927-1.958-0.000228-3.4913-1.5347-3.4911-3.4927 0.0002284-1.9575 1.5334-3.4907 3.4911-3.491zm40.205 0c1.9579-0.000343 3.4925 1.533 3.4927 3.491 0.000457 1.9584-1.5343 3.493-3.4927 3.4927-1.958-0.000228-3.4914-1.5347-3.4911-3.4927 0.000221-1.9575 1.5335-3.4907 3.4911-3.491z"/></svg>
+	<h1 class="header-appname">Nextcloud Updater</h1>
+</div>
+
+<div id="content-wrapper">
+	<div id="content">
+
+		<div id="app-navigation">
+			<ul>
+				<li><a href="#progress">Update</a></li>
+			</ul>
+		</div>
+		<div id="app-content">
+			<div id="error" class="section hidden"></div>
+			<div id="output" class="section hidden"></div>
+
+			<ul id="progress" class="section">
+				<li id="step-init" class="step icon-loading passed-step">
+					<h2>Initializing</h2>
+					<div class="output hidden">Current version is 9.1.0.8<br>
+						No updates found online.<br>
+						<button id="recheck" class="button">Recheck</button></div>
+				</li>
+				<li id="step-check-files" class="step current-step">
+					<h2>Check for expected files</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-check-permissions" class="step">
+					<h2>Check for write permissions</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-enable-maintenance" class="step">
+					<h2>Enable maintenance mode</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-backup" class="step">
+					<h2>Create backup</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-download" class="step">
+					<h2>Downloading</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-extract" class="step">
+					<h2>Extracting</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-entrypoints" class="step">
+					<h2>Replace entry points</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-delete" class="step">
+					<h2>Delete old files</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-move" class="step">
+					<h2>Move new files in place</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-done" class="step">
+					<h2>Done</h2>
+					<div class="output hidden"></div>
+				</li>
+			</ul>
+
+		</div>
+	</div>
+</div>
 
 <?php
 	// TODO: Proper auth also in the steps above…
-if(!isset($_POST['password'])):
+if(false):
 	?>
 	<p>Please provide your defined password in config.php to proceed:</p>
 	<form method="POST">
@@ -620,18 +872,39 @@ if(!isset($_POST['password'])):
 	</form>
 <?php endif; ?>
 
-<?php if(isset($_POST['password']) && $_POST['password'] === '1'): ?>
+<?php if(true): ?>
 	<pre id="progress">
 Starting update process. Please be patient...
 	</pre>
 <?php endif; ?>
 </body>
-<?php if(isset($_POST['password']) && $_POST['password'] === '1'): ?>
+<?php if(true): ?>
 
 	<script>
 		function addStepText(text) {
 			var previousValue = document.getElementById('progress').innerHTML;
 			document.getElementById('progress').innerHTML = previousValue + "\r" + text;
+		}
+
+		function currentStep(id) {
+			var el = document.getElementById(id);
+			el.classList.remove('failed-step');
+			el.classList.remove('passed-step');
+			el.classList.add('current-step');
+		}
+
+		function errorStep(id) {
+			var el = document.getElementById(id);
+			el.classList.remove('passed-step');
+			el.classList.remove('current-step');
+			el.classList.add('failed-step');
+		}
+
+		function successStep(id) {
+			var el = document.getElementById(id);
+			el.classList.remove('failed-step');
+			el.classList.remove('current-step');
+			el.classList.add('passed-step');
 		}
 
 		function performStep(number, callback) {
@@ -656,13 +929,13 @@ Starting update process. Please be patient...
 		var performStepCallbacks = {
 			1: function(response) {
 				if(response.proceed === true) {
-					addStepText('Success: Check for expected files has succeeded');
-
-					// Step 2: Check for write permissions
-					addStepText('Start: Check for write permissions');
+					successStep('step-check-files');
+					currentStep('step-check-permissions');
 					performStep(2, performStepCallbacks[2])
 				} else {
-					addStepText('Error: Check for all expected files failed. The following extra files have been found:');
+					errorStep('step-check-files');
+					// TODO
+					addStepText('The following extra files have been found:');
 					response['response'].forEach(function(file) {
 						addStepText("\t"+file);
 					});
@@ -670,11 +943,13 @@ Starting update process. Please be patient...
 			},
 			2: function(response) {
 				if(response.proceed === true) {
-					addStepText('Success: Check for write permissions');
-
+					successStep('step-check-permissions');
+					currentStep('step-enable-maintenance');
 					performStep(3, performStepCallbacks[3]);
 				} else {
-					addStepText('Error: Check for all write permissions failed. The following places can not be written to:');
+					errorStep('step-check-permissions');
+					// TODO
+					addStepText('The following places can not be written to:');
 					response['response'].forEach(function(file) {
 						addStepText("\t"+file);
 					});
@@ -682,52 +957,45 @@ Starting update process. Please be patient...
 			},
 			3: function(response) {
 				if(response.proceed === true) {
-					addStepText('Enabled maintenance mode');
-
-					addStepText('Start: Create backup');
+					successStep('step-enable-maintenance');
+					currentStep('step-backup');
 					performStep(4, performStepCallbacks[4]);
 				} else {
-					addStepText('Error: Could not enable maintenance mode in config.php');
+					errorStep('step-enable-maintenance');
 				}
 			},
 			4: function(response) {
-				addStepText('Done: Create backup');
-
-				addStepText('Start: Download update');
+				successStep('step-backup');
+				currentStep('step-download');
 				performStep(5, performStepCallbacks[5]);
 			},
 			5: function(response) {
-				addStepText('Done: Download update');
-
-				addStepText('Start: Extract update');
+				successStep('step-download');
+				currentStep('step-extract');
 				performStep(6, performStepCallbacks[6]);
 			},
 			6: function(response) {
-				addStepText('Done: Extract update');
-
-				addStepText('Start: Replace Entry Points');
+				successStep('step-extract');
+				currentStep('step-entrypoints');
 				performStep(7, performStepCallbacks[7]);
 			},
 			7: function(response) {
-				addStepText('Done: Replace Entry Points');
-
-				addStepText('Start: Delete old files');
+				successStep('step-entrypoints');
+				currentStep('step-delete');
 				performStep(8, performStepCallbacks[8]);
 			},
 			8: function(response) {
-				addStepText('Done: Delete old files');
-
-				addStepText('Start: Move new files in place');
+				successStep('step-delete');
+				currentStep('step-move');
 				performStep(9, performStepCallbacks[9]);
 			},
 			9: function(response) {
-				addStepText('Done: Move new files in place');
-				addStepText('!!! Update done !!!');
+				successStep('step-move');
+				successStep('step-done');
 			}
 		};
 
-		// Step 1: Check for expected files
-		addStepText('Start: Check for expected files');
+		currentStep('step-check-files');
 		performStep(1, performStepCallbacks[1]);
 	</script>
 <?php endif; ?>
