@@ -1115,6 +1115,8 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 </body>
 <?php if($auth->isAuthenticated()): ?>
 	<script>
+		var done = false;
+		var started = false;
 		function addStepText(id, text) {
 			var el = document.getElementById(id);
 			var output =el.getElementsByClassName('output')[0];
@@ -1158,6 +1160,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 		}
 
 		function performStep(number, callback) {
+			started = true;
 			var httpRequest = new XMLHttpRequest();
 			httpRequest.open('POST', document.getElementById('updater-endpoint').value);
 			httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -1338,6 +1341,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 				} else {
 					errorStep('step-done');
 				}
+				done = true;
 			},
 		};
 
@@ -1378,6 +1382,14 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 				e.preventDefault();
 				askForMaintenance(false);
 			};
+		}
+
+		// Show a popup when user tries to close page
+		window.onbeforeunload = confirmExit;
+		function confirmExit() {
+			if (done === false && started === true) {
+				return 'Update is in progress. Are you sure, you want to close?';
+			}
 		}
 	</script>
 <?php else: ?>
