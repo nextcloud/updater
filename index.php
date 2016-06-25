@@ -720,6 +720,73 @@ class Updater {
 		if($state === false) {
 			throw new \Exception('Could not rmdir $storagelocation');
 		}
+		$state = unlink($this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/.step');
+		if($state === false) {
+			throw new \Exception('Could not rmdir .step');
+		}
+	}
+
+	/**
+	 * @param string $state
+	 * @param int $step
+	 * @throws Exception
+	 */
+	private function writeStep($state, $step) {
+		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
+		if(!file_exists($updaterDir . '/.step')) {
+			if(!file_exists($updaterDir)) {
+				$state = mkdir($updaterDir);
+				if ($state === false) {
+					throw new \Exception('Could not create $updaterDir');
+				}
+			}
+			$state = touch($updaterDir . '/.step');
+			if($state === false) {
+				throw new \Exception('Could not create .step');
+			}
+		}
+
+		$state = file_put_contents($updaterDir . '/.step', json_encode(['state' => $state, 'step' => $step]));
+		if($state === false) {
+			throw new \Exception('Could not write to .step');
+		}
+	}
+
+	/**
+	 * @param int $step
+	 * @throws Exception
+	 */
+	public function startStep($step) {
+		$this->writeStep('start', $step);
+	}
+
+	/**
+	 * @param int $step
+	 * @throws Exception
+	 */
+	public function endStep($step) {
+		$this->writeStep('end', $step);
+	}
+
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
+	public function currentStep() {
+		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
+		$jsonData = [];
+		if(file_exists($updaterDir. '/.step')) {
+			$state = file_get_contents($updaterDir . '/.step');
+			if ($state === false) {
+				throw new \Exception('Could not read from .step');
+			}
+
+			$jsonData = json_decode($state, true);
+			if (!is_array($jsonData)) {
+				throw new \Exception('Can\'t decode .step JSON data');
+			}
+		}
+		return $jsonData;
 	}
 }
 
@@ -734,7 +801,23 @@ try {
 $password = isset($_SERVER['HTTP_X_UPDATER_AUTH']) ? $_SERVER['HTTP_X_UPDATER_AUTH'] : '';
 $auth = new Auth($updater, $password);
 
-// TODO: Note when a step started and when one ended, also to prevent multiple people at the same time accessing the updater
+// Check if already a step is in process
+$currentStep = $updater->currentStep();
+$stepNumber = 0;
+if($currentStep !== []) {
+	$stepState = $currentStep['state'];
+	$stepNumber = $currentStep['step'];
+
+	if($stepState === 'start') {
+		die(
+		sprintf(
+			'Step %s is currently in process. Please reload this page later.',
+			$stepNumber
+			)
+		);
+	}
+}
+
 if(isset($_POST['step'])) {
 	set_time_limit(0);
 	try {
@@ -747,6 +830,7 @@ if(isset($_POST['step'])) {
 			throw new Exception('Invalid step');
 		}
 
+		$updater->startStep($step);
 		switch ($step) {
 			case 1:
 				$updater->checkForExpectedFilesAndFolders();
@@ -783,6 +867,7 @@ if(isset($_POST['step'])) {
 				$updater->finalize();
 				break;
 		}
+		$updater->endStep($step);
 		echo(json_encode(['proceed' => true]));
 	} catch (UpdateException $e) {
 		echo(json_encode(['proceed' => false, 'response' => $e->getData()]));
@@ -1017,6 +1102,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 </div>
 <input type="hidden" id="updater-access-key" value="<?php echo htmlentities($password) ?>"/>
 <input type="hidden" id="updater-endpoint" value="<?php echo htmlentities($updaterUrl) ?>"/>
+<input type="hidden" id="updater-step-start" value="<?php echo $stepNumber ?>" />
 <div id="content-wrapper">
 	<div id="content">
 
@@ -1038,8 +1124,12 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 
 						<?php
 						if ($updater->updateAvailable()) {
+							$buttonText = 'Start update';
+							if($currentStep > 0) {
+								$buttonText = 'Continue update';
+							}
 							?>
-							<button id="startUpdateButton">Start update</button>
+							<button id="startUpdateButton"><?php echo $buttonText ?></button>
 							<?php
 						}
 						?>
@@ -1123,6 +1213,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 	<script>
 		var done = false;
 		var started = false;
+		var updaterStepStart = parseInt(document.getElementById('updater-step-start').value);
 		function addStepText(id, text) {
 			var el = document.getElementById(id);
 			var output =el.getElementsByClassName('output')[0];
@@ -1352,8 +1443,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 		};
 
 		function startUpdate() {
-			currentStep('step-check-files');
-			performStep(1, performStepCallbacks[1]);
+			if(updaterStepStart === 0) {
+				currentStep('step-check-files');
+			}
+			performStep(updaterStepStart+1, performStepCallbacks[updaterStepStart+1]);
 		}
 
 		function askForMaintenance(keepActive) {
