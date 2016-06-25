@@ -635,27 +635,18 @@ class Updater {
 	}
 
 	/**
-	 * Moves the newly downloaded files into place
+	 * Moves the specified filed except the excluded elements to the correct position
 	 *
+	 * @param string $dataLocation
+	 * @param array $excludedElements
 	 * @throws Exception
 	 */
-	public function moveNewVersionInPlace() {
-		$excludedElements = [
-			'updater',
-			'index.php',
-			'status.php',
-			'remote.php',
-			'public.php',
-			'ocs/v1.php',
-		];
-
-		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/';
-
+	private function moveWithExclusions($dataLocation, array $excludedElements) {
 		/**
 		 * @var SplFileInfo $fileInfo
 		 */
-		foreach ($this->getRecursiveDirectoryIterator($storageLocation) as $path => $fileInfo) {
-			$fileName = explode($storageLocation, $path)[1];
+		foreach ($this->getRecursiveDirectoryIterator($dataLocation) as $path => $fileInfo) {
+			$fileName = explode($dataLocation, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
 
 			// Exclude the exclusions
@@ -694,39 +685,36 @@ class Updater {
 				}
 			}
 		}
+	}
 
-		// Rename entry files of Nextcloud and updater file
-		/**
-		 * @var SplFileInfo $fileInfo
-		 */
-		foreach ($this->getRecursiveDirectoryIterator($storageLocation) as $path => $fileInfo) {
-			$fileName = explode($storageLocation, $path)[1];
-			if($fileInfo->isFile()) {
-				if(!file_exists(__DIR__ . '/../' . dirname($fileName))) {
-					$state = mkdir(__DIR__ . '/../' . dirname($fileName), 0750, true);
-					if($state === false) {
-						throw new \Exception('Could not mkdir ' . __DIR__  . '/../' . dirname($fileName));
-					}
-				}
-				$state = rename($path, __DIR__  . '/../' . $fileName);
-				if($state === false) {
-					throw new \Exception(
-						sprintf(
-							'Could not rename %s to %s',
-							$path,
-							__DIR__ . '/../' . $fileName
-						)
-					);
-				}
-			}
-			if($fileInfo->isDir()) {
-				$state = rmdir($path);
-				if($state === false) {
-					throw new \Exception('Could not rmdir ' . $path);
-				}
-			}
-		}
+	/**
+	 * Moves the newly downloaded files into place
+	 *
+	 * @throws Exception
+	 */
+	public function moveNewVersionInPlace() {
+		// Rename everything else except the entry and updater files
+		$excludedElements = [
+			'updater',
+			'index.php',
+			'status.php',
+			'remote.php',
+			'public.php',
+			'ocs/v1.php',
+		];
+		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/';
+		$this->moveWithExclusions($storageLocation, $excludedElements);
 
+		// Rename everything except the updater files
+		$this->moveWithExclusions($storageLocation, ['updater']);
+	}
+
+	/**
+	 * Finalize and cleanup the updater by finally replacing the updater script
+	 */
+	public function finalize() {
+		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/';
+		$this->moveWithExclusions($storageLocation, []);
 		$state = rmdir($storageLocation);
 		if($state === false) {
 			throw new \Exception('Could not rmdir $storagelocation');
@@ -784,6 +772,9 @@ if(isset($_POST['step'])) {
 			case '10':
 				$updater->setMaintenanceMode(false);
 				break;
+			case '11':
+				$updater->finalize();
+				break;
 		}
 		echo(json_encode(['proceed' => true]));
 	} catch (UpdateException $e) {
@@ -794,6 +785,8 @@ if(isset($_POST['step'])) {
 
 	die();
 }
+
+$updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 ?>
 
 <html>
@@ -913,7 +906,6 @@ if(isset($_POST['step'])) {
 			opacity: 1;
 		}
 
-
 		#app-content {
 			position: relative;
 			height: 100%;
@@ -1017,7 +1009,7 @@ if(isset($_POST['step'])) {
 	<h1 class="header-appname">Nextcloud Updater</h1>
 </div>
 <input type="hidden" id="updater-access-key" value="<?php echo htmlentities($password) ?>"/>
-<input type="hidden" id="updater-endpoint" value="<?php echo htmlentities(explode('?', $_SERVER['REQUEST_URI'], 2)[0]) ?>"/>
+<input type="hidden" id="updater-endpoint" value="<?php echo htmlentities($updaterUrl) ?>"/>
 <div id="content-wrapper">
 	<div id="content">
 
@@ -1085,14 +1077,14 @@ if(isset($_POST['step'])) {
 				<li id="step-maintenance-mode" class="step">
 					<h2>Keep maintenance mode active?</h2>
 					<div class="output hidden">
-						<button onClick="askForMaintenance(true)">Yes (for usage with command line tool)</button>
-						<button onClick="askForMaintenance(false)">No (for usage of the web based updater)</button>
+						<button id="maintenance-enable">Yes (for usage with command line tool)</button>
+						<button id="maintenance-disable">No (for usage of the web based updater)</button>
 					</div>
 				</li>
 				<li id="step-done" class="step">
 					<h2>Done</h2>
 					<div class="output hidden">
-						<a class="button" href="../">Go to back to your Nextcloud instance to finish the update</a>
+						<a class="button" href="<?php echo $updaterUrl . '/../'?>">Go to back to your Nextcloud instance to finish the update</a>
 					</div>
 				</li>
 			</ul>
@@ -1326,12 +1318,6 @@ if(isset($_POST['step'])) {
 			10: function (response) {
 				if (response.proceed === true) {
 					successStep('step-maintenance-mode');
-					successStep('step-done');
-
-					// show button to get to the web based migration steps
-					var el = document.getElementById('step-done')
-						.getElementsByClassName('output')[0];
-					el.classList.remove('hidden');
 				} else {
 					errorStep('step-maintenance-mode');
 
@@ -1339,7 +1325,19 @@ if(isset($_POST['step'])) {
 						addStepText('step-maintenance-mode', response.response);
 					}
 				}
-			}
+			},
+			11: function (response) {
+				if (response.proceed === true) {
+					successStep('step-done');
+
+					// show button to get to the web based migration steps
+					var el = document.getElementById('step-done')
+						.getElementsByClassName('output')[0];
+					el.classList.remove('hidden');
+				} else {
+					errorStep('step-done');
+				}
+			},
 		};
 
 		function startUpdate() {
@@ -1359,12 +1357,25 @@ if(isset($_POST['step'])) {
 				currentStep('step-maintenance-mode');
 				performStep(10, performStepCallbacks[10]);
 			}
+			performStep(11, performStepCallbacks[11]);
 		}
 
 		if(document.getElementById('startUpdateButton')) {
 			document.getElementById('startUpdateButton').onclick = function (e) {
 				e.preventDefault();
 				startUpdate();
+			};
+		}
+		if(document.getElementById('maintenance-enable')) {
+			document.getElementById('maintenance-enable').onclick = function (e) {
+				e.preventDefault();
+				askForMaintenance(true);
+			};
+		}
+		if(document.getElementById('maintenance-disable')) {
+			document.getElementById('maintenance-disable').onclick = function (e) {
+				e.preventDefault();
+				askForMaintenance(false);
 			};
 		}
 	</script>
