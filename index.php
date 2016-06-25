@@ -211,14 +211,14 @@ class Updater {
 	 */
 	public function checkWritePermissions() {
 		// TODO: Exclude data folder
-		$notWriteablePaths = array();
+		$notWritablePaths = array();
 		foreach ($this->getRecursiveDirectoryIterator() as $path => $dir) {
 			if(!is_writable($path)) {
-				$notWriteablePaths[] = $path;
+				$notWritablePaths[] = $path;
 			}
 		}
-		if(count($notWriteablePaths) > 0) {
-			throw new UpdateException($notWriteablePaths);
+		if(count($notWritablePaths) > 0) {
+			throw new UpdateException($notWritablePaths);
 		}
 	}
 
@@ -226,6 +226,7 @@ class Updater {
 	 * Sets the maintenance mode to the defined value
 	 *
 	 * @param bool $state
+	 * @throws Exception when config.php can't be written
 	 */
 	public function setMaintenanceMode($state) {
 		/** @var array $CONFIG */
@@ -379,6 +380,7 @@ class Updater {
 	public function extractDownload() {
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		$files = scandir($storageLocation);
+		// ., .. and downloaded zip archive
 		if(count($files) !== 3) {
 			throw new \Exception('Not exact 3 files existent in folder');
 		}
@@ -415,7 +417,7 @@ class Updater {
 		foreach($filesToReplace as $file) {
 			$state = file_put_contents(__DIR__  . '/../' . $file, $content);
 			if($state === false) {
-				throw new \Exception('Cant replace entry point: '.$file);
+				throw new \Exception('Can\'t replace entry point: '.$file);
 			}
 		}
 	}
