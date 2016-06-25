@@ -798,6 +798,26 @@ class Updater {
 		}
 		return $jsonData;
 	}
+
+	/**
+	 * Rollback the changes if $step has failed
+	 *
+	 * @param int $step
+	 * @throws Exception
+	 */
+	public function rollbackChanges($step) {
+		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
+		if(file_exists($updaterDir . '/.step')) {
+			$state = unlink($updaterDir . '/.step');
+			if ($state === false) {
+				throw new \Exception('Could not delete .step');
+			}
+		}
+
+		if($step >= 7) {
+			// TODO: If it fails after step 7: Rollback
+		}
+	}
 }
 
 // Check if the config.php is at the expected place
@@ -861,7 +881,6 @@ if(isset($_POST['step'])) {
 				$updater->extractDownload();
 				break;
 			case 7:
-				// TODO: If it fails after step 7: Rollback
 				$updater->replaceEntryPoints();
 				break;
 			case 8:
@@ -877,13 +896,15 @@ if(isset($_POST['step'])) {
 				$updater->finalize();
 				break;
 		}
+		$updater->endStep($step);
 		echo(json_encode(['proceed' => true]));
 	} catch (UpdateException $e) {
+		$updater->rollbackChanges($step);
 		echo(json_encode(['proceed' => false, 'response' => $e->getData()]));
 	} catch (\Exception $e) {
+		$updater->rollbackChanges($step);
 		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
 	}
-	$updater->endStep($step);
 
 	die();
 }
