@@ -1014,6 +1014,7 @@ if(isset($_POST['step'])) {
 	<h1 class="header-appname">Nextcloud Updater</h1>
 </div>
 <input type="hidden" id="updater-access-key" value="<?php echo htmlentities($password) ?>"/>
+<input type="hidden" id="updater-endpoint" value="<?php echo htmlentities(explode('?', $_SERVER['REQUEST_URI'], 2)[0]) ?>"/>
 <div id="content-wrapper">
 	<div id="content">
 
@@ -1142,7 +1143,7 @@ if(isset($_POST['step'])) {
 
 		function performStep(number, callback) {
 			var httpRequest = new XMLHttpRequest();
-			httpRequest.open('POST', window.location.href);
+			httpRequest.open('POST', document.getElementById('updater-endpoint').value);
 			httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			httpRequest.setRequestHeader('X-Updater-Auth', document.getElementById('updater-access-key').value);
 			httpRequest.onreadystatechange = function () {
