@@ -32,6 +32,13 @@ class UpdateException extends \Exception {
 	}
 }
 
+class RecursiveDirectoryIteratorWithoutData extends RecursiveFilterIterator {
+	public function accept() {
+		$excludes = ['data'];
+		return !($this->isDir() && in_array($this->getFilename(), $excludes, true));
+	}
+}
+
 class Auth {
 	/** @var Updater */
 	private $updater;
@@ -302,9 +309,12 @@ class Updater {
 	 * Checks for files that are not writable
 	 */
 	public function checkWritePermissions() {
-		// TODO: Exclude data folder
 		$notWritablePaths = array();
-		foreach ($this->getRecursiveDirectoryIterator() as $path => $dir) {
+		$dir = new RecursiveDirectoryIterator(__DIR__ . '/../');
+		$filter = new RecursiveDirectoryIteratorWithoutData($dir);
+		$it = new RecursiveIteratorIterator($filter);
+
+		foreach ($it as $path => $dir) {
 			if(!is_writable($path)) {
 				$notWritablePaths[] = $path;
 			}
@@ -867,13 +877,13 @@ if(isset($_POST['step'])) {
 				$updater->finalize();
 				break;
 		}
-		$updater->endStep($step);
 		echo(json_encode(['proceed' => true]));
 	} catch (UpdateException $e) {
 		echo(json_encode(['proceed' => false, 'response' => $e->getData()]));
 	} catch (\Exception $e) {
 		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
 	}
+	$updater->endStep($step);
 
 	die();
 }
@@ -1123,7 +1133,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 						<?php echo($updater->checkForUpdate()); ?><br>
 
 						<?php
-						if ($updater->updateAvailable()) {
+						if ($updater->updateAvailable() || $currentStep > 0) {
 							$buttonText = 'Start update';
 							if($currentStep > 0) {
 								$buttonText = 'Continue update';
