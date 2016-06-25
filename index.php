@@ -31,6 +31,97 @@ class UpdateException extends \Exception {
 	}
 }
 
+class Auth {
+	/** @var Updater */
+	private $updater;
+	/** @var string */
+	private $password;
+
+	/**
+	 * @param Updater $updater
+	 * @param string $password
+	 */
+	public function __construct(Updater $updater,
+								$password) {
+		$this->updater = $updater;
+		$this->password = $password;
+	}
+	/**
+	 * Compares two strings.
+	 *
+	 * This method implements a constant-time algorithm to compare strings.
+	 * Regardless of the used implementation, it will leak length information.
+	 *
+	 * @param string $knownString The string of known length to compare against
+	 * @param string $userInput   The string that the user can control
+	 *
+	 * @return bool true if the two strings are the same, false otherwise
+	 * @license MIT
+	 * @source https://github.com/symfony/security-core/blob/56721d5f5f63da7e08d05aa7668a5a9ef2367e1e/Util/StringUtils.php
+	 */
+	private static function equals($knownString, $userInput) {
+		// Avoid making unnecessary duplications of secret data
+		if (!is_string($knownString)) {
+			$knownString = (string) $knownString;
+		}
+		if (!is_string($userInput)) {
+			$userInput = (string) $userInput;
+		}
+		if (function_exists('hash_equals')) {
+			return hash_equals($knownString, $userInput);
+		}
+		$knownLen = self::safeStrlen($knownString);
+		$userLen = self::safeStrlen($userInput);
+		if ($userLen !== $knownLen) {
+			return false;
+		}
+		$result = 0;
+		for ($i = 0; $i < $knownLen; ++$i) {
+			$result |= (ord($knownString[$i]) ^ ord($userInput[$i]));
+		}
+		// They are only identical strings if $result is exactly 0...
+		return 0 === $result;
+	}
+	/**
+	 * Returns the number of bytes in a string.
+	 *
+	 * @param string $string The string whose length we wish to obtain
+	 *
+	 * @return int
+	 * @license MIT
+	 * @source https://github.com/symfony/security-core/blob/56721d5f5f63da7e08d05aa7668a5a9ef2367e1e/Util/StringUtils.php
+	 */
+	private static function safeStrlen($string) {
+		// Premature optimization
+		// Since this cannot be changed at runtime, we can cache it
+		static $funcExists = null;
+		if (null === $funcExists) {
+			$funcExists = function_exists('mb_strlen');
+		}
+		if ($funcExists) {
+			return mb_strlen($string, '8bit');
+		}
+		return strlen($string);
+	}
+
+	/**
+	 * Whether the current user is authenticated
+	 *
+	 * @return bool
+	 */
+	public function isAuthenticated() {
+		$storedHash = $this->updater->getConfigOption('updater.secret');
+
+		// As a sanity check the stored hash or the sent password can never be empty
+		if($storedHash === '' || $storedHash === null || $this->password === null) {
+			return false;
+		}
+
+		// As we still support PHP 5.4 we have to use some magic involving "crypt"
+		return $this->equals($storedHash, crypt($this->password, $storedHash));
+	}
+}
+
 class Updater {
 	/** @var array */
 	private $configValues = [];
@@ -116,7 +207,7 @@ class Updater {
 	 * @param string $key
 	 * @return mixed|null Null if the entry is not found
 	 */
-	private function getConfigOption($key) {
+	public function getConfigOption($key) {
 		return isset($this->configValues[$key]) ? $this->configValues[$key] : null;
 	}
 
@@ -650,11 +741,17 @@ try {
 	die($e->getMessage());
 }
 
+// Check for authentication
+$password = isset($_SERVER['HTTP_X_UPDATER_AUTH']) ? $_SERVER['HTTP_X_UPDATER_AUTH'] : '';
+$auth = new Auth($updater, $password);
+
 // TODO: Note when a step started and when one ended, also to prevent multiple people at the same time accessing the updater
 if(isset($_POST['step'])) {
 	set_time_limit(0);
 	try {
-
+		if(!$auth->isAuthenticated()) {
+			throw new Exception('Not authenticated');
+		}
 		switch ($_POST['step']) {
 			case '1':
 				$updater->checkForExpectedFilesAndFolders();
@@ -904,6 +1001,10 @@ if(isset($_POST['step'])) {
 			color: #111;
 		}
 
+		code {
+			color: lightcoral;
+		}
+
 
 	</style>
 </head>
@@ -912,7 +1013,7 @@ if(isset($_POST['step'])) {
 	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xml:space="preserve" height="34" width="62" enable-background="new 0 0 196.6 72" y="0px" x="0px" viewBox="0 0 62.000002 34"><path style="color-rendering:auto;text-decoration-color:#000000;color:#000000;isolation:auto;mix-blend-mode:normal;shape-rendering:auto;solid-color:#000000;block-progression:tb;text-decoration-line:none;image-rendering:auto;white-space:normal;text-indent:0;enable-background:accumulate;text-transform:none;text-decoration-style:solid" fill="#fff" d="m31.6 4.0001c-5.95 0.0006-10.947 4.0745-12.473 9.5549-1.333-2.931-4.266-5.0088-7.674-5.0092-4.6384 0.0005-8.4524 3.8142-8.453 8.4532-0.0008321 4.6397 3.8137 8.4544 8.4534 8.455 3.4081-0.000409 6.3392-2.0792 7.6716-5.011 1.5261 5.4817 6.5242 9.5569 12.475 9.5569 5.918 0.000457 10.89-4.0302 12.448-9.4649 1.3541 2.8776 4.242 4.9184 7.6106 4.9188 4.6406 0.000828 8.4558-3.8144 8.4551-8.455-0.000457-4.6397-3.8154-8.454-8.4551-8.4533-3.3687 0.0008566-6.2587 2.0412-7.6123 4.9188-1.559-5.4338-6.528-9.4644-12.446-9.464zm0 4.9623c4.4687-0.000297 8.0384 3.5683 8.0389 8.0371 0.000228 4.4693-3.5696 8.0391-8.0389 8.0388-4.4687-0.000438-8.0375-3.5701-8.0372-8.0388 0.000457-4.4682 3.5689-8.0366 8.0372-8.0371zm-20.147 4.5456c1.9576 0.000226 3.4908 1.5334 3.4911 3.491 0.000343 1.958-1.533 3.4925-3.4911 3.4927-1.958-0.000228-3.4913-1.5347-3.4911-3.4927 0.0002284-1.9575 1.5334-3.4907 3.4911-3.491zm40.205 0c1.9579-0.000343 3.4925 1.533 3.4927 3.491 0.000457 1.9584-1.5343 3.493-3.4927 3.4927-1.958-0.000228-3.4914-1.5347-3.4911-3.4927 0.000221-1.9575 1.5335-3.4907 3.4911-3.491z"/></svg>
 	<h1 class="header-appname">Nextcloud Updater</h1>
 </div>
-
+<input type="hidden" id="updater-access-key" value="<?php echo htmlentities($password) ?>"/>
 <div id="content-wrapper">
 	<div id="content">
 
@@ -922,6 +1023,7 @@ if(isset($_POST['step'])) {
 			</ul>
 		</div>
 		<div id="app-content">
+		<?php if($auth->isAuthenticated()): ?>
 			<div id="error" class="section hidden"></div>
 			<div id="output" class="section hidden"></div>
 
@@ -934,12 +1036,10 @@ if(isset($_POST['step'])) {
 						<?php
 						if ($updater->updateAvailable()) {
 							?>
-							<button onClick="startUpdate()">Start update</button>
+							<button id="startUpdateButton">Start update</button>
 							<?php
 						}
 						?>
-						<button onClick="window.location.reload()">Recheck</button>
-
 						</div>
 				</li>
 				<li id="step-check-files" class="step">
@@ -983,25 +1083,31 @@ if(isset($_POST['step'])) {
 					<div class="output hidden"></div>
 				</li>
 			</ul>
-
+		<?php else: ?>
+			<h2>Authentication</h2>
+			<p>To login you need to provide the unhashed value of "updater.secret" in your config file.</p>
+			<p>If you don't know that value, you can access this updater directly via the Nextcloud admin screen or generate
+			your own secret:</p>
+			<code>php -r '$password = trim(shell_exec("openssl rand -base64 48"));if(strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";}else{echo "Could not execute OpenSSL.\n";};'</code>
+			<br/><br/>
+			<form method="post" name="login">
+				<fieldset>
+					<input type="password" id="updater-secret-input" value=""
+						   placeholder="Secret"
+						   autocomplete="on" required>
+					<input type="submit" id="updater-secret-submit" value="Login" />
+				</fieldset>
+			</form>
+			<?php if(isset($_SERVER['HTTP_X_UPDATER_AUTH']) && !$auth->isAuthenticated()): ?>
+			<p>Invalid password</p>
+			<?php endif; ?>
+		<?php endif; ?>
 		</div>
 	</div>
 </div>
 
-<?php
-	// TODO: Proper auth also in the steps above…
-if(false):
-	?>
-	<p>Please provide your defined password in config.php to proceed:</p>
-	<form method="POST">
-		<input type="password" name="password" />
-		<input type="submit" />
-	</form>
-<?php endif; ?>
-
 </body>
-<?php if(true): ?>
-
+<?php if($auth->isAuthenticated()): ?>
 	<script>
 		function addStepText(id, text) {
 			var el = document.getElementById(id);
@@ -1036,8 +1142,9 @@ if(false):
 
 		function performStep(number, callback) {
 			var httpRequest = new XMLHttpRequest();
-			httpRequest.open("POST", window.location.href);
-			httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			httpRequest.open('POST', window.location.href);
+			httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			httpRequest.setRequestHeader('X-Updater-Auth', document.getElementById('updater-access-key').value);
 			httpRequest.onreadystatechange = function () {
 				if (httpRequest.readyState != 4) { // 4 - request done
 					return;
@@ -1194,6 +1301,32 @@ if(false):
 			performStep(1, performStepCallbacks[1]);
 		}
 
+		if(document.getElementById('startUpdateButton')) {
+			document.getElementById('startUpdateButton').onclick = function (e) {
+				e.preventDefault();
+				startUpdate();
+			};
+		}
+	</script>
+<?php else: ?>
+	<script>
+		function login() {
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', window.location.href, true);
+			xhr.setRequestHeader('X-Updater-Auth', document.getElementById('updater-secret-input').value);
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState === 4) {
+					document.getElementsByTagName('html')[0].innerHTML = xhr.responseText;
+					eval(document.getElementsByTagName('script')[0].innerHTML);
+				}
+			};
+			xhr.send();
+		}
+
+		document.getElementById('updater-secret-submit').onclick = function(e) {
+			e.preventDefault();
+			login();
+		};
 	</script>
 <?php endif; ?>
 
