@@ -1116,12 +1116,27 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			color: #111;
 		}
 
-		.output code {
+		code {
 			font-family: monospace;
 			font-size: 1.2em;
 			background-color: #eee;
 			border-radius: 2px;
 			padding: 2px 6px 2px 4px;
+		}
+
+		#login code {
+			display: block;
+			border-radius: 3px;
+		}
+
+		#login form {
+			margin-top: 5px;
+		}
+
+		#login input {
+			padding: 5px;
+			border-radius: 3px;
+			border: 1px solid rgba(240,240,240,.9);
 		}
 
 	</style>
@@ -1214,23 +1229,24 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 				</li>
 			</ul>
 		<?php else: ?>
-			<h2>Authentication</h2>
-			<p>To login you need to provide the unhashed value of "updater.secret" in your config file.</p>
-			<p>If you don't know that value, you can access this updater directly via the Nextcloud admin screen or generate
-			your own secret:</p>
-			<code>php -r '$password = trim(shell_exec("openssl rand -base64 48"));if(strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";}else{echo "Could not execute OpenSSL.\n";};'</code>
-			<br/><br/>
-			<form method="post" name="login">
-				<fieldset>
-					<input type="password" id="updater-secret-input" value=""
-						   placeholder="Secret"
-						   autocomplete="on" required>
-					<input type="submit" id="updater-secret-submit" value="Login" />
-				</fieldset>
-			</form>
-			<?php if(isset($_SERVER['HTTP_X_UPDATER_AUTH']) && !$auth->isAuthenticated()): ?>
-			<p>Invalid password</p>
-			<?php endif; ?>
+			<div id="login" class="section">
+				<h2>Authentication</h2>
+				<p>To login you need to provide the unhashed value of "updater.secret" in your config file.</p>
+				<p>If you don't know that value, you can access this updater directly via the Nextcloud admin screen or generate
+				your own secret:</p>
+				<code>php -r '$password = trim(shell_exec("openssl rand -base64 48"));if(strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";}else{echo "Could not execute OpenSSL.\n";};'</code>
+				<form method="post" name="login">
+					<fieldset>
+						<input type="password" id="updater-secret-input" value=""
+							   placeholder="Secret"
+							   autocomplete="on" required>
+						<button id="updater-secret-submit">Login</button>
+					</fieldset>
+				</form>
+				<?php if(isset($_SERVER['HTTP_X_UPDATER_AUTH']) && !$auth->isAuthenticated()): ?>
+				<p>Invalid password</p>
+				<?php endif; ?>
+			</div>
 		<?php endif; ?>
 		</div>
 	</div>
