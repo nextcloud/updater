@@ -88,10 +88,10 @@ class Updater {
 	public function checkForUpdate() {
 		$response = $this->getUpdateServerResponse();
 
-		$version = $response['version'];
-		$versionString = $response['versionstring'];
+		$version = isset($response['version']) ? $response['version'] : '';
+		$versionString = isset($response['versionstring']) ? $response['versionstring'] : '';
 
-		if ($version !== $this->currentVersion) {
+		if ($version !== '' && $version !== $this->currentVersion) {
 			$this->updateAvailable = true;
 			$updateText = 'Update to ' . $versionString . ' available.';
 		} else {
@@ -333,6 +333,11 @@ class Updater {
 			throw new \Exception('Could not do request to updater server: '.curl_error($curl));
 		}
 		curl_close($curl);
+
+		// Response can be empty when no update is available
+		if($response === '') {
+			return [];
+		}
 
 		$xml = simplexml_load_string($response);
 		if($xml === false) {
