@@ -741,39 +741,45 @@ if(isset($_POST['step'])) {
 		if(!$auth->isAuthenticated()) {
 			throw new Exception('Not authenticated');
 		}
-		switch ($_POST['step']) {
-			case '1':
+
+		$step = (int)$_POST['step'];
+		if($step > 11 || $step < 1) {
+			throw new Exception('Invalid step');
+		}
+
+		switch ($step) {
+			case 1:
 				$updater->checkForExpectedFilesAndFolders();
 				break;
-			case '2':
+			case 2:
 				$updater->checkWritePermissions();
 				break;
-			case '3':
+			case 3:
 				$updater->setMaintenanceMode(true);
 				break;
-			case '4':
+			case 4:
 				$updater->createBackup();
 				break;
-			case '5':
+			case 5:
 				$updater->downloadUpdate();
 				break;
-			case '6':
+			case 6:
 				$updater->extractDownload();
 				break;
-			case '7':
+			case 7:
 				// TODO: If it fails after step 7: Rollback
 				$updater->replaceEntryPoints();
 				break;
-			case '8':
+			case 8:
 				$updater->deleteOldFiles();
 				break;
-			case '9':
+			case 9:
 				$updater->moveNewVersionInPlace();
 				break;
-			case '10':
+			case 10:
 				$updater->setMaintenanceMode(false);
 				break;
-			case '11':
+			case 11:
 				$updater->finalize();
 				break;
 		}
