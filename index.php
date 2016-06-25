@@ -1007,7 +1007,18 @@ if(false):
 					// failure
 				}
 
-				callback(JSON.parse(httpRequest.responseText));
+				if(httpRequest.responseText.substr(0,1) !== '{') {
+					// it seems that this is not a JSON object
+					var response = {
+						processed: false,
+						response: 'Parsing response failed. ' + httpRequest.responseText
+					};
+					callback(response);
+				} else {
+					// parse JSON
+					callback(JSON.parse(httpRequest.responseText));
+				}
+
 			};
 			httpRequest.send("step="+number);
 		}
