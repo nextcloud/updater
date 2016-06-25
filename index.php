@@ -34,6 +34,10 @@ class UpdateException extends \Exception {
 class Updater {
 	/** @var array */
 	private $configValues = [];
+	/** @var string */
+	private $currentVersion = 'unknown';
+	/** @var bool */
+	private $updateAvailable = false;
 
 	public function __construct() {
 		$configFileName = __DIR__ . '/../config/config.php';
@@ -44,6 +48,66 @@ class Updater {
 		/** @var array $CONFIG */
 		require_once $configFileName;
 		$this->configValues = $CONFIG;
+
+		$versionFileName = __DIR__ . '/../version.php';
+		if (!file_exists($versionFileName)) {
+			// fallback to version in config.php
+			$version = $this->getConfigOption('version');
+		} else {
+			/** @var string $OC_VersionString */
+			require_once $versionFileName;
+			$version = $OC_VersionString;
+		}
+
+		if($version === null) {
+			return;
+		}
+
+		// normalize version to 3 digits
+		$splittedVersion = explode('.', $version);
+		if(sizeof($splittedVersion) >= 3) {
+			$splittedVersion = array_slice($splittedVersion, 0, 3);
+		}
+
+		$this->currentVersion = implode('.', $splittedVersion);
+	}
+
+	/**
+	 * Returns current version or "unknown" if this could not be determined.
+	 *
+	 * @return string
+	 */
+	public function getCurrentVersion() {
+		return $this->currentVersion;
+	}
+
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
+	public function checkForUpdate() {
+		$response = $this->getUpdateServerResponse();
+
+		$version = $response['version'];
+		$versionString = $response['versionstring'];
+
+		if ($version !== $this->currentVersion) {
+			$this->updateAvailable = true;
+			$updateText = 'Update to ' . $versionString . ' available.';
+		} else {
+			$updateText = 'No update available.';
+		}
+
+		return $updateText;
+	}
+
+	/**
+	 * Returns bool whether update is available or not
+	 *
+	 * @return bool
+	 */
+	public function updateAvailable() {
+		return $this->updateAvailable;
 	}
 
 	/**
@@ -147,14 +211,14 @@ class Updater {
 	 */
 	public function checkWritePermissions() {
 		// TODO: Exclude data folder
-		$notWriteablePaths = array();
+		$notWritablePaths = array();
 		foreach ($this->getRecursiveDirectoryIterator() as $path => $dir) {
 			if(!is_writable($path)) {
-				$notWriteablePaths[] = $path;
+				$notWritablePaths[] = $path;
 			}
 		}
-		if(count($notWriteablePaths) > 0) {
-			throw new UpdateException($notWriteablePaths);
+		if(count($notWritablePaths) > 0) {
+			throw new UpdateException($notWritablePaths);
 		}
 	}
 
@@ -162,6 +226,7 @@ class Updater {
 	 * Sets the maintenance mode to the defined value
 	 *
 	 * @param bool $state
+	 * @throws Exception when config.php can't be written
 	 */
 	public function setMaintenanceMode($state) {
 		/** @var array $CONFIG */
@@ -292,10 +357,14 @@ class Updater {
 	public function downloadUpdate() {
 		$response = $this->getUpdateServerResponse();
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
+		if(file_exists($storageLocation)) {
+			$this->recursiveDelete($storageLocation);
+		}
 		$state = mkdir($storageLocation, 0750, true);
 		if($state === false) {
 			throw new \Exception('Could not mkdir storage location');
 		}
+
 		$fp = fopen($storageLocation . basename($response['url']), 'w+');
 		$ch = curl_init($response['url']);
 		curl_setopt($ch, CURLOPT_FILE, $fp);
@@ -315,6 +384,7 @@ class Updater {
 	public function extractDownload() {
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		$files = scandir($storageLocation);
+		// ., .. and downloaded zip archive
 		if(count($files) !== 3) {
 			throw new \Exception('Not exact 3 files existent in folder');
 		}
@@ -349,9 +419,16 @@ class Updater {
 
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
 		foreach($filesToReplace as $file) {
+			$parentDir = dirname(__DIR__ . '/../' . $file);
+			if(!file_exists($parentDir)) {
+				$r = mkdir($parentDir);
+				if($r !== true) {
+					throw new \Exception('Can\'t create parent directory for entry point: ' . $file);
+				}
+			}
 			$state = file_put_contents(__DIR__  . '/../' . $file, $content);
 			if($state === false) {
-				throw new \Exception('Cant replace entry point: '.$file);
+				throw new \Exception('Can\'t replace entry point: '.$file);
 			}
 		}
 	}
@@ -387,22 +464,32 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function deleteOldFiles() {
+		$shippedAppsFile = __DIR__ . '/../core/shipped.json';
+		if(!file_exists($shippedAppsFile)) {
+			throw new \Exception('core/shipped.json is not available');
+		}
 		// Delete shipped apps
-		$shippedApps = json_decode(file_get_contents(__DIR__ . '(/../core/shipped.json'), true);
+		$shippedApps = json_decode(file_get_contents($shippedAppsFile), true);
 		foreach($shippedApps['shippedApps'] as $app) {
 			$this->recursiveDelete(__DIR__ . '/../apps/' . $app);
 		}
 
-		// Delete example config
-		$state = unlink(__DIR__ . '/../config/config.sample.php');
-		if($state === false) {
-			throw new \Exception('Could not unlink sample config');
+		$configSampleFile = __DIR__ . '/../config/config.sample.php';
+		if(file_exists($configSampleFile)) {
+			// Delete example config
+			$state = unlink($configSampleFile);
+			if ($state === false) {
+				throw new \Exception('Could not unlink sample config');
+			}
 		}
 
-		// Delete themes
-		$state = unlink(__DIR__ . '/../themes/README');
-		if($state === false) {
-			throw new \Exception('Could not delete themes README');
+		$themesReadme = __DIR__ . '/../themes/README';
+		if(file_exists($themesReadme)) {
+			// Delete themes
+			$state = unlink($themesReadme);
+			if ($state === false) {
+				throw new \Exception('Could not delete themes README');
+			}
 		}
 		$this->recursiveDelete(__DIR__ . '/../themes/example/');
 
@@ -591,6 +678,7 @@ if(isset($_POST['step'])) {
 				break;
 			case '9':
 				$updater->moveNewVersionInPlace();
+				// TODO: ask if maintenance mode should kept enabled (for occ upgrade) or removed for (web UI update)
 				$updater->setMaintenanceMode(false);
 				break;
 		}
@@ -608,7 +696,7 @@ if(isset($_POST['step'])) {
 <html>
 <head>
 	<style>
-		html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, dialog, figure, footer, header, hgroup, nav, section {
+		html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, dialog, figure, footer, header, nav, section {
 			margin: 0;
 			padding: 0;
 			border: 0;
@@ -636,6 +724,10 @@ if(isset($_POST['step'])) {
 		}
 		ul {
 			list-style: none;
+		}
+		.output ul {
+			list-style: initial;
+			padding: 0 30px;
 		}
 		#header {
 			position: fixed;
@@ -758,7 +850,7 @@ if(isset($_POST['step'])) {
 			background-image: url(data:image/gif;base64,R0lGODlhEAAQAOMAAP///zMzM9HR0ZycnMTExK6url5eXnd3d9/f3+np6cnJyUpKSjY2Nv///////////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJCgAPACwAAAAAEAAQAAAETvDJ+UqhWA7JmCSZtIDdo4ChsTwlkWDG9Szb9yQEehgGkuUKGCpE/AEHyJqRECxKfBjEkJJ7fZhRycmHkwhA4CmG4EORQyfb4xuyPsSSCAAh+QQJCgAPACwAAAAAEAAQAAAEUvDJ+QqhWBa5lmSZZChPV4LhYZQLwmzUQD7GMIEJcT3EMCQZ3WwyEISORx1BoVAmhcgJIoPYYXRAic5ImT6a05xEcClbg9MdwYtpasfnSZYXigAAIfkECQoADwAsAAAAABAAEAAABFDwyfkIoVgqaYxcmTQgT1eCYTGURrJcTyIR5DPAD1gwjCRYMgwPNaGFaqGMhaBQLJPLTXKCpOIowCJBgKk5SQnYr1K5YowwY8Y585klQXImAgAh+QQJCgAPACwAAAAAEAAQAAAEUPDJ+YSgWCI5hjSZRCRP9xxgqBDlkBjsQz7ERtsPSCyLJBCjDC81qYVmoQxjuVgBk0tGLznBVWMYIBJ4odhWm0TsR6NhM8aYMbMS+c6TbSgCACH5BAkKAA8ALAAAAAAQABAAAARQ8Mn5EKJY3leKHJlEJJw3gKFClMmwkQ+xyRNIGIYkEGOGHxhaBhbKLI4GFa94XOSKtQxilWEwPCKCALNZMEAJ6i4Wo4ZoVCFGJdKZKcT3JAIAIfkECQoADwAsAAAAABAAEAAABFDwyflSolgiSYgsGXd1DwGGitclxVZxLuGWDzIMkrBmN07JoUsoZCgeUiSicUjxURCezGIRLREEmAHWsMAlojoag8EERhlOSoojMZAzQlomAgAh+QQJCgAPACwAAAAAEAAQAAAEUPDJ+VKiWCJJCM/c1T2KB5ZPlxBXxW0pnFbjI6hZp2CETLWgzGBYKNWExCBlkEGYMAbDsyPAFKoHQ4EmuT0Yj8VC2ftKFswMyvw4jDNAcCYCACH5BAkKAA8ALAAAAAAQABAAAARQ8Mn5UqJYIkkIz9zVPYoHlk+XEFfFbSmcVuMjqFmnYIRMtaCcrlQTEnbBiYmCWFIGA1lHwNtAdyuJgfFYPAyGJGPQ1RZAC275cQhnzhJvJgIAIfkECQoADwAsAAAAABAAEAAABFHwyflSolgiSQjP3NU9igeWT5cQV8VtKZxW4yOoWadghEy1oJyuVBMSdsGJTzJggHASBsOAEVxKm4LzcVg8qINBciGmPgZIjMH7lRTEuYkZEwEAIfkECQoADwAsAAAAABAAEAAABE/wyflSolgiSQjP3NU9igeWT5cQV8VtKZxW4yOoWadghEy1oJyOQWQEO4RdcOKTDBYgnGSxOGAQl9KGAH0cDI9BygQyFMKvMhhtI1PI4kwEACH5BAkKAA8ALAAAAAAQABAAAARQ8Mn5UqJYIkkIz9zVPYoHlk+XEFclMQO3fatpMIyQdQoGgy3QjofDCTuEnnAyoxQMINXEYDhgEJfShgB9FGKekXDQMxGalEEsJRGYrpM3JQIAIfkEAQoADwAsAAAAABAAEAAABFHwyflSolgOSQjPEuN1j+KBC/N0CXFV0rI9zDF57XksC5J1CsyiAHqBfkCD0nDsEILHiQ+jmGFYk8GASEFcTD7ETDBanUAE3ykNMn0e5OINFAEAOw==);
 		}
 
-		li.current-step h2, li.passed-step h2 {
+		li.current-step h2, li.passed-step h2, li.failed-step h2 {
 			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 			opacity: 1;
 		}
@@ -768,11 +860,12 @@ if(isset($_POST['step'])) {
 			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAWlBMVEUAAAAAqgAAvwAA1QAA3wAAxgAA0QAA1QAAzgAA0QAA1gAA1gAA1wAA1gAA0gAA1QAA1AAA1AAA1AAA1QAA0wAA1AAA1AAA1QAA0wAA1AAA1AAA1QAA1AAA1ACEAd/9AAAAHXRSTlMAAwQGCAkLDBUWGR8gLC2osrO3uru9v9LT1Nfq+K5OpOQAAABPSURBVBiVpYq3EYAwEMBEfnJONr//mhSYI5SgTifBPyLv5UPtP11tAZDI4b3aEiCeTAYErdoKAFl0TQk71wGZ1eTN2d2zXd09tw4gY8l3dg+HBDK71PO7AAAAAElFTkSuQmCC);
 		}
 
+		li.failed-step {
+			background-color: #ffd4d4;
+		}
 		li.failed-step h2 {
-			background-color: #ffb0b0;
+			color: #000;
 			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAACqAADMAADVAADVAADVAADVAADWAADWAADUAADUAADUAADVAADUAADTAADVAADUAADVAADUAADUAACCP69rAAAAE3RSTlMAAwUGDCorMjiHpaeosdPk6ervRw2uZQAAAERJREFUeAFjIA4w8QoDgRA7jM/ILQwGgmxQPheQw8HAJywswAoW4BSGCQjzM4MEeBACwizECiAAC4ah6NZiOgzT6YQBABtYB8QyiY2BAAAAAElFTkSuQmCC);
-			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-			opacity: 1;
 		}
 
 		li.step .output {
@@ -811,11 +904,11 @@ if(isset($_POST['step'])) {
 			<ul id="progress" class="section">
 				<li id="step-init" class="step icon-loading passed-step">
 					<h2>Initializing</h2>
-					<div class="output hidden">Current version is 9.1.0.8<br>
-						No updates found online.<br>
-						<button id="recheck" class="button">Recheck</button></div>
+					<div class="output">Current version is <?php echo($updater->getCurrentVersion()); ?>.<br>
+						<?php echo($updater->checkForUpdate()); ?><br>
+						<button id="recheck" class="button" onClick="window.location.reload()">Recheck</button></div>
 				</li>
-				<li id="step-check-files" class="step current-step">
+				<li id="step-check-files" class="step">
 					<h2>Check for expected files</h2>
 					<div class="output hidden"></div>
 				</li>
@@ -872,18 +965,18 @@ if(false):
 	</form>
 <?php endif; ?>
 
-<?php if(true): ?>
-	<pre id="progress">
-Starting update process. Please be patient...
-	</pre>
-<?php endif; ?>
 </body>
 <?php if(true): ?>
 
 	<script>
-		function addStepText(text) {
-			var previousValue = document.getElementById('progress').innerHTML;
-			document.getElementById('progress').innerHTML = previousValue + "\r" + text;
+		function addStepText(id, text) {
+			var el = document.getElementById(id);
+			var output =el.getElementsByClassName('output')[0];
+			if(typeof text === 'object') {
+				text = JSON.stringify(text);
+			}
+			output.innerHTML = text;
+			output.classList.remove('hidden');
 		}
 
 		function currentStep(id) {
@@ -920,7 +1013,18 @@ Starting update process. Please be patient...
 					// failure
 				}
 
-				callback(JSON.parse(httpRequest.responseText));
+				if(httpRequest.responseText.substr(0,1) !== '{') {
+					// it seems that this is not a JSON object
+					var response = {
+						processed: false,
+						response: 'Parsing response failed. ' + httpRequest.responseText
+					};
+					callback(response);
+				} else {
+					// parse JSON
+					callback(JSON.parse(httpRequest.responseText));
+				}
+
 			};
 			httpRequest.send("step="+number);
 		}
@@ -934,11 +1038,13 @@ Starting update process. Please be patient...
 					performStep(2, performStepCallbacks[2])
 				} else {
 					errorStep('step-check-files');
-					// TODO
-					addStepText('The following extra files have been found:');
+
+					var text = 'The following extra files have been found:<ul>';
 					response['response'].forEach(function(file) {
-						addStepText("\t"+file);
+						text += '<li>' + file + '</li>';
 					});
+					text += '</ul>';
+					addStepText('step-check-files', text);
 				}
 			},
 			2: function(response) {
@@ -948,11 +1054,13 @@ Starting update process. Please be patient...
 					performStep(3, performStepCallbacks[3]);
 				} else {
 					errorStep('step-check-permissions');
-					// TODO
-					addStepText('The following places can not be written to:');
+
+					var text = 'The following places can not be written to:<ul>';
 					response['response'].forEach(function(file) {
-						addStepText("\t"+file);
+						text += '<li>' + file + '</li>';
 					});
+					text += '</ul>';
+					addStepText('step-check-permissions', text);
 				}
 			},
 			3: function(response) {
@@ -962,41 +1070,99 @@ Starting update process. Please be patient...
 					performStep(4, performStepCallbacks[4]);
 				} else {
 					errorStep('step-enable-maintenance');
+
+					if(response.response) {
+						addStepText('step-enable-maintenance', response.response);
+					}
 				}
 			},
-			4: function(response) {
-				successStep('step-backup');
-				currentStep('step-download');
-				performStep(5, performStepCallbacks[5]);
+			4: function (response) {
+				if (response.proceed === true) {
+					successStep('step-backup');
+					currentStep('step-download');
+					performStep(5, performStepCallbacks[5]);
+				} else {
+					errorStep('step-backup');
+
+					if(response.response) {
+						addStepText('step-backup', response.response);
+					}
+				}
 			},
-			5: function(response) {
-				successStep('step-download');
-				currentStep('step-extract');
-				performStep(6, performStepCallbacks[6]);
+			5: function (response) {
+				if (response.proceed === true) {
+					successStep('step-download');
+					currentStep('step-extract');
+					performStep(6, performStepCallbacks[6]);
+				} else {
+					errorStep('step-download');
+
+					if(response.response) {
+						addStepText('step-download', response.response);
+					}
+				}
 			},
-			6: function(response) {
-				successStep('step-extract');
-				currentStep('step-entrypoints');
-				performStep(7, performStepCallbacks[7]);
+			6: function (response) {
+				if (response.proceed === true) {
+					successStep('step-extract');
+					currentStep('step-entrypoints');
+					performStep(7, performStepCallbacks[7]);
+				} else {
+					errorStep('step-extract');
+
+					if(response.response) {
+						addStepText('step-extract', response.response);
+					}
+				}
 			},
-			7: function(response) {
-				successStep('step-entrypoints');
-				currentStep('step-delete');
-				performStep(8, performStepCallbacks[8]);
+			7: function (response) {
+				if (response.proceed === true) {
+					successStep('step-entrypoints');
+					currentStep('step-delete');
+					performStep(8, performStepCallbacks[8]);
+				} else {
+					errorStep('step-entrypoints');
+
+					if(response.response) {
+						addStepText('step-entrypoints', response.response);
+					}
+				}
 			},
-			8: function(response) {
-				successStep('step-delete');
-				currentStep('step-move');
-				performStep(9, performStepCallbacks[9]);
+			8: function (response) {
+				if (response.proceed === true) {
+					successStep('step-delete');
+					currentStep('step-move');
+					performStep(9, performStepCallbacks[9]);
+				} else {
+					errorStep('step-delete');
+
+					if(response.response) {
+						addStepText('step-delete', response.response);
+					}
+				}
 			},
-			9: function(response) {
-				successStep('step-move');
-				successStep('step-done');
+			9: function (response) {
+				if (response.proceed === true) {
+					successStep('step-move');
+					successStep('step-done');
+				} else {
+					errorStep('step-move');
+
+					if(response.response) {
+						addStepText('step-move', response.response);
+					}
+				}
 			}
 		};
 
-		currentStep('step-check-files');
-		performStep(1, performStepCallbacks[1]);
+		<?php
+		if ($updater->updateAvailable()) {
+			?>
+			currentStep('step-check-files');
+			performStep(1, performStepCallbacks[1]);
+			<?php
+		}
+		?>
 	</script>
 <?php endif; ?>
 
