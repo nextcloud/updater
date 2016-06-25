@@ -885,6 +885,25 @@ if(isset($_POST['step'])) {
 			color: #555;
 		}
 
+		button {
+			font-family: 'Open Sans', Frutiger, Calibri, 'Myriad Pro', Myriad, sans-serif;
+			font-size: 13px;
+			font-weight: 600;
+			color: #555;
+			margin: 3px 3px 3px 0;
+			padding: 5px;
+			background-color: rgba(255, 255, 255, .95);
+			border-radius: 3px;
+			border: 1px solid rgba(240,240,240,.9);
+			cursor: pointer;
+			outline: none;
+		}
+
+		button:hover, button:focus {
+			background-color: rgba(240,240,240,.9);
+			color: #111;
+		}
+
 
 	</style>
 </head>
@@ -911,7 +930,17 @@ if(isset($_POST['step'])) {
 					<h2>Initializing</h2>
 					<div class="output">Current version is <?php echo($updater->getCurrentVersion()); ?>.<br>
 						<?php echo($updater->checkForUpdate()); ?><br>
-						<button id="recheck" class="button" onClick="window.location.reload()">Recheck</button></div>
+
+						<?php
+						if ($updater->updateAvailable()) {
+							?>
+							<button onClick="startUpdate()">Start update</button>
+							<?php
+						}
+						?>
+						<button onClick="window.location.reload()">Recheck</button>
+
+						</div>
 				</li>
 				<li id="step-check-files" class="step">
 					<h2>Check for expected files</h2>
@@ -1160,14 +1189,11 @@ if(false):
 			}
 		};
 
-		<?php
-		if ($updater->updateAvailable()) {
-			?>
+		function startUpdate() {
 			currentStep('step-check-files');
 			performStep(1, performStepCallbacks[1]);
-			<?php
 		}
-		?>
+
 	</script>
 <?php endif; ?>
 
