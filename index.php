@@ -964,11 +964,6 @@ if(false):
 	</form>
 <?php endif; ?>
 
-<?php if(true): ?>
-	<pre id="progress">
-Starting update process. Please be patient...
-	</pre>
-<?php endif; ?>
 </body>
 <?php if(true): ?>
 
