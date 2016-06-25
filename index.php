@@ -357,10 +357,14 @@ class Updater {
 	public function downloadUpdate() {
 		$response = $this->getUpdateServerResponse();
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
+		if(file_exists($storageLocation)) {
+			$this->recursiveDelete($storageLocation);
+		}
 		$state = mkdir($storageLocation, 0750, true);
 		if($state === false) {
 			throw new \Exception('Could not mkdir storage location');
 		}
+
 		$fp = fopen($storageLocation . basename($response['url']), 'w+');
 		$ch = curl_init($response['url']);
 		curl_setopt($ch, CURLOPT_FILE, $fp);
@@ -415,6 +419,13 @@ class Updater {
 
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
 		foreach($filesToReplace as $file) {
+			$parentDir = dirname(__DIR__ . '/../' . $file);
+			if(!file_exists($parentDir)) {
+				$r = mkdir($parentDir);
+				if($r !== true) {
+					throw new \Exception('Can\'t create parent directory for entry point: ' . $file);
+				}
+			}
 			$state = file_put_contents(__DIR__  . '/../' . $file, $content);
 			if($state === false) {
 				throw new \Exception('Can\'t replace entry point: '.$file);
@@ -453,22 +464,32 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function deleteOldFiles() {
+		$shippedAppsFile = __DIR__ . '/../core/shipped.json';
+		if(!file_exists($shippedAppsFile)) {
+			throw new \Exception('core/shipped.json is not available');
+		}
 		// Delete shipped apps
-		$shippedApps = json_decode(file_get_contents(__DIR__ . '(/../core/shipped.json'), true);
+		$shippedApps = json_decode(file_get_contents($shippedAppsFile), true);
 		foreach($shippedApps['shippedApps'] as $app) {
 			$this->recursiveDelete(__DIR__ . '/../apps/' . $app);
 		}
 
-		// Delete example config
-		$state = unlink(__DIR__ . '/../config/config.sample.php');
-		if($state === false) {
-			throw new \Exception('Could not unlink sample config');
+		$configSampleFile = __DIR__ . '/../config/config.sample.php';
+		if(file_exists($configSampleFile)) {
+			// Delete example config
+			$state = unlink($configSampleFile);
+			if ($state === false) {
+				throw new \Exception('Could not unlink sample config');
+			}
 		}
 
-		// Delete themes
-		$state = unlink(__DIR__ . '/../themes/README');
-		if($state === false) {
-			throw new \Exception('Could not delete themes README');
+		$themesReadme = __DIR__ . '/../themes/README';
+		if(file_exists($themesReadme)) {
+			// Delete themes
+			$state = unlink($themesReadme);
+			if ($state === false) {
+				throw new \Exception('Could not delete themes README');
+			}
 		}
 		$this->recursiveDelete(__DIR__ . '/../themes/example/');
 
