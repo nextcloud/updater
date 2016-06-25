@@ -780,7 +780,8 @@ if(isset($_POST['step'])) {
 				break;
 			case '9':
 				$updater->moveNewVersionInPlace();
-				// TODO: ask if maintenance mode should kept enabled (for occ upgrade) or removed for (web UI update)
+				break;
+			case '10':
 				$updater->setMaintenanceMode(false);
 				break;
 		}
@@ -943,7 +944,7 @@ if(isset($_POST['step'])) {
 			background-repeat: no-repeat;
 		}
 
-		li.current-step, li.passed-step, li.failed-step{
+		li.current-step, li.passed-step, li.failed-step, li.waiting-step {
 			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 			opacity: 1;
 		}
@@ -952,13 +953,12 @@ if(isset($_POST['step'])) {
 			background-image: url(data:image/gif;base64,R0lGODlhEAAQAOMAAP///zMzM9HR0ZycnMTExK6url5eXnd3d9/f3+np6cnJyUpKSjY2Nv///////////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJCgAPACwAAAAAEAAQAAAETvDJ+UqhWA7JmCSZtIDdo4ChsTwlkWDG9Szb9yQEehgGkuUKGCpE/AEHyJqRECxKfBjEkJJ7fZhRycmHkwhA4CmG4EORQyfb4xuyPsSSCAAh+QQJCgAPACwAAAAAEAAQAAAEUvDJ+QqhWBa5lmSZZChPV4LhYZQLwmzUQD7GMIEJcT3EMCQZ3WwyEISORx1BoVAmhcgJIoPYYXRAic5ImT6a05xEcClbg9MdwYtpasfnSZYXigAAIfkECQoADwAsAAAAABAAEAAABFDwyfkIoVgqaYxcmTQgT1eCYTGURrJcTyIR5DPAD1gwjCRYMgwPNaGFaqGMhaBQLJPLTXKCpOIowCJBgKk5SQnYr1K5YowwY8Y585klQXImAgAh+QQJCgAPACwAAAAAEAAQAAAEUPDJ+YSgWCI5hjSZRCRP9xxgqBDlkBjsQz7ERtsPSCyLJBCjDC81qYVmoQxjuVgBk0tGLznBVWMYIBJ4odhWm0TsR6NhM8aYMbMS+c6TbSgCACH5BAkKAA8ALAAAAAAQABAAAARQ8Mn5EKJY3leKHJlEJJw3gKFClMmwkQ+xyRNIGIYkEGOGHxhaBhbKLI4GFa94XOSKtQxilWEwPCKCALNZMEAJ6i4Wo4ZoVCFGJdKZKcT3JAIAIfkECQoADwAsAAAAABAAEAAABFDwyflSolgiSYgsGXd1DwGGitclxVZxLuGWDzIMkrBmN07JoUsoZCgeUiSicUjxURCezGIRLREEmAHWsMAlojoag8EERhlOSoojMZAzQlomAgAh+QQJCgAPACwAAAAAEAAQAAAEUPDJ+VKiWCJJCM/c1T2KB5ZPlxBXxW0pnFbjI6hZp2CETLWgzGBYKNWExCBlkEGYMAbDsyPAFKoHQ4EmuT0Yj8VC2ftKFswMyvw4jDNAcCYCACH5BAkKAA8ALAAAAAAQABAAAARQ8Mn5UqJYIkkIz9zVPYoHlk+XEFfFbSmcVuMjqFmnYIRMtaCcrlQTEnbBiYmCWFIGA1lHwNtAdyuJgfFYPAyGJGPQ1RZAC275cQhnzhJvJgIAIfkECQoADwAsAAAAABAAEAAABFHwyflSolgiSQjP3NU9igeWT5cQV8VtKZxW4yOoWadghEy1oJyuVBMSdsGJTzJggHASBsOAEVxKm4LzcVg8qINBciGmPgZIjMH7lRTEuYkZEwEAIfkECQoADwAsAAAAABAAEAAABE/wyflSolgiSQjP3NU9igeWT5cQV8VtKZxW4yOoWadghEy1oJyOQWQEO4RdcOKTDBYgnGSxOGAQl9KGAH0cDI9BygQyFMKvMhhtI1PI4kwEACH5BAkKAA8ALAAAAAAQABAAAARQ8Mn5UqJYIkkIz9zVPYoHlk+XEFclMQO3fatpMIyQdQoGgy3QjofDCTuEnnAyoxQMINXEYDhgEJfShgB9FGKekXDQMxGalEEsJRGYrpM3JQIAIfkEAQoADwAsAAAAABAAEAAABFHwyflSolgOSQjPEuN1j+KBC/N0CXFV0rI9zDF57XksC5J1CsyiAHqBfkCD0nDsEILHiQ+jmGFYk8GASEFcTD7ETDBanUAE3ykNMn0e5OINFAEAOw==);
 		}
 
-		li.current-step h2, li.passed-step h2, li.failed-step h2 {
+		li.current-step h2, li.passed-step h2, li.failed-step h2, li.waiting-step h2 {
 			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 			opacity: 1;
 		}
 
 		li.passed-step h2 {
-			cursor : pointer;
 			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAWlBMVEUAAAAAqgAAvwAA1QAA3wAAxgAA0QAA1QAAzgAA0QAA1gAA1gAA1wAA1gAA0gAA1QAA1AAA1AAA1AAA1QAA0wAA1AAA1AAA1QAA0wAA1AAA1AAA1QAA1AAA1ACEAd/9AAAAHXRSTlMAAwQGCAkLDBUWGR8gLC2osrO3uru9v9LT1Nfq+K5OpOQAAABPSURBVBiVpYq3EYAwEMBEfnJONr//mhSYI5SgTifBPyLv5UPtP11tAZDI4b3aEiCeTAYErdoKAFl0TQk71wGZ1eTN2d2zXd09tw4gY8l3dg+HBDK71PO7AAAAAElFTkSuQmCC);
 		}
 
@@ -982,7 +982,7 @@ if(isset($_POST['step'])) {
 			color: #555;
 		}
 
-		button {
+		button, a.button {
 			font-family: 'Open Sans', Frutiger, Calibri, 'Myriad Pro', Myriad, sans-serif;
 			font-size: 13px;
 			font-weight: 600;
@@ -996,15 +996,18 @@ if(isset($_POST['step'])) {
 			outline: none;
 		}
 
-		button:hover, button:focus {
+		button:hover, button:focus, a.button:hover, a.button:focus {
 			background-color: rgba(240,240,240,.9);
 			color: #111;
 		}
 
-		code {
-			color: lightcoral;
+		.output code {
+			font-family: monospace;
+			font-size: 1.2em;
+			background-color: #eee;
+			border-radius: 2px;
+			padding: 2px 6px 2px 4px;
 		}
-
 
 	</style>
 </head>
@@ -1079,9 +1082,18 @@ if(isset($_POST['step'])) {
 					<h2>Move new files in place</h2>
 					<div class="output hidden"></div>
 				</li>
+				<li id="step-maintenance-mode" class="step">
+					<h2>Keep maintenance mode active?</h2>
+					<div class="output hidden">
+						<button onClick="askForMaintenance(true)">Yes (for usage with command line tool)</button>
+						<button onClick="askForMaintenance(false)">No (for usage of the web based updater)</button>
+					</div>
+				</li>
 				<li id="step-done" class="step">
 					<h2>Done</h2>
-					<div class="output hidden"></div>
+					<div class="output hidden">
+						<a class="button" href="../">Go to back to your Nextcloud instance to finish the update</a>
+					</div>
 				</li>
 			</ul>
 		<?php else: ?>
@@ -1116,7 +1128,7 @@ if(isset($_POST['step'])) {
 			if(typeof text === 'object') {
 				text = JSON.stringify(text);
 			}
-			output.innerHTML = text;
+			output.innerHTML = output.innerHTML + text;
 			output.classList.remove('hidden');
 		}
 
@@ -1124,6 +1136,7 @@ if(isset($_POST['step'])) {
 			var el = document.getElementById(id);
 			el.classList.remove('failed-step');
 			el.classList.remove('passed-step');
+			el.classList.remove('waiting-step');
 			el.classList.add('current-step');
 		}
 
@@ -1131,6 +1144,7 @@ if(isset($_POST['step'])) {
 			var el = document.getElementById(id);
 			el.classList.remove('passed-step');
 			el.classList.remove('current-step');
+			el.classList.remove('waiting-step');
 			el.classList.add('failed-step');
 		}
 
@@ -1138,7 +1152,16 @@ if(isset($_POST['step'])) {
 			var el = document.getElementById(id);
 			el.classList.remove('failed-step');
 			el.classList.remove('current-step');
+			el.classList.remove('waiting-step');
 			el.classList.add('passed-step');
+		}
+
+		function waitingStep(id) {
+			var el = document.getElementById(id);
+			el.classList.remove('failed-step');
+			el.classList.remove('current-step');
+			el.classList.remove('passed-step');
+			el.classList.add('waiting-step');
 		}
 
 		function performStep(number, callback) {
@@ -1286,12 +1309,34 @@ if(isset($_POST['step'])) {
 			9: function (response) {
 				if (response.proceed === true) {
 					successStep('step-move');
-					successStep('step-done');
+
+					waitingStep('step-maintenance-mode');
+					// show buttons to decide on maintenance mode
+					var el = document.getElementById('step-maintenance-mode')
+						.getElementsByClassName('output')[0];
+					el.classList.remove('hidden');
 				} else {
 					errorStep('step-move');
 
 					if(response.response) {
 						addStepText('step-move', response.response);
+					}
+				}
+			},
+			10: function (response) {
+				if (response.proceed === true) {
+					successStep('step-maintenance-mode');
+					successStep('step-done');
+
+					// show button to get to the web based migration steps
+					var el = document.getElementById('step-done')
+						.getElementsByClassName('output')[0];
+					el.classList.remove('hidden');
+				} else {
+					errorStep('step-maintenance-mode');
+
+					if(response.response) {
+						addStepText('step-maintenance-mode', response.response);
 					}
 				}
 			}
@@ -1300,6 +1345,20 @@ if(isset($_POST['step'])) {
 		function startUpdate() {
 			currentStep('step-check-files');
 			performStep(1, performStepCallbacks[1]);
+		}
+
+		function askForMaintenance(keepActive) {
+			var el = document.getElementById('step-maintenance-mode')
+				.getElementsByClassName('output')[0];
+			if (keepActive) {
+				el.innerHTML = 'Maintenance mode will kept active.<br>Now trigger the migration via command line: <code>./occ upgrade</code><br>';
+				successStep('step-maintenance-mode');
+				successStep('step-done');
+			} else {
+				el.innerHTML = 'Maintenance mode will get disabled.<br>';
+				currentStep('step-maintenance-mode');
+				performStep(10, performStepCallbacks[10]);
+			}
 		}
 
 		if(document.getElementById('startUpdateButton')) {
