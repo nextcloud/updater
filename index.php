@@ -968,9 +968,14 @@ if(false):
 <?php if(true): ?>
 
 	<script>
-		function addStepText(text) {
-			var previousValue = document.getElementById('progress').innerHTML;
-			document.getElementById('progress').innerHTML = previousValue + "\r" + text;
+		function addStepText(id, text) {
+			var el = document.getElementById(id);
+			var output =el.getElementsByClassName('output')[0];
+			if(typeof text === 'object') {
+				text = JSON.stringify(text);
+			}
+			output.innerHTML = text;
+			output.classList.remove('hidden');
 		}
 
 		function currentStep(id) {
@@ -1032,11 +1037,13 @@ if(false):
 					performStep(2, performStepCallbacks[2])
 				} else {
 					errorStep('step-check-files');
-					// TODO
-					addStepText('The following extra files have been found:');
+
+					var text = 'The following extra files have been found:<ul>';
 					response['response'].forEach(function(file) {
-						addStepText("\t"+file);
+						text += '<li>' + file + '</li>';
 					});
+					text += '</ul>';
+					addStepText('step-check-files', text);
 				}
 			},
 			2: function(response) {
@@ -1046,11 +1053,13 @@ if(false):
 					performStep(3, performStepCallbacks[3]);
 				} else {
 					errorStep('step-check-permissions');
-					// TODO
-					addStepText('The following places can not be written to:');
+
+					var text = 'The following places can not be written to:<ul>';
 					response['response'].forEach(function(file) {
-						addStepText("\t"+file);
+						text += '<li>' + file + '</li>';
 					});
+					text += '</ul>';
+					addStepText('step-check-permissions', text);
 				}
 			},
 			3: function(response) {
@@ -1060,36 +1069,88 @@ if(false):
 					performStep(4, performStepCallbacks[4]);
 				} else {
 					errorStep('step-enable-maintenance');
+
+					if(response.response) {
+						addStepText('step-enable-maintenance', response.response);
+					}
 				}
 			},
-			4: function(response) {
-				successStep('step-backup');
-				currentStep('step-download');
-				performStep(5, performStepCallbacks[5]);
+			4: function (response) {
+				if (response.proceed === true) {
+					successStep('step-backup');
+					currentStep('step-download');
+					performStep(5, performStepCallbacks[5]);
+				} else {
+					errorStep('step-backup');
+
+					if(response.response) {
+						addStepText('step-backup', response.response);
+					}
+				}
 			},
-			5: function(response) {
-				successStep('step-download');
-				currentStep('step-extract');
-				performStep(6, performStepCallbacks[6]);
+			5: function (response) {
+				if (response.proceed === true) {
+					successStep('step-download');
+					currentStep('step-extract');
+					performStep(6, performStepCallbacks[6]);
+				} else {
+					errorStep('step-download');
+
+					if(response.response) {
+						addStepText('step-download', response.response);
+					}
+				}
 			},
-			6: function(response) {
-				successStep('step-extract');
-				currentStep('step-entrypoints');
-				performStep(7, performStepCallbacks[7]);
+			6: function (response) {
+				if (response.proceed === true) {
+					successStep('step-extract');
+					currentStep('step-entrypoints');
+					performStep(7, performStepCallbacks[7]);
+				} else {
+					errorStep('step-extract');
+
+					if(response.response) {
+						addStepText('step-extract', response.response);
+					}
+				}
 			},
-			7: function(response) {
-				successStep('step-entrypoints');
-				currentStep('step-delete');
-				performStep(8, performStepCallbacks[8]);
+			7: function (response) {
+				if (response.proceed === true) {
+					successStep('step-entrypoints');
+					currentStep('step-delete');
+					performStep(8, performStepCallbacks[8]);
+				} else {
+					errorStep('step-entrypoints');
+
+					if(response.response) {
+						addStepText('step-entrypoints', response.response);
+					}
+				}
 			},
-			8: function(response) {
-				successStep('step-delete');
-				currentStep('step-move');
-				performStep(9, performStepCallbacks[9]);
+			8: function (response) {
+				if (response.proceed === true) {
+					successStep('step-delete');
+					currentStep('step-move');
+					performStep(9, performStepCallbacks[9]);
+				} else {
+					errorStep('step-delete');
+
+					if(response.response) {
+						addStepText('step-delete', response.response);
+					}
+				}
 			},
-			9: function(response) {
-				successStep('step-move');
-				successStep('step-done');
+			9: function (response) {
+				if (response.proceed === true) {
+					successStep('step-move');
+					successStep('step-done');
+				} else {
+					errorStep('step-move');
+
+					if(response.response) {
+						addStepText('step-move', response.response);
+					}
+				}
 			}
 		};
 
