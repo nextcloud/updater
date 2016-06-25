@@ -1333,11 +1333,15 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 
 
 		var performStepCallbacks = {
+			0: function() { // placeholder that is called on start of the updater
+				currentStep('step-check-files');
+				performStep(1, performStepCallbacks[1]);
+			},
 			1: function(response) {
 				if(response.proceed === true) {
 					successStep('step-check-files');
 					currentStep('step-check-permissions');
-					performStep(2, performStepCallbacks[2])
+					performStep(2, performStepCallbacks[2]);
 				} else {
 					errorStep('step-check-files');
 
@@ -1463,6 +1467,8 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			10: function (response) {
 				if (response.proceed === true) {
 					successStep('step-maintenance-mode');
+					currentStep('step-done');
+					performStep(11, performStepCallbacks[11]);
 				} else {
 					errorStep('step-maintenance-mode');
 
@@ -1487,10 +1493,9 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 		};
 
 		function startUpdate() {
-			if(updaterStepStart === 0) {
-				currentStep('step-check-files');
-			}
-			performStep(updaterStepStart+1, performStepCallbacks[updaterStepStart+1]);
+			performStepCallbacks[updaterStepStart]({
+				proceed: true
+			});
 		}
 
 		function askForMaintenance(keepActive) {
@@ -1499,13 +1504,13 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			if (keepActive) {
 				el.innerHTML = 'Maintenance mode will kept active.<br>Now trigger the migration via command line: <code>./occ upgrade</code><br>';
 				successStep('step-maintenance-mode');
-				successStep('step-done');
+				currentStep('step-done');
+				performStep(11, performStepCallbacks[11]);
 			} else {
 				el.innerHTML = 'Maintenance mode will get disabled.<br>';
 				currentStep('step-maintenance-mode');
 				performStep(10, performStepCallbacks[10]);
 			}
-			performStep(11, performStepCallbacks[11]);
 		}
 
 		if(document.getElementById('startUpdateButton')) {
