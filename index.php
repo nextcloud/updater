@@ -745,19 +745,19 @@ class Updater {
 		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
 		if(!file_exists($updaterDir . '/.step')) {
 			if(!file_exists($updaterDir)) {
-				$state = mkdir($updaterDir);
-				if ($state === false) {
+				$result = mkdir($updaterDir);
+				if ($result === false) {
 					throw new \Exception('Could not create $updaterDir');
 				}
 			}
-			$state = touch($updaterDir . '/.step');
-			if($state === false) {
+			$result = touch($updaterDir . '/.step');
+			if($result === false) {
 				throw new \Exception('Could not create .step');
 			}
 		}
 
-		$state = file_put_contents($updaterDir . '/.step', json_encode(['state' => $state, 'step' => $step]));
-		if($state === false) {
+		$result = file_put_contents($updaterDir . '/.step', json_encode(['state' => $state, 'step' => $step]));
+		if($result === false) {
 			throw new \Exception('Could not write to .step');
 		}
 	}
