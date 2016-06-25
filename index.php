@@ -678,6 +678,7 @@ if(isset($_POST['step'])) {
 				break;
 			case '9':
 				$updater->moveNewVersionInPlace();
+				// TODO: ask if maintenance mode should kept enabled (for occ upgrade) or removed for (web UI update)
 				$updater->setMaintenanceMode(false);
 				break;
 		}
