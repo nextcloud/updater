@@ -902,7 +902,7 @@ if(isset($_POST['step'])) {
 						<?php echo($updater->checkForUpdate()); ?><br>
 						<button id="recheck" class="button" onClick="window.location.reload()">Recheck</button></div>
 				</li>
-				<li id="step-check-files" class="step current-step">
+				<li id="step-check-files" class="step">
 					<h2>Check for expected files</h2>
 					<div class="output hidden"></div>
 				</li>
@@ -1082,8 +1082,14 @@ Starting update process. Please be patient...
 			}
 		};
 
-		currentStep('step-check-files');
-		performStep(1, performStepCallbacks[1]);
+		<?php
+		if ($updater->updateAvailable()) {
+			?>
+			currentStep('step-check-files');
+			performStep(1, performStepCallbacks[1]);
+			<?php
+		}
+		?>
 	</script>
 <?php endif; ?>
 
