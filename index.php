@@ -1144,9 +1144,6 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 		</div>
 		<div id="app-content">
 		<?php if($auth->isAuthenticated()): ?>
-			<div id="error" class="section hidden"></div>
-			<div id="output" class="section hidden"></div>
-
 			<ul id="progress" class="section">
 				<li id="step-init" class="step icon-loading passed-step">
 					<h2>Initializing</h2>
