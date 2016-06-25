@@ -34,6 +34,10 @@ class UpdateException extends \Exception {
 class Updater {
 	/** @var array */
 	private $configValues = [];
+	/** @var string */
+	private $currentVersion = 'unknown';
+	/** @var bool */
+	private $updateAvailable = false;
 
 	public function __construct() {
 		$configFileName = __DIR__ . '/../config/config.php';
@@ -44,6 +48,66 @@ class Updater {
 		/** @var array $CONFIG */
 		require_once $configFileName;
 		$this->configValues = $CONFIG;
+
+		$versionFileName = __DIR__ . '/../version.php';
+		if (!file_exists($versionFileName)) {
+			// fallback to version in config.php
+			$version = $this->getConfigOption('version');
+		} else {
+			/** @var string $OC_VersionString */
+			require_once $versionFileName;
+			$version = $OC_VersionString;
+		}
+
+		if($version === null) {
+			return;
+		}
+
+		// normalize version to 3 digits
+		$splittedVersion = explode('.', $version);
+		if(sizeof($splittedVersion) >= 3) {
+			$splittedVersion = array_slice($splittedVersion, 0, 3);
+		}
+
+		$this->currentVersion = implode('.', $splittedVersion);
+	}
+
+	/**
+	 * Returns current version or "unknown" if this could not be determined.
+	 *
+	 * @return string
+	 */
+	public function getCurrentVersion() {
+		return $this->currentVersion;
+	}
+
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
+	public function checkForUpdate() {
+		$response = $this->getUpdateServerResponse();
+
+		$version = $response['version'];
+		$versionString = $response['versionstring'];
+
+		if ($version !== $this->currentVersion) {
+			$this->updateAvailable = true;
+			$updateText = 'Update to ' . $versionString . ' available.';
+		} else {
+			$updateText = 'No update available.';
+		}
+
+		return $updateText;
+	}
+
+	/**
+	 * Returns bool whether update is available or not
+	 *
+	 * @return bool
+	 */
+	public function updateAvailable() {
+		return $this->updateAvailable;
 	}
 
 	/**
@@ -811,9 +875,9 @@ if(isset($_POST['step'])) {
 			<ul id="progress" class="section">
 				<li id="step-init" class="step icon-loading passed-step">
 					<h2>Initializing</h2>
-					<div class="output hidden">Current version is 9.1.0.8<br>
-						No updates found online.<br>
-						<button id="recheck" class="button">Recheck</button></div>
+					<div class="output">Current version is <?php echo($updater->getCurrentVersion()); ?>.<br>
+						<?php echo($updater->checkForUpdate()); ?><br>
+						<button id="recheck" class="button" onClick="window.location.reload()">Recheck</button></div>
 				</li>
 				<li id="step-check-files" class="step current-step">
 					<h2>Check for expected files</h2>
