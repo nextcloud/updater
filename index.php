@@ -34,7 +34,10 @@ class UpdateException extends \Exception {
 
 class RecursiveDirectoryIteratorWithoutData extends RecursiveFilterIterator {
 	public function accept() {
-		$excludes = ['data'];
+		$excludes = [
+			'data',
+			'..',
+		];
 		return !($this->isDir() && in_array($this->getFilename(), $excludes, true));
 	}
 }
