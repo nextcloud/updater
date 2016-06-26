@@ -422,12 +422,13 @@ class Updater {
 			$updaterServer = 'https://updates.nextcloud.org/updater_server/';
 		}
 
+		$releaseChannel = !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+
 		// Download update response
 		$curl = curl_init();
 		curl_setopt_array($curl, [
 			CURLOPT_RETURNTRANSFER => 1,
-			// TODO: Detect release channel, probably we want to write the channel to config.php for that
-			CURLOPT_URL => $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOption('version')) .'xxxstablexx',
+			CURLOPT_URL => $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOption('version')) .'xxx'.$releaseChannel.'xx',
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
 		]);
 		$response = curl_exec($curl);
