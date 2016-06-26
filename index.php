@@ -686,7 +686,7 @@ class Updater {
 
 			if($fileInfo->isFile()) {
 				if(!file_exists(__DIR__ . '/../' . dirname($fileName))) {
-					$state = mkdir(__DIR__ . '/../' . dirname($fileName), 0750, true);
+					$state = mkdir(__DIR__ . '/../' . dirname($fileName), 0755, true);
 					if($state === false) {
 						throw new \Exception('Could not mkdir ' . __DIR__  . '/../' . dirname($fileName));
 					}
