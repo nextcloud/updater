@@ -135,6 +135,8 @@ class Updater {
 	private $configValues = [];
 	/** @var string */
 	private $currentVersion = 'unknown';
+	/** @var string */
+	private $buildTime;
 	/** @var bool */
 	private $updateAvailable = false;
 
@@ -152,13 +154,19 @@ class Updater {
 		if (!file_exists($versionFileName)) {
 			// fallback to version in config.php
 			$version = $this->getConfigOption('version');
+			$buildTime = '';
 		} else {
 			/** @var string $OC_VersionString */
+			/** @var string $OC_Build */
 			require_once $versionFileName;
 			$version = $OC_VersionString;
+			$buildTime = $OC_Build;
 		}
 
 		if($version === null) {
+			return;
+		}
+		if($buildTime === null) {
 			return;
 		}
 
@@ -169,6 +177,7 @@ class Updater {
 		}
 
 		$this->currentVersion = implode('.', $splittedVersion);
+		$this->buildTime = $buildTime;
 	}
 
 	/**
@@ -428,7 +437,7 @@ class Updater {
 		$curl = curl_init();
 		curl_setopt_array($curl, [
 			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOption('version')) .'xxx'.$releaseChannel.'xx',
+			CURLOPT_URL => $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOption('version')) .'xxx'.$releaseChannel.'xx'.urlencode($this->buildTime),
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
 		]);
 		$response = curl_exec($curl);
