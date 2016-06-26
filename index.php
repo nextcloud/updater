@@ -745,19 +745,19 @@ class Updater {
 		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
 		if(!file_exists($updaterDir . '/.step')) {
 			if(!file_exists($updaterDir)) {
-				$state = mkdir($updaterDir);
-				if ($state === false) {
+				$result = mkdir($updaterDir);
+				if ($result === false) {
 					throw new \Exception('Could not create $updaterDir');
 				}
 			}
-			$state = touch($updaterDir . '/.step');
-			if($state === false) {
+			$result = touch($updaterDir . '/.step');
+			if($result === false) {
 				throw new \Exception('Could not create .step');
 			}
 		}
 
-		$state = file_put_contents($updaterDir . '/.step', json_encode(['state' => $state, 'step' => $step]));
-		if($state === false) {
+		$result = file_put_contents($updaterDir . '/.step', json_encode(['state' => $state, 'step' => $step]));
+		if($result === false) {
 			throw new \Exception('Could not write to .step');
 		}
 	}
@@ -1116,12 +1116,27 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			color: #111;
 		}
 
-		.output code {
+		code {
 			font-family: monospace;
 			font-size: 1.2em;
 			background-color: #eee;
 			border-radius: 2px;
 			padding: 2px 6px 2px 4px;
+		}
+
+		#login code {
+			display: block;
+			border-radius: 3px;
+		}
+
+		#login form {
+			margin-top: 5px;
+		}
+
+		#login input {
+			padding: 5px;
+			border-radius: 3px;
+			border: 1px solid rgba(240,240,240,.9);
 		}
 
 	</style>
@@ -1144,9 +1159,6 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 		</div>
 		<div id="app-content">
 		<?php if($auth->isAuthenticated()): ?>
-			<div id="error" class="section hidden"></div>
-			<div id="output" class="section hidden"></div>
-
 			<ul id="progress" class="section">
 				<li id="step-init" class="step icon-loading passed-step">
 					<h2>Initializing</h2>
@@ -1154,9 +1166,9 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 						<?php echo($updater->checkForUpdate()); ?><br>
 
 						<?php
-						if ($updater->updateAvailable() || $currentStep > 0) {
+						if ($updater->updateAvailable() || $stepNumber > 0) {
 							$buttonText = 'Start update';
-							if($currentStep > 0) {
+							if($stepNumber > 0) {
 								$buttonText = 'Continue update';
 							}
 							?>
@@ -1166,50 +1178,50 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 						?>
 						</div>
 				</li>
-				<li id="step-check-files" class="step">
+				<li id="step-check-files" class="step <?php if($stepNumber >= 1) { echo 'passed-step'; }?>">
 					<h2>Check for expected files</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-check-permissions" class="step">
+				<li id="step-check-permissions" class="step <?php if($stepNumber >= 2) { echo 'passed-step'; }?>">
 					<h2>Check for write permissions</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-enable-maintenance" class="step">
+				<li id="step-enable-maintenance" class="step <?php if($stepNumber >= 3) { echo 'passed-step'; }?>">
 					<h2>Enable maintenance mode</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-backup" class="step">
+				<li id="step-backup" class="step <?php if($stepNumber >= 4) { echo 'passed-step'; }?>">
 					<h2>Create backup</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-download" class="step">
+				<li id="step-download" class="step <?php if($stepNumber >= 5) { echo 'passed-step'; }?>">
 					<h2>Downloading</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-extract" class="step">
+				<li id="step-extract" class="step <?php if($stepNumber >= 6) { echo 'passed-step'; }?>">
 					<h2>Extracting</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-entrypoints" class="step">
+				<li id="step-entrypoints" class="step <?php if($stepNumber >= 7) { echo 'passed-step'; }?>">
 					<h2>Replace entry points</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-delete" class="step">
+				<li id="step-delete" class="step <?php if($stepNumber >= 8) { echo 'passed-step'; }?>">
 					<h2>Delete old files</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-move" class="step">
+				<li id="step-move" class="step <?php if($stepNumber >= 9) { echo 'passed-step'; }?>">
 					<h2>Move new files in place</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-maintenance-mode" class="step">
+				<li id="step-maintenance-mode" class="step <?php if($stepNumber >= 10) { echo 'passed-step'; }?>">
 					<h2>Keep maintenance mode active?</h2>
 					<div class="output hidden">
 						<button id="maintenance-enable">Yes (for usage with command line tool)</button>
 						<button id="maintenance-disable">No (for usage of the web based updater)</button>
 					</div>
 				</li>
-				<li id="step-done" class="step">
+				<li id="step-done" class="step <?php if($stepNumber >= 11) { echo 'passed-step'; }?>">
 					<h2>Done</h2>
 					<div class="output hidden">
 						<a class="button" href="<?php echo $updaterUrl . '../'?>">Go to back to your Nextcloud instance to finish the update</a>
@@ -1217,23 +1229,24 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 				</li>
 			</ul>
 		<?php else: ?>
-			<h2>Authentication</h2>
-			<p>To login you need to provide the unhashed value of "updater.secret" in your config file.</p>
-			<p>If you don't know that value, you can access this updater directly via the Nextcloud admin screen or generate
-			your own secret:</p>
-			<code>php -r '$password = trim(shell_exec("openssl rand -base64 48"));if(strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";}else{echo "Could not execute OpenSSL.\n";};'</code>
-			<br/><br/>
-			<form method="post" name="login">
-				<fieldset>
-					<input type="password" id="updater-secret-input" value=""
-						   placeholder="Secret"
-						   autocomplete="on" required>
-					<input type="submit" id="updater-secret-submit" value="Login" />
-				</fieldset>
-			</form>
-			<?php if(isset($_SERVER['HTTP_X_UPDATER_AUTH']) && !$auth->isAuthenticated()): ?>
-			<p>Invalid password</p>
-			<?php endif; ?>
+			<div id="login" class="section">
+				<h2>Authentication</h2>
+				<p>To login you need to provide the unhashed value of "updater.secret" in your config file.</p>
+				<p>If you don't know that value, you can access this updater directly via the Nextcloud admin screen or generate
+				your own secret:</p>
+				<code>php -r '$password = trim(shell_exec("openssl rand -base64 48"));if(strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";}else{echo "Could not execute OpenSSL.\n";};'</code>
+				<form method="post" name="login">
+					<fieldset>
+						<input type="password" id="updater-secret-input" value=""
+							   placeholder="Secret"
+							   autocomplete="on" required>
+						<button id="updater-secret-submit">Login</button>
+					</fieldset>
+				</form>
+				<?php if(isset($_SERVER['HTTP_X_UPDATER_AUTH']) && !$auth->isAuthenticated()): ?>
+				<p>Invalid password</p>
+				<?php endif; ?>
+			</div>
 		<?php endif; ?>
 		</div>
 	</div>
@@ -1320,11 +1333,15 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 
 
 		var performStepCallbacks = {
+			0: function() { // placeholder that is called on start of the updater
+				currentStep('step-check-files');
+				performStep(1, performStepCallbacks[1]);
+			},
 			1: function(response) {
 				if(response.proceed === true) {
 					successStep('step-check-files');
 					currentStep('step-check-permissions');
-					performStep(2, performStepCallbacks[2])
+					performStep(2, performStepCallbacks[2]);
 				} else {
 					errorStep('step-check-files');
 
@@ -1450,6 +1467,8 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			10: function (response) {
 				if (response.proceed === true) {
 					successStep('step-maintenance-mode');
+					currentStep('step-done');
+					performStep(11, performStepCallbacks[11]);
 				} else {
 					errorStep('step-maintenance-mode');
 
@@ -1474,10 +1493,9 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 		};
 
 		function startUpdate() {
-			if(updaterStepStart === 0) {
-				currentStep('step-check-files');
-			}
-			performStep(updaterStepStart+1, performStepCallbacks[updaterStepStart+1]);
+			performStepCallbacks[updaterStepStart]({
+				proceed: true
+			});
 		}
 
 		function askForMaintenance(keepActive) {
@@ -1486,13 +1504,13 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			if (keepActive) {
 				el.innerHTML = 'Maintenance mode will kept active.<br>Now trigger the migration via command line: <code>./occ upgrade</code><br>';
 				successStep('step-maintenance-mode');
-				successStep('step-done');
+				currentStep('step-done');
+				performStep(11, performStepCallbacks[11]);
 			} else {
 				el.innerHTML = 'Maintenance mode will get disabled.<br>';
 				currentStep('step-maintenance-mode');
 				performStep(10, performStepCallbacks[10]);
 			}
-			performStep(11, performStepCallbacks[11]);
 		}
 
 		if(document.getElementById('startUpdateButton')) {
