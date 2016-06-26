@@ -913,9 +913,11 @@ if(isset($_POST['step'])) {
 		echo(json_encode(['proceed' => true]));
 	} catch (UpdateException $e) {
 		$updater->rollbackChanges($step);
+		http_response_code(500);
 		echo(json_encode(['proceed' => false, 'response' => $e->getData()]));
 	} catch (\Exception $e) {
 		$updater->rollbackChanges($step);
+		http_response_code(500);
 		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
 	}
 
