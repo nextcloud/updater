@@ -204,7 +204,7 @@ class Updater {
 
 		if ($version !== '' && $version !== $this->currentVersion) {
 			$this->updateAvailable = true;
-			$updateText = 'Update to ' . $versionString . ' available.';
+			$updateText = 'Update to ' . $versionString . ' available. <br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
 		} else {
 			$updateText = 'No update available.';
 		}
@@ -1059,7 +1059,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			display: none;
 		}
 
-		li.step{
+		li.step, .light {
 			-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=57)";
 			opacity: .57;
 		}
