@@ -32,6 +32,9 @@ class UpdateException extends \Exception {
 	}
 }
 
+class LogException extends \Exception {
+}
+
 class RecursiveDirectoryIteratorWithoutData extends RecursiveFilterIterator {
 	public function accept() {
 		$excludes = [
@@ -199,6 +202,8 @@ class Updater {
 	public function checkForUpdate() {
 		$response = $this->getUpdateServerResponse();
 
+		$this->silentLog('[info] checkForUpdate() ' . print_r($response, true));
+
 		$version = isset($response['version']) ? $response['version'] : '';
 		$versionString = isset($response['versionstring']) ? $response['versionstring'] : '';
 
@@ -209,6 +214,7 @@ class Updater {
 			$updateText = 'No update available.';
 		}
 
+		$this->silentLog('[info] end of checkForUpdate() ' . $updateText);
 		return $updateText;
 	}
 
@@ -304,6 +310,8 @@ class Updater {
 	 * Checks for files that are unexpected.
 	 */
 	public function checkForExpectedFilesAndFolders() {
+		$this->silentLog('[info] checkForExpectedFilesAndFolders()');
+
 		$expectedElements = $this->getExpectedElementsList();
 		$unexpectedElements = [];
 		foreach (new DirectoryIterator(__DIR__ . '/../') as $fileInfo) {
@@ -315,12 +323,15 @@ class Updater {
 		if (count($unexpectedElements) !== 0) {
 			throw new UpdateException($unexpectedElements);
 		}
+		$this->silentLog('[info] end of checkForExpectedFilesAndFolders()');
 	}
 
 	/**
 	 * Checks for files that are not writable
 	 */
 	public function checkWritePermissions() {
+		$this->silentLog('[info] checkWritePermissions()');
+
 		$notWritablePaths = array();
 		$dir = new RecursiveDirectoryIterator(__DIR__ . '/../');
 		$filter = new RecursiveDirectoryIteratorWithoutData($dir);
@@ -334,6 +345,8 @@ class Updater {
 		if(count($notWritablePaths) > 0) {
 			throw new UpdateException($notWritablePaths);
 		}
+
+		$this->silentLog('[info] end of checkWritePermissions()');
 	}
 
 	/**
@@ -343,6 +356,8 @@ class Updater {
 	 * @throws Exception when config.php can't be written
 	 */
 	public function setMaintenanceMode($state) {
+		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') .  '")');
+
 		/** @var array $CONFIG */
 		$configFileName = __DIR__ . '/../config/config.php';
 		require $configFileName;
@@ -355,6 +370,7 @@ class Updater {
 		if ($state === false) {
 			throw new \Exception('Could not write to config.php');
 		}
+		$this->silentLog('[info] end of setMaintenanceMode()');
 	}
 
 	/**
@@ -363,6 +379,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function createBackup() {
+		$this->silentLog('[info] createBackup()');
+
 		$excludedElements = [
 			'data',
 		];
@@ -370,6 +388,8 @@ class Updater {
 		// Create new folder for the backup
 		$backupFolderLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid').'/backups/nextcloud-'.$this->getConfigOption('version') . '/';
 		if(file_exists($backupFolderLocation)) {
+			$this->silentLog('[info] backup folder location exists');
+
 			$this->recursiveDelete($backupFolderLocation);
 		}
 		$state = mkdir($backupFolderLocation, 0750, true);
@@ -421,6 +441,7 @@ class Updater {
 				}
 			}
 		}
+		$this->silentLog('[info] end of createBackup()');
 	}
 
 	/**
@@ -428,11 +449,14 @@ class Updater {
 	 * @throws Exception
 	 */
 	private function getUpdateServerResponse() {
+		$this->silentLog('[info] getUpdateServerResponse()');
+
 		$updaterServer = $this->getConfigOption('updater.server.url');
 		if($updaterServer === null) {
 			// FIXME: used deployed URL
 			$updaterServer = 'https://updates.nextcloud.org/updater_server/';
 		}
+		$this->silentLog('[info] updaterServer: ' . $updaterServer);
 
 		$releaseChannel = !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
 
@@ -466,6 +490,7 @@ class Updater {
 		if($response === null) {
 			throw new \Exception('Could not JSON decode updater server response.');
 		}
+		$this->silentLog('[info] getUpdateServerResponse response: ' . print_r($response, true));
 		return $response;
 	}
 
@@ -475,9 +500,12 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function downloadUpdate() {
+		$this->silentLog('[info] downloadUpdate()');
+
 		$response = $this->getUpdateServerResponse();
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		if(file_exists($storageLocation)) {
+			$this->silentLog('[info] storage location exists');
 			$this->recursiveDelete($storageLocation);
 		}
 		$state = mkdir($storageLocation, 0750, true);
@@ -521,6 +549,8 @@ class Updater {
 		}
 		curl_close($ch);
 		fclose($fp);
+
+		$this->silentLog('[info] end of downloadUpdate()');
 	}
 
 	/**
@@ -529,7 +559,11 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function extractDownload() {
+		$this->silentLog('[info] extractDownload()');
+
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
+		$this->silentLog('[info] storage location: ' . $storageLocation);
+
 		$files = scandir($storageLocation);
 		// ., .. and downloaded zip archive
 		if(count($files) !== 3) {
@@ -548,6 +582,8 @@ class Updater {
 		} else {
 			throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
 		}
+
+		$this->silentLog('[info] end of extractDownload()');
 	}
 
 	/**
@@ -556,6 +592,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function replaceEntryPoints() {
+		$this->silentLog('[info] replaceEntryPoints()');
+
 		$filesToReplace = [
 			'index.php',
 			'status.php',
@@ -566,6 +604,7 @@ class Updater {
 
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
 		foreach($filesToReplace as $file) {
+			$this->silentLog('[info] replace ' . $file);
 			$parentDir = dirname(__DIR__ . '/../' . $file);
 			if(!file_exists($parentDir)) {
 				$r = mkdir($parentDir);
@@ -578,6 +617,8 @@ class Updater {
 				throw new \Exception('Can\'t replace entry point: '.$file);
 			}
 		}
+
+		$this->silentLog('[info] end of replaceEntryPoints()');
 	}
 
 	/**
@@ -611,6 +652,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function deleteOldFiles() {
+		$this->silentLog('[info] deleteOldFiles()');
+
 		$shippedAppsFile = __DIR__ . '/../core/shipped.json';
 		if(!file_exists($shippedAppsFile)) {
 			throw new \Exception('core/shipped.json is not available');
@@ -623,6 +666,8 @@ class Updater {
 
 		$configSampleFile = __DIR__ . '/../config/config.sample.php';
 		if(file_exists($configSampleFile)) {
+			$this->silentLog('[info] config sample exists');
+
 			// Delete example config
 			$state = unlink($configSampleFile);
 			if ($state === false) {
@@ -632,6 +677,8 @@ class Updater {
 
 		$themesReadme = __DIR__ . '/../themes/README';
 		if(file_exists($themesReadme)) {
+			$this->silentLog('[info] thmes README exists');
+
 			// Delete themes
 			$state = unlink($themesReadme);
 			if ($state === false) {
@@ -683,6 +730,8 @@ class Updater {
 				}
 			}
 		}
+
+		$this->silentLog('[info] end of deleteOldFiles()');
 	}
 
 	/**
@@ -744,6 +793,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function moveNewVersionInPlace() {
+		$this->silentLog('[info] moveNewVersionInPlace()');
+
 		// Rename everything else except the entry and updater files
 		$excludedElements = [
 			'updater',
@@ -754,17 +805,23 @@ class Updater {
 			'ocs/v1.php',
 		];
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/';
+		$this->silentLog('[info] storage location: ' . $storageLocation);
 		$this->moveWithExclusions($storageLocation, $excludedElements);
 
 		// Rename everything except the updater files
 		$this->moveWithExclusions($storageLocation, ['updater']);
+
+		$this->silentLog('[info] end of moveNewVersionInPlace()');
 	}
 
 	/**
 	 * Finalize and cleanup the updater by finally replacing the updater script
 	 */
 	public function finalize() {
+		$this->silentLog('[info] finalize()');
+
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/';
+		$this->silentLog('[info] storage location: ' . $storageLocation);
 		$this->moveWithExclusions($storageLocation, []);
 		$state = rmdir($storageLocation);
 		if($state === false) {
@@ -774,6 +831,7 @@ class Updater {
 		if($state === false) {
 			throw new \Exception('Could not rmdir .step');
 		}
+		$this->silentLog('[info] end of finalize()');
 	}
 
 	/**
@@ -807,6 +865,7 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function startStep($step) {
+		$this->silentLog('[info] startStep("' . $step . '")');
 		$this->writeStep('start', $step);
 	}
 
@@ -815,6 +874,7 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function endStep($step) {
+		$this->silentLog('[info] endStep("' . $step . '")');
 		$this->writeStep('end', $step);
 	}
 
@@ -823,6 +883,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function currentStep() {
+		$this->silentLog('[info] currentStep()');
+
 		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
 		$jsonData = [];
 		if(file_exists($updaterDir. '/.step')) {
@@ -846,8 +908,11 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function rollbackChanges($step) {
+		$this->silentLog('[info] rollbackChanges("' . $step . '")');
+
 		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
 		if(file_exists($updaterDir . '/.step')) {
+			$this->silentLog('[info] unlink .step');
 			$state = unlink($updaterDir . '/.step');
 			if ($state === false) {
 				throw new \Exception('Could not delete .step');
@@ -855,15 +920,94 @@ class Updater {
 		}
 
 		if($step >= 7) {
+			$this->silentLog('[info] rollbackChanges - step >= 7');
 			// TODO: If it fails after step 7: Rollback
+		}
+		$this->silentLog('[info] end of  rollbackChanges()');
+	}
+
+	/**
+	 * Logs an exception with current datetime prepended to updater.log
+	 *
+	 * @param Exception $e
+	 * @throws LogException
+	 */
+	public function logException(\Exception $e) {
+		$message = '[error] ';
+
+		$message .= 'Exception: ' . get_class($e) . PHP_EOL;
+		$message .= 'Message: ' . $e->getMessage() . PHP_EOL;
+		$message .= 'Code:' . $e->getCode() . PHP_EOL;
+		$message .= 'Trace:' . PHP_EOL . $e->getTraceAsString() . PHP_EOL;
+		$message .= 'File:' . $e->getFile() . PHP_EOL;
+		$message .= 'Line:' . $e->getLine() . PHP_EOL;
+		if($e instanceof UpdateException) {
+			$message .= 'Data:' . PHP_EOL . print_r($e->getData(), true) . PHP_EOL;
+		}
+		$this->log($message);
+	}
+
+	/**
+	 * Logs a message with current datetime prepended to updater.log
+	 *
+	 * @param string $message
+	 * @throws LogException
+	 */
+	public function log($message) {
+		$updaterLogPath = $this->getDataDirectoryLocation() . '/updater.log';
+
+		$fh = fopen($updaterLogPath, 'a');
+		if($fh === false) {
+			throw new \LogException('Could not open updater.log');
+		}
+
+		$logLine = date(\DateTime::ISO8601) . ' ' . $message . PHP_EOL;
+
+		$result = fwrite($fh, $logLine);
+		if($result === false) {
+			throw new \LogException('Could not write to updater.log');
+		}
+
+		fclose($fh);
+	}
+
+
+	/**
+	 * Logs a message with current datetime prepended to updater.log but drops possible LogException
+	 *
+	 * @param string $message
+	 */
+	public function silentLog($message) {
+		try {
+			$this->log($message);
+		} catch (LogException $logE) {
+			/* ignore log exception here (already detected later anyways) */
 		}
 	}
 }
+
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
 
 // Check if the config.php is at the expected place
 try {
 	$updater = new Updater();
 } catch (\Exception $e) {
+	// logging here is not possible because we don't know the data directory
+	die($e->getMessage());
+}
+
+// Check if the updater.log can be written to
+try {
+	$updater->log('[info] request to updater');
+} catch (\Exception $e) {
+	if(isset($_POST['step'])) {
+		// mark step as failed
+		http_response_code(500);
+		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
+		die();
+	}
+	// show logging error to user
 	die($e->getMessage());
 }
 
@@ -877,6 +1021,7 @@ $stepNumber = 0;
 if($currentStep !== []) {
 	$stepState = $currentStep['state'];
 	$stepNumber = $currentStep['step'];
+	$updater->log('[info] Step ' . $stepNumber . ' is in state "' . $stepState . '".');
 
 	if($stepState === 'start') {
 		die(
@@ -889,6 +1034,7 @@ if($currentStep !== []) {
 }
 
 if(isset($_POST['step'])) {
+	$updater->log('[info] POST request for step "' . $_POST['step'] . '"');
 	set_time_limit(0);
 	try {
 		if(!$auth->isAuthenticated()) {
@@ -939,18 +1085,41 @@ if(isset($_POST['step'])) {
 		$updater->endStep($step);
 		echo(json_encode(['proceed' => true]));
 	} catch (UpdateException $e) {
-		$updater->rollbackChanges($step);
+		$message = $e->getData();
+
+		try {
+			$updater->log('[error] POST request failed with UpdateException');
+			$updater->logException($e);
+		} catch (LogException $logE) {
+			$message .= ' (and writing to log failed also with: ' . $logE->getMessage() . ')';
+		}
+
+		if(isset($step)) {
+			$updater->rollbackChanges($step);
+		}
 		http_response_code(500);
-		echo(json_encode(['proceed' => false, 'response' => $e->getData()]));
+		echo(json_encode(['proceed' => false, 'response' => $message]));
 	} catch (\Exception $e) {
-		$updater->rollbackChanges($step);
+		$message = $e->getMessage();
+
+		try {
+			$updater->log('[error] POST request failed with other exception');
+			$updater->logException($e);
+		} catch (LogException $logE) {
+			$message .= ' (and writing to log failed also with: ' . $logE->getMessage() . ')';
+		}
+
+		if(isset($step)) {
+			$updater->rollbackChanges($step);
+		}
 		http_response_code(500);
-		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
+		echo(json_encode(['proceed' => false, 'response' => $message]));
 	}
 
 	die();
 }
 
+$updater->log('[info] show HTML page');
 $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 ?>
 
@@ -1387,11 +1556,16 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 				} else {
 					errorStep('step-check-files');
 
-					var text = 'The following extra files have been found:<ul>';
-					response['response'].forEach(function(file) {
-						text += '<li>' + file + '</li>';
-					});
-					text += '</ul>';
+					var text = '';
+					if (typeof response['response'] === 'string') {
+						text = response['response'];
+					} else {
+						text = 'The following extra files have been found:<ul>';
+						response['response'].forEach(function(file) {
+							text += '<li>' + file + '</li>';
+						});
+						text += '</ul>';
+					}
 					addStepText('step-check-files', text);
 				}
 			},
@@ -1403,11 +1577,16 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 				} else {
 					errorStep('step-check-permissions');
 
-					var text = 'The following places can not be written to:<ul>';
-					response['response'].forEach(function(file) {
-						text += '<li>' + file + '</li>';
-					});
-					text += '</ul>';
+					var text = '';
+					if (typeof response['response'] === 'string') {
+						text = response['response'];
+					} else {
+						text = 'The following places can not be written to:<ul>';
+						response['response'].forEach(function(file) {
+							text += '<li>' + file + '</li>';
+						});
+						text += '</ul>';
+					}
 					addStepText('step-check-permissions', text);
 				}
 			},
