@@ -492,6 +492,33 @@ class Updater {
 		if(curl_exec($ch) === false) {
 			throw new \Exception('Curl error: ' . curl_error($ch));
 		}
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if($httpCode !== 200) {
+			$statusCodes = [
+				400 => 'Bad request',
+				401 => 'Unauthorized',
+				403 => 'Forbidden',
+				404 => 'Not Found',
+				500 => 'Internal Server Error',
+				502 => 'Bad Gateway',
+				503 => 'Service Unavailable',
+				504 => 'Gateway Timeout',
+			];
+
+			$message = 'Download failed';
+			if(isset($statusCodes[$httpCode])) {
+				$message .= ' - ' . $statusCodes[$httpCode] . ' (HTTP ' . $httpCode . ')';
+			} else {
+				$message .= ' - HTTP status code: ' . $httpCode;
+			}
+
+			$curlErrorMessage = curl_error($ch);
+			if(!empty($curlErrorMessage)) {
+				$message .= ' - curl error message: ' . $curlErrorMessage;
+			}
+
+			throw new \Exception($message);
+		}
 		curl_close($ch);
 		fclose($fp);
 	}
