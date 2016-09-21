@@ -149,7 +149,11 @@ class Updater {
 	private $requestID = null;
 
 	public function __construct() {
-		$configFileName = __DIR__ . '/../config/config.php';
+		if($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
+			$configFileName = rtrim($dir, '/') . '/config.php';
+		} else {
+			$configFileName = __DIR__ . '/../config/config.php';
+		}
 		if (!file_exists($configFileName)) {
 			throw new \Exception('Could not find '.__DIR__.'/../config.php. Is this file in the "updater" subfolder of Nextcloud?');
 		}
@@ -360,8 +364,14 @@ class Updater {
 	public function setMaintenanceMode($state) {
 		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') .  '")');
 
+		if($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
+			$configFileName = rtrim($dir, '/') . '/config.php';
+		} else {
+			$configFileName = __DIR__ . '/../config/config.php';
+		}
+		$this->silentLog('[info] configFileName ' . $configFileName);
+
 		/** @var array $CONFIG */
-		$configFileName = __DIR__ . '/../config/config.php';
 		require $configFileName;
 		$CONFIG['maintenance'] = $state;
 		$content = "<?php\n";
