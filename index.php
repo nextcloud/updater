@@ -145,6 +145,8 @@ class Updater {
 	private $buildTime;
 	/** @var bool */
 	private $updateAvailable = false;
+	/** @var string */
+	private $requestID = null;
 
 	public function __construct() {
 		$configFileName = __DIR__ . '/../config/config.php';
@@ -459,6 +461,8 @@ class Updater {
 		$this->silentLog('[info] updaterServer: ' . $updaterServer);
 
 		$releaseChannel = !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+		$this->silentLog('[info] releaseChannel: ' . $releaseChannel);
+		$this->silentLog('[info] internal version: ' . $this->getConfigOption('version'));
 
 		// Download update response
 		$curl = curl_init();
@@ -961,7 +965,17 @@ class Updater {
 			throw new \LogException('Could not open updater.log');
 		}
 
-		$logLine = date(\DateTime::ISO8601) . ' ' . $message . PHP_EOL;
+		if($this->requestID === null) {
+			$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			$charactersLength = strlen($characters);
+			$randomString = '';
+			for ($i = 0; $i < 10; $i++) {
+				$randomString .= $characters[rand(0, $charactersLength - 1)];
+			}
+			$this->requestID = $randomString;
+		}
+
+		$logLine = date(\DateTime::ISO8601) . ' ' . $this->requestID . ' ' . $message . PHP_EOL;
 
 		$result = fwrite($fh, $logLine);
 		if($result === false) {
@@ -983,6 +997,15 @@ class Updater {
 		} catch (LogException $logE) {
 			/* ignore log exception here (already detected later anyways) */
 		}
+	}
+
+
+	/**
+	 * Logs current version
+	 *
+	 */
+	public function logVersion() {
+		$this->silentLog('[info] current version: ' . $this->currentVersion . ' build time: ' . $this->buildTime);
 	}
 }
 
@@ -1120,6 +1143,7 @@ if(isset($_POST['step'])) {
 }
 
 $updater->log('[info] show HTML page');
+$updater->logVersion();
 $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 ?>
 
