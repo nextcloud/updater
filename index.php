@@ -155,7 +155,7 @@ class Updater {
 			$configFileName = __DIR__ . '/../config/config.php';
 		}
 		if (!file_exists($configFileName)) {
-			throw new \Exception('Could not find '.__DIR__.'/../config.php. Is this file in the "updater" subfolder of Nextcloud?');
+			throw new \Exception('Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?');
 		}
 
 		/** @var array $CONFIG */
@@ -371,6 +371,10 @@ class Updater {
 		}
 		$this->silentLog('[info] configFileName ' . $configFileName);
 
+		// usually is already tested in the constructor but just to be on the safe side
+		if (!file_exists($configFileName)) {
+			throw new \Exception('Could not find config.php.');
+		}
 		/** @var array $CONFIG */
 		require $configFileName;
 		$CONFIG['maintenance'] = $state;
@@ -1500,6 +1504,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 </body>
 <?php if($auth->isAuthenticated()): ?>
 	<script>
+		function escapeHTML(s) {
+			return s.toString().split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split('\'').join('&#039;');
+		}
+
 		var done = false;
 		var started = false;
 		var updaterStepStart = parseInt(document.getElementById('updater-step-start').value);
@@ -1592,11 +1600,11 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 
 					var text = '';
 					if (typeof response['response'] === 'string') {
-						text = response['response'];
+						text = escapeHTML(response['response']);
 					} else {
 						text = 'The following extra files have been found:<ul>';
 						response['response'].forEach(function(file) {
-							text += '<li>' + file + '</li>';
+							text += '<li>' + escapeHTML(file) + '</li>';
 						});
 						text += '</ul>';
 					}
@@ -1613,11 +1621,11 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 
 					var text = '';
 					if (typeof response['response'] === 'string') {
-						text = response['response'];
+						text = escapeHTML(response['response']);
 					} else {
 						text = 'The following places can not be written to:<ul>';
 						response['response'].forEach(function(file) {
-							text += '<li>' + file + '</li>';
+							text += '<li>' + escapeHTML(file) + '</li>';
 						});
 						text += '</ul>';
 					}
@@ -1633,7 +1641,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					errorStep('step-enable-maintenance');
 
 					if(response.response) {
-						addStepText('step-enable-maintenance', response.response);
+						addStepText('step-enable-maintenance', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1646,7 +1654,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					errorStep('step-backup');
 
 					if(response.response) {
-						addStepText('step-backup', response.response);
+						addStepText('step-backup', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1659,7 +1667,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					errorStep('step-download');
 
 					if(response.response) {
-						addStepText('step-download', response.response);
+						addStepText('step-download', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1672,7 +1680,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					errorStep('step-extract');
 
 					if(response.response) {
-						addStepText('step-extract', response.response);
+						addStepText('step-extract', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1685,7 +1693,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					errorStep('step-entrypoints');
 
 					if(response.response) {
-						addStepText('step-entrypoints', response.response);
+						addStepText('step-entrypoints', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1698,7 +1706,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					errorStep('step-delete');
 
 					if(response.response) {
-						addStepText('step-delete', response.response);
+						addStepText('step-delete', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1715,7 +1723,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					errorStep('step-move');
 
 					if(response.response) {
-						addStepText('step-move', response.response);
+						addStepText('step-move', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1728,7 +1736,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					errorStep('step-maintenance-mode');
 
 					if(response.response) {
-						addStepText('step-maintenance-mode', response.response);
+						addStepText('step-maintenance-mode', escapeHTML(response.response));
 					}
 				}
 			},
