@@ -162,6 +162,11 @@ class Updater {
 		require_once $configFileName;
 		$this->configValues = $CONFIG;
 
+		$dataDir = $this->getDataDirectoryLocation();
+		if(empty($dataDir) || !is_string($dataDir)) {
+			throw new \Exception('Could not read data directory from config.php.');
+		}
+
 		$versionFileName = __DIR__ . '/../version.php';
 		if (!file_exists($versionFileName)) {
 			// fallback to version in config.php
