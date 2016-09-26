@@ -37,6 +37,7 @@ class LogException extends \Exception {
 
 class RecursiveDirectoryIteratorWithoutData extends RecursiveFilterIterator {
 	public function accept() {
+		/** @var DirectoryIterator $this */
 		$excludes = [
 			'data',
 			'..',
@@ -264,7 +265,7 @@ class Updater {
 	 * @return array
 	 */
 	private function getExpectedElementsList() {
-		return $expectedElements = [
+		return [
 			// Generic
 			'.',
 			'..',
