@@ -32,6 +32,9 @@ class UpdateException extends \Exception {
 	}
 }
 
+class LogException extends \Exception {
+}
+
 class RecursiveDirectoryIteratorWithoutData extends RecursiveFilterIterator {
 	public function accept() {
 		$excludes = [
@@ -142,16 +145,27 @@ class Updater {
 	private $buildTime;
 	/** @var bool */
 	private $updateAvailable = false;
+	/** @var string */
+	private $requestID = null;
 
 	public function __construct() {
-		$configFileName = __DIR__ . '/../config/config.php';
+		if($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
+			$configFileName = rtrim($dir, '/') . '/config.php';
+		} else {
+			$configFileName = __DIR__ . '/../config/config.php';
+		}
 		if (!file_exists($configFileName)) {
-			throw new \Exception('Could not find '.__DIR__.'/../config.php. Is this file in the "updater" subfolder of Nextcloud?');
+			throw new \Exception('Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?');
 		}
 
 		/** @var array $CONFIG */
 		require_once $configFileName;
 		$this->configValues = $CONFIG;
+
+		$dataDir = $this->getDataDirectoryLocation();
+		if(empty($dataDir) || !is_string($dataDir)) {
+			throw new \Exception('Could not read data directory from config.php.');
+		}
 
 		$versionFileName = __DIR__ . '/../version.php';
 		if (!file_exists($versionFileName)) {
@@ -199,16 +213,20 @@ class Updater {
 	public function checkForUpdate() {
 		$response = $this->getUpdateServerResponse();
 
+		$this->silentLog('[info] checkForUpdate() ' . print_r($response, true));
+
 		$version = isset($response['version']) ? $response['version'] : '';
 		$versionString = isset($response['versionstring']) ? $response['versionstring'] : '';
 
 		if ($version !== '' && $version !== $this->currentVersion) {
 			$this->updateAvailable = true;
-			$updateText = 'Update to ' . $versionString . ' available. <br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
+			$releaseChannel = !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+			$updateText = 'Update to ' . $versionString . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
 		} else {
 			$updateText = 'No update available.';
 		}
 
+		$this->silentLog('[info] end of checkForUpdate() ' . $updateText);
 		return $updateText;
 	}
 
@@ -304,6 +322,8 @@ class Updater {
 	 * Checks for files that are unexpected.
 	 */
 	public function checkForExpectedFilesAndFolders() {
+		$this->silentLog('[info] checkForExpectedFilesAndFolders()');
+
 		$expectedElements = $this->getExpectedElementsList();
 		$unexpectedElements = [];
 		foreach (new DirectoryIterator(__DIR__ . '/../') as $fileInfo) {
@@ -315,12 +335,15 @@ class Updater {
 		if (count($unexpectedElements) !== 0) {
 			throw new UpdateException($unexpectedElements);
 		}
+		$this->silentLog('[info] end of checkForExpectedFilesAndFolders()');
 	}
 
 	/**
 	 * Checks for files that are not writable
 	 */
 	public function checkWritePermissions() {
+		$this->silentLog('[info] checkWritePermissions()');
+
 		$notWritablePaths = array();
 		$dir = new RecursiveDirectoryIterator(__DIR__ . '/../');
 		$filter = new RecursiveDirectoryIteratorWithoutData($dir);
@@ -334,6 +357,8 @@ class Updater {
 		if(count($notWritablePaths) > 0) {
 			throw new UpdateException($notWritablePaths);
 		}
+
+		$this->silentLog('[info] end of checkWritePermissions()');
 	}
 
 	/**
@@ -343,8 +368,20 @@ class Updater {
 	 * @throws Exception when config.php can't be written
 	 */
 	public function setMaintenanceMode($state) {
+		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') .  '")');
+
+		if($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
+			$configFileName = rtrim($dir, '/') . '/config.php';
+		} else {
+			$configFileName = __DIR__ . '/../config/config.php';
+		}
+		$this->silentLog('[info] configFileName ' . $configFileName);
+
+		// usually is already tested in the constructor but just to be on the safe side
+		if (!file_exists($configFileName)) {
+			throw new \Exception('Could not find config.php.');
+		}
 		/** @var array $CONFIG */
-		$configFileName = __DIR__ . '/../config/config.php';
 		require $configFileName;
 		$CONFIG['maintenance'] = $state;
 		$content = "<?php\n";
@@ -355,6 +392,7 @@ class Updater {
 		if ($state === false) {
 			throw new \Exception('Could not write to config.php');
 		}
+		$this->silentLog('[info] end of setMaintenanceMode()');
 	}
 
 	/**
@@ -363,6 +401,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function createBackup() {
+		$this->silentLog('[info] createBackup()');
+
 		$excludedElements = [
 			'data',
 		];
@@ -370,6 +410,8 @@ class Updater {
 		// Create new folder for the backup
 		$backupFolderLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid').'/backups/nextcloud-'.$this->getConfigOption('version') . '/';
 		if(file_exists($backupFolderLocation)) {
+			$this->silentLog('[info] backup folder location exists');
+
 			$this->recursiveDelete($backupFolderLocation);
 		}
 		$state = mkdir($backupFolderLocation, 0750, true);
@@ -421,6 +463,7 @@ class Updater {
 				}
 			}
 		}
+		$this->silentLog('[info] end of createBackup()');
 	}
 
 	/**
@@ -428,13 +471,18 @@ class Updater {
 	 * @throws Exception
 	 */
 	private function getUpdateServerResponse() {
+		$this->silentLog('[info] getUpdateServerResponse()');
+
 		$updaterServer = $this->getConfigOption('updater.server.url');
 		if($updaterServer === null) {
 			// FIXME: used deployed URL
 			$updaterServer = 'https://updates.nextcloud.org/updater_server/';
 		}
+		$this->silentLog('[info] updaterServer: ' . $updaterServer);
 
 		$releaseChannel = !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+		$this->silentLog('[info] releaseChannel: ' . $releaseChannel);
+		$this->silentLog('[info] internal version: ' . $this->getConfigOption('version'));
 
 		// Download update response
 		$curl = curl_init();
@@ -466,6 +514,7 @@ class Updater {
 		if($response === null) {
 			throw new \Exception('Could not JSON decode updater server response.');
 		}
+		$this->silentLog('[info] getUpdateServerResponse response: ' . print_r($response, true));
 		return $response;
 	}
 
@@ -475,9 +524,12 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function downloadUpdate() {
+		$this->silentLog('[info] downloadUpdate()');
+
 		$response = $this->getUpdateServerResponse();
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		if(file_exists($storageLocation)) {
+			$this->silentLog('[info] storage location exists');
 			$this->recursiveDelete($storageLocation);
 		}
 		$state = mkdir($storageLocation, 0750, true);
@@ -492,8 +544,39 @@ class Updater {
 		if(curl_exec($ch) === false) {
 			throw new \Exception('Curl error: ' . curl_error($ch));
 		}
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if($httpCode !== 200) {
+			$statusCodes = [
+				400 => 'Bad request',
+				401 => 'Unauthorized',
+				403 => 'Forbidden',
+				404 => 'Not Found',
+				500 => 'Internal Server Error',
+				502 => 'Bad Gateway',
+				503 => 'Service Unavailable',
+				504 => 'Gateway Timeout',
+			];
+
+			$message = 'Download failed';
+			if(isset($statusCodes[$httpCode])) {
+				$message .= ' - ' . $statusCodes[$httpCode] . ' (HTTP ' . $httpCode . ')';
+			} else {
+				$message .= ' - HTTP status code: ' . $httpCode;
+			}
+
+			$curlErrorMessage = curl_error($ch);
+			if(!empty($curlErrorMessage)) {
+				$message .= ' - curl error message: ' . $curlErrorMessage;
+			}
+
+			$message .= ' - URL: ' . htmlentities($response['url']);
+
+			throw new \Exception($message);
+		}
 		curl_close($ch);
 		fclose($fp);
+
+		$this->silentLog('[info] end of downloadUpdate()');
 	}
 
 	/**
@@ -502,7 +585,11 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function extractDownload() {
+		$this->silentLog('[info] extractDownload()');
+
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
+		$this->silentLog('[info] storage location: ' . $storageLocation);
+
 		$files = scandir($storageLocation);
 		// ., .. and downloaded zip archive
 		if(count($files) !== 3) {
@@ -521,6 +608,8 @@ class Updater {
 		} else {
 			throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
 		}
+
+		$this->silentLog('[info] end of extractDownload()');
 	}
 
 	/**
@@ -529,6 +618,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function replaceEntryPoints() {
+		$this->silentLog('[info] replaceEntryPoints()');
+
 		$filesToReplace = [
 			'index.php',
 			'status.php',
@@ -539,6 +630,7 @@ class Updater {
 
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
 		foreach($filesToReplace as $file) {
+			$this->silentLog('[info] replace ' . $file);
 			$parentDir = dirname(__DIR__ . '/../' . $file);
 			if(!file_exists($parentDir)) {
 				$r = mkdir($parentDir);
@@ -551,6 +643,8 @@ class Updater {
 				throw new \Exception('Can\'t replace entry point: '.$file);
 			}
 		}
+
+		$this->silentLog('[info] end of replaceEntryPoints()');
 	}
 
 	/**
@@ -584,6 +678,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function deleteOldFiles() {
+		$this->silentLog('[info] deleteOldFiles()');
+
 		$shippedAppsFile = __DIR__ . '/../core/shipped.json';
 		if(!file_exists($shippedAppsFile)) {
 			throw new \Exception('core/shipped.json is not available');
@@ -596,6 +692,8 @@ class Updater {
 
 		$configSampleFile = __DIR__ . '/../config/config.sample.php';
 		if(file_exists($configSampleFile)) {
+			$this->silentLog('[info] config sample exists');
+
 			// Delete example config
 			$state = unlink($configSampleFile);
 			if ($state === false) {
@@ -605,6 +703,8 @@ class Updater {
 
 		$themesReadme = __DIR__ . '/../themes/README';
 		if(file_exists($themesReadme)) {
+			$this->silentLog('[info] thmes README exists');
+
 			// Delete themes
 			$state = unlink($themesReadme);
 			if ($state === false) {
@@ -656,6 +756,8 @@ class Updater {
 				}
 			}
 		}
+
+		$this->silentLog('[info] end of deleteOldFiles()');
 	}
 
 	/**
@@ -717,6 +819,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function moveNewVersionInPlace() {
+		$this->silentLog('[info] moveNewVersionInPlace()');
+
 		// Rename everything else except the entry and updater files
 		$excludedElements = [
 			'updater',
@@ -727,17 +831,23 @@ class Updater {
 			'ocs/v1.php',
 		];
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/';
+		$this->silentLog('[info] storage location: ' . $storageLocation);
 		$this->moveWithExclusions($storageLocation, $excludedElements);
 
 		// Rename everything except the updater files
 		$this->moveWithExclusions($storageLocation, ['updater']);
+
+		$this->silentLog('[info] end of moveNewVersionInPlace()');
 	}
 
 	/**
 	 * Finalize and cleanup the updater by finally replacing the updater script
 	 */
 	public function finalize() {
+		$this->silentLog('[info] finalize()');
+
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/';
+		$this->silentLog('[info] storage location: ' . $storageLocation);
 		$this->moveWithExclusions($storageLocation, []);
 		$state = rmdir($storageLocation);
 		if($state === false) {
@@ -747,6 +857,7 @@ class Updater {
 		if($state === false) {
 			throw new \Exception('Could not rmdir .step');
 		}
+		$this->silentLog('[info] end of finalize()');
 	}
 
 	/**
@@ -780,6 +891,7 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function startStep($step) {
+		$this->silentLog('[info] startStep("' . $step . '")');
 		$this->writeStep('start', $step);
 	}
 
@@ -788,6 +900,7 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function endStep($step) {
+		$this->silentLog('[info] endStep("' . $step . '")');
 		$this->writeStep('end', $step);
 	}
 
@@ -796,6 +909,8 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function currentStep() {
+		$this->silentLog('[info] currentStep()');
+
 		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
 		$jsonData = [];
 		if(file_exists($updaterDir. '/.step')) {
@@ -819,8 +934,11 @@ class Updater {
 	 * @throws Exception
 	 */
 	public function rollbackChanges($step) {
+		$this->silentLog('[info] rollbackChanges("' . $step . '")');
+
 		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
 		if(file_exists($updaterDir . '/.step')) {
+			$this->silentLog('[info] unlink .step');
 			$state = unlink($updaterDir . '/.step');
 			if ($state === false) {
 				throw new \Exception('Could not delete .step');
@@ -828,15 +946,113 @@ class Updater {
 		}
 
 		if($step >= 7) {
+			$this->silentLog('[info] rollbackChanges - step >= 7');
 			// TODO: If it fails after step 7: Rollback
 		}
+		$this->silentLog('[info] end of  rollbackChanges()');
+	}
+
+	/**
+	 * Logs an exception with current datetime prepended to updater.log
+	 *
+	 * @param Exception $e
+	 * @throws LogException
+	 */
+	public function logException(\Exception $e) {
+		$message = '[error] ';
+
+		$message .= 'Exception: ' . get_class($e) . PHP_EOL;
+		$message .= 'Message: ' . $e->getMessage() . PHP_EOL;
+		$message .= 'Code:' . $e->getCode() . PHP_EOL;
+		$message .= 'Trace:' . PHP_EOL . $e->getTraceAsString() . PHP_EOL;
+		$message .= 'File:' . $e->getFile() . PHP_EOL;
+		$message .= 'Line:' . $e->getLine() . PHP_EOL;
+		if($e instanceof UpdateException) {
+			$message .= 'Data:' . PHP_EOL . print_r($e->getData(), true) . PHP_EOL;
+		}
+		$this->log($message);
+	}
+
+	/**
+	 * Logs a message with current datetime prepended to updater.log
+	 *
+	 * @param string $message
+	 * @throws LogException
+	 */
+	public function log($message) {
+		$updaterLogPath = $this->getDataDirectoryLocation() . '/updater.log';
+
+		$fh = fopen($updaterLogPath, 'a');
+		if($fh === false) {
+			throw new \LogException('Could not open updater.log');
+		}
+
+		if($this->requestID === null) {
+			$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			$charactersLength = strlen($characters);
+			$randomString = '';
+			for ($i = 0; $i < 10; $i++) {
+				$randomString .= $characters[rand(0, $charactersLength - 1)];
+			}
+			$this->requestID = $randomString;
+		}
+
+		$logLine = date(\DateTime::ISO8601) . ' ' . $this->requestID . ' ' . $message . PHP_EOL;
+
+		$result = fwrite($fh, $logLine);
+		if($result === false) {
+			throw new \LogException('Could not write to updater.log');
+		}
+
+		fclose($fh);
+	}
+
+
+	/**
+	 * Logs a message with current datetime prepended to updater.log but drops possible LogException
+	 *
+	 * @param string $message
+	 */
+	public function silentLog($message) {
+		try {
+			$this->log($message);
+		} catch (LogException $logE) {
+			/* ignore log exception here (already detected later anyways) */
+		}
+	}
+
+
+	/**
+	 * Logs current version
+	 *
+	 */
+	public function logVersion() {
+		$this->silentLog('[info] current version: ' . $this->currentVersion . ' build time: ' . $this->buildTime);
 	}
 }
+
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
 
 // Check if the config.php is at the expected place
 try {
 	$updater = new Updater();
 } catch (\Exception $e) {
+	// logging here is not possible because we don't know the data directory
+	die($e->getMessage());
+}
+
+// Check if the updater.log can be written to
+try {
+	$updater->log('[info] request to updater');
+} catch (\Exception $e) {
+	if(isset($_POST['step'])) {
+		// mark step as failed
+		http_response_code(500);
+		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
+		die();
+	}
+	// show logging error to user
 	die($e->getMessage());
 }
 
@@ -850,6 +1066,7 @@ $stepNumber = 0;
 if($currentStep !== []) {
 	$stepState = $currentStep['state'];
 	$stepNumber = $currentStep['step'];
+	$updater->log('[info] Step ' . $stepNumber . ' is in state "' . $stepState . '".');
 
 	if($stepState === 'start') {
 		die(
@@ -862,6 +1079,7 @@ if($currentStep !== []) {
 }
 
 if(isset($_POST['step'])) {
+	$updater->log('[info] POST request for step "' . $_POST['step'] . '"');
 	set_time_limit(0);
 	try {
 		if(!$auth->isAuthenticated()) {
@@ -912,19 +1130,46 @@ if(isset($_POST['step'])) {
 		$updater->endStep($step);
 		echo(json_encode(['proceed' => true]));
 	} catch (UpdateException $e) {
-		$updater->rollbackChanges($step);
+		$message = $e->getData();
+
+		try {
+			$updater->log('[error] POST request failed with UpdateException');
+			$updater->logException($e);
+		} catch (LogException $logE) {
+			$message .= ' (and writing to log failed also with: ' . $logE->getMessage() . ')';
+		}
+
+		if(isset($step)) {
+			$updater->rollbackChanges($step);
+		}
 		http_response_code(500);
-		echo(json_encode(['proceed' => false, 'response' => $e->getData()]));
+		echo(json_encode(['proceed' => false, 'response' => $message]));
 	} catch (\Exception $e) {
-		$updater->rollbackChanges($step);
+		$message = $e->getMessage();
+
+		try {
+			$updater->log('[error] POST request failed with other exception');
+			$updater->logException($e);
+		} catch (LogException $logE) {
+			$message .= ' (and writing to log failed also with: ' . $logE->getMessage() . ')';
+		}
+
+		if(isset($step)) {
+			$updater->rollbackChanges($step);
+		}
 		http_response_code(500);
-		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
+		echo(json_encode(['proceed' => false, 'response' => $message]));
 	}
 
 	die();
 }
 
+$updater->log('[info] show HTML page');
+$updater->logVersion();
 $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+if(strpos($updaterUrl, 'index.php') === false) {
+	$updaterUrl = rtrim($updaterUrl, '/') . '/index.php';
+}
 ?>
 
 <html>
@@ -1191,6 +1436,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 							<?php
 						}
 						?>
+						<button id="retryUpdateButton" class="hidden">Retry update</button>
 						</div>
 				</li>
 				<li id="step-check-files" class="step <?php if($stepNumber >= 1) { echo 'passed-step'; }?>">
@@ -1239,7 +1485,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 				<li id="step-done" class="step <?php if($stepNumber >= 11) { echo 'passed-step'; }?>">
 					<h2>Done</h2>
 					<div class="output hidden">
-						<a class="button" href="<?php echo $updaterUrl . '../'?>">Go to back to your Nextcloud instance to finish the update</a>
+						<a class="button" href="<?php echo str_replace('/index.php', '/../', $updaterUrl); ?>">Go to back to your Nextcloud instance to finish the update</a>
 					</div>
 				</li>
 			</ul>
@@ -1270,17 +1516,28 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 </body>
 <?php if($auth->isAuthenticated()): ?>
 	<script>
+		function escapeHTML(s) {
+			return s.toString().split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split('\'').join('&#039;');
+		}
+
 		var done = false;
 		var started = false;
 		var updaterStepStart = parseInt(document.getElementById('updater-step-start').value);
+		var elementId =false;
 		function addStepText(id, text) {
 			var el = document.getElementById(id);
-			var output =el.getElementsByClassName('output')[0];
+			var output = el.getElementsByClassName('output')[0];
 			if(typeof text === 'object') {
 				text = JSON.stringify(text);
 			}
 			output.innerHTML = output.innerHTML + text;
 			output.classList.remove('hidden');
+		}
+		function removeStepText(id) {
+			var el = document.getElementById(id);
+			var output = el.getElementsByClassName('output')[0];
+			output.innerHTML = '';
+			output.classList.add('hidden');
 		}
 
 		function currentStep(id) {
@@ -1291,12 +1548,20 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			el.classList.add('current-step');
 		}
 
-		function errorStep(id) {
+		function errorStep(id, numericId) {
 			var el = document.getElementById(id);
 			el.classList.remove('passed-step');
 			el.classList.remove('current-step');
 			el.classList.remove('waiting-step');
 			el.classList.add('failed-step');
+
+			// set start step to previous one
+			updaterStepStart = numericId - 1;
+			elementId = id;
+
+			// show restart button
+			var button = document.getElementById('retryUpdateButton');
+			button.classList.remove('hidden');
 		}
 
 		function successStep(id) {
@@ -1358,13 +1623,18 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-check-permissions');
 					performStep(2, performStepCallbacks[2]);
 				} else {
-					errorStep('step-check-files');
+					errorStep('step-check-files', 1);
 
-					var text = 'The following extra files have been found:<ul>';
-					response['response'].forEach(function(file) {
-						text += '<li>' + file + '</li>';
-					});
-					text += '</ul>';
+					var text = '';
+					if (typeof response['response'] === 'string') {
+						text = escapeHTML(response['response']);
+					} else {
+						text = 'The following extra files have been found:<ul>';
+						response['response'].forEach(function(file) {
+							text += '<li>' + escapeHTML(file) + '</li>';
+						});
+						text += '</ul>';
+					}
 					addStepText('step-check-files', text);
 				}
 			},
@@ -1374,13 +1644,18 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-enable-maintenance');
 					performStep(3, performStepCallbacks[3]);
 				} else {
-					errorStep('step-check-permissions');
+					errorStep('step-check-permissions', 2);
 
-					var text = 'The following places can not be written to:<ul>';
-					response['response'].forEach(function(file) {
-						text += '<li>' + file + '</li>';
-					});
-					text += '</ul>';
+					var text = '';
+					if (typeof response['response'] === 'string') {
+						text = escapeHTML(response['response']);
+					} else {
+						text = 'The following places can not be written to:<ul>';
+						response['response'].forEach(function(file) {
+							text += '<li>' + escapeHTML(file) + '</li>';
+						});
+						text += '</ul>';
+					}
 					addStepText('step-check-permissions', text);
 				}
 			},
@@ -1390,10 +1665,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-backup');
 					performStep(4, performStepCallbacks[4]);
 				} else {
-					errorStep('step-enable-maintenance');
+					errorStep('step-enable-maintenance', 3);
 
 					if(response.response) {
-						addStepText('step-enable-maintenance', response.response);
+						addStepText('step-enable-maintenance', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1403,10 +1678,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-download');
 					performStep(5, performStepCallbacks[5]);
 				} else {
-					errorStep('step-backup');
+					errorStep('step-backup', 4);
 
 					if(response.response) {
-						addStepText('step-backup', response.response);
+						addStepText('step-backup', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1416,10 +1691,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-extract');
 					performStep(6, performStepCallbacks[6]);
 				} else {
-					errorStep('step-download');
+					errorStep('step-download', 5);
 
 					if(response.response) {
-						addStepText('step-download', response.response);
+						addStepText('step-download', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1429,10 +1704,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-entrypoints');
 					performStep(7, performStepCallbacks[7]);
 				} else {
-					errorStep('step-extract');
+					errorStep('step-extract', 6);
 
 					if(response.response) {
-						addStepText('step-extract', response.response);
+						addStepText('step-extract', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1442,10 +1717,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-delete');
 					performStep(8, performStepCallbacks[8]);
 				} else {
-					errorStep('step-entrypoints');
+					errorStep('step-entrypoints', 7);
 
 					if(response.response) {
-						addStepText('step-entrypoints', response.response);
+						addStepText('step-entrypoints', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1455,10 +1730,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-move');
 					performStep(9, performStepCallbacks[9]);
 				} else {
-					errorStep('step-delete');
+					errorStep('step-delete', 8);
 
 					if(response.response) {
-						addStepText('step-delete', response.response);
+						addStepText('step-delete', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1472,10 +1747,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 						.getElementsByClassName('output')[0];
 					el.classList.remove('hidden');
 				} else {
-					errorStep('step-move');
+					errorStep('step-move', 9);
 
 					if(response.response) {
-						addStepText('step-move', response.response);
+						addStepText('step-move', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1485,10 +1760,10 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-done');
 					performStep(11, performStepCallbacks[11]);
 				} else {
-					errorStep('step-maintenance-mode');
+					errorStep('step-maintenance-mode', 10);
 
 					if(response.response) {
-						addStepText('step-maintenance-mode', response.response);
+						addStepText('step-maintenance-mode', escapeHTML(response.response));
 					}
 				}
 			},
@@ -1501,7 +1776,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 						.getElementsByClassName('output')[0];
 					el.classList.remove('hidden');
 				} else {
-					errorStep('step-done');
+					errorStep('step-done', 11);
 				}
 				done = true;
 			},
@@ -1511,6 +1786,27 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			performStepCallbacks[updaterStepStart]({
 				proceed: true
 			});
+		}
+
+		function retryUpdate() {
+			//remove failed log
+			if (elementId !== false) {
+				var el = document.getElementById(elementId);
+				el.classList.remove('passed-step');
+				el.classList.remove('current-step');
+				el.classList.remove('waiting-step');
+				el.classList.remove('failed-step');
+
+				removeStepText(elementId);
+
+				elementId = false;
+			}
+
+			// hide restart button
+			var button = document.getElementById('retryUpdateButton');
+			button.classList.add('hidden');
+
+			startUpdate();
 		}
 
 		function askForMaintenance(keepActive) {
@@ -1531,7 +1827,14 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 		if(document.getElementById('startUpdateButton')) {
 			document.getElementById('startUpdateButton').onclick = function (e) {
 				e.preventDefault();
+				this.classList.add('hidden');
 				startUpdate();
+			};
+		}
+		if(document.getElementById('retryUpdateButton')) {
+			document.getElementById('retryUpdateButton').onclick = function (e) {
+				e.preventDefault();
+				retryUpdate();
 			};
 		}
 		if(document.getElementById('maintenance-enable')) {
