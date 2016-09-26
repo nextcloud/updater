@@ -569,6 +569,8 @@ class Updater {
 				$message .= ' - curl error message: ' . $curlErrorMessage;
 			}
 
+			$message .= ' - URL: ' . htmlentities($response['url']);
+
 			throw new \Exception($message);
 		}
 		curl_close($ch);
@@ -1165,6 +1167,9 @@ if(isset($_POST['step'])) {
 $updater->log('[info] show HTML page');
 $updater->logVersion();
 $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+if(strpos($updaterUrl, 'index.php') === false) {
+	$updaterUrl = rtrim($updaterUrl, '/') . '/index.php';
+}
 ?>
 
 <html>
@@ -1431,6 +1436,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 							<?php
 						}
 						?>
+						<button id="retryUpdateButton" class="hidden">Retry update</button>
 						</div>
 				</li>
 				<li id="step-check-files" class="step <?php if($stepNumber >= 1) { echo 'passed-step'; }?>">
@@ -1479,7 +1485,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 				<li id="step-done" class="step <?php if($stepNumber >= 11) { echo 'passed-step'; }?>">
 					<h2>Done</h2>
 					<div class="output hidden">
-						<a class="button" href="<?php echo $updaterUrl . '../'?>">Go to back to your Nextcloud instance to finish the update</a>
+						<a class="button" href="<?php echo str_replace('/index.php', '/../', $updaterUrl); ?>">Go to back to your Nextcloud instance to finish the update</a>
 					</div>
 				</li>
 			</ul>
@@ -1517,14 +1523,21 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 		var done = false;
 		var started = false;
 		var updaterStepStart = parseInt(document.getElementById('updater-step-start').value);
+		var elementId =false;
 		function addStepText(id, text) {
 			var el = document.getElementById(id);
-			var output =el.getElementsByClassName('output')[0];
+			var output = el.getElementsByClassName('output')[0];
 			if(typeof text === 'object') {
 				text = JSON.stringify(text);
 			}
 			output.innerHTML = output.innerHTML + text;
 			output.classList.remove('hidden');
+		}
+		function removeStepText(id) {
+			var el = document.getElementById(id);
+			var output = el.getElementsByClassName('output')[0];
+			output.innerHTML = '';
+			output.classList.add('hidden');
 		}
 
 		function currentStep(id) {
@@ -1535,12 +1548,20 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			el.classList.add('current-step');
 		}
 
-		function errorStep(id) {
+		function errorStep(id, numericId) {
 			var el = document.getElementById(id);
 			el.classList.remove('passed-step');
 			el.classList.remove('current-step');
 			el.classList.remove('waiting-step');
 			el.classList.add('failed-step');
+
+			// set start step to previous one
+			updaterStepStart = numericId - 1;
+			elementId = id;
+
+			// show restart button
+			var button = document.getElementById('retryUpdateButton');
+			button.classList.remove('hidden');
 		}
 
 		function successStep(id) {
@@ -1602,7 +1623,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-check-permissions');
 					performStep(2, performStepCallbacks[2]);
 				} else {
-					errorStep('step-check-files');
+					errorStep('step-check-files', 1);
 
 					var text = '';
 					if (typeof response['response'] === 'string') {
@@ -1623,7 +1644,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-enable-maintenance');
 					performStep(3, performStepCallbacks[3]);
 				} else {
-					errorStep('step-check-permissions');
+					errorStep('step-check-permissions', 2);
 
 					var text = '';
 					if (typeof response['response'] === 'string') {
@@ -1644,7 +1665,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-backup');
 					performStep(4, performStepCallbacks[4]);
 				} else {
-					errorStep('step-enable-maintenance');
+					errorStep('step-enable-maintenance', 3);
 
 					if(response.response) {
 						addStepText('step-enable-maintenance', escapeHTML(response.response));
@@ -1657,7 +1678,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-download');
 					performStep(5, performStepCallbacks[5]);
 				} else {
-					errorStep('step-backup');
+					errorStep('step-backup', 4);
 
 					if(response.response) {
 						addStepText('step-backup', escapeHTML(response.response));
@@ -1670,7 +1691,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-extract');
 					performStep(6, performStepCallbacks[6]);
 				} else {
-					errorStep('step-download');
+					errorStep('step-download', 5);
 
 					if(response.response) {
 						addStepText('step-download', escapeHTML(response.response));
@@ -1683,7 +1704,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-entrypoints');
 					performStep(7, performStepCallbacks[7]);
 				} else {
-					errorStep('step-extract');
+					errorStep('step-extract', 6);
 
 					if(response.response) {
 						addStepText('step-extract', escapeHTML(response.response));
@@ -1696,7 +1717,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-delete');
 					performStep(8, performStepCallbacks[8]);
 				} else {
-					errorStep('step-entrypoints');
+					errorStep('step-entrypoints', 7);
 
 					if(response.response) {
 						addStepText('step-entrypoints', escapeHTML(response.response));
@@ -1709,7 +1730,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-move');
 					performStep(9, performStepCallbacks[9]);
 				} else {
-					errorStep('step-delete');
+					errorStep('step-delete', 8);
 
 					if(response.response) {
 						addStepText('step-delete', escapeHTML(response.response));
@@ -1726,7 +1747,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 						.getElementsByClassName('output')[0];
 					el.classList.remove('hidden');
 				} else {
-					errorStep('step-move');
+					errorStep('step-move', 9);
 
 					if(response.response) {
 						addStepText('step-move', escapeHTML(response.response));
@@ -1739,7 +1760,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 					currentStep('step-done');
 					performStep(11, performStepCallbacks[11]);
 				} else {
-					errorStep('step-maintenance-mode');
+					errorStep('step-maintenance-mode', 10);
 
 					if(response.response) {
 						addStepText('step-maintenance-mode', escapeHTML(response.response));
@@ -1755,7 +1776,7 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 						.getElementsByClassName('output')[0];
 					el.classList.remove('hidden');
 				} else {
-					errorStep('step-done');
+					errorStep('step-done', 11);
 				}
 				done = true;
 			},
@@ -1765,6 +1786,27 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 			performStepCallbacks[updaterStepStart]({
 				proceed: true
 			});
+		}
+
+		function retryUpdate() {
+			//remove failed log
+			if (elementId !== false) {
+				var el = document.getElementById(elementId);
+				el.classList.remove('passed-step');
+				el.classList.remove('current-step');
+				el.classList.remove('waiting-step');
+				el.classList.remove('failed-step');
+
+				removeStepText(elementId);
+
+				elementId = false;
+			}
+
+			// hide restart button
+			var button = document.getElementById('retryUpdateButton');
+			button.classList.add('hidden');
+
+			startUpdate();
 		}
 
 		function askForMaintenance(keepActive) {
@@ -1785,7 +1827,14 @@ $updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 		if(document.getElementById('startUpdateButton')) {
 			document.getElementById('startUpdateButton').onclick = function (e) {
 				e.preventDefault();
+				this.classList.add('hidden');
 				startUpdate();
+			};
+		}
+		if(document.getElementById('retryUpdateButton')) {
+			document.getElementById('retryUpdateButton').onclick = function (e) {
+				e.preventDefault();
+				retryUpdate();
 			};
 		}
 		if(document.getElementById('maintenance-enable')) {
