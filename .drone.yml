@@ -17,7 +17,7 @@ pipeline:
       matrix:
         TESTS: signed-off-check
   check-same-code-base:
-    image: nextcloudci/php7.0:php7.0-2
+    image: nextcloudci/php7.0:php7.0-3
     commands:
       - make check-same-code-base
     when:
