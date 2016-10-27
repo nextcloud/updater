@@ -19,9 +19,17 @@ pipeline:
   check-same-code-base:
     commands:
       - make check-same-code-base
-  build:
+    when:
+      matrix:
+        TESTS: check-same-code-base
+  test-cli:
     commands:
       - make test
+    when:
+      matrix:
+        TESTS: test
 matrix:
   include:
+    - TESTS: test
     - TESTS: signed-off-check
+    - TESTS: check-same-code-base
