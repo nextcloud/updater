@@ -1,5 +1,6 @@
 <?php
 /**
+ * @copyright Copyright (c) 2016 Lukas Reschke <lukas@statuscode.ch>
  * @copyright Copyright (c) 2016 Morris Jobke <hey@morrisjobke.de>
  *
  * @license GNU AGPL version 3 or any later version
@@ -21,20 +22,14 @@
 
 namespace NC\Updater;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+class UpdateException extends \Exception {
+	protected $data;
 
-class UpdateCommand extends Command {
-    protected function configure() {
-        $this
-            ->setName('update-code')
-            ->setDescription('Updates the code of an Nextcloud instance')
-            ->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.")
-        ;
-    }
+	public function __construct($data) {
+		$this->data = $data;
+	}
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
-        // TODO
-    }
+	public function getData() {
+		return $this->data;
+	}
 }
