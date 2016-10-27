@@ -16,6 +16,9 @@ pipeline:
     when:
       matrix:
         TESTS: signed-off-check
+  check-same-code-base:
+    commands:
+      - make check-same-code-base
   build:
     commands:
       - make test

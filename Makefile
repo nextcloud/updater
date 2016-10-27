@@ -11,3 +11,6 @@ clean:
 
 test: updater.phar
 	cd tests && vendor/behat/behat/bin/behat
+
+check-same-code-base:
+	cd tests && php checkSameCodeBase.php
