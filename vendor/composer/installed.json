@@ -1,0 +1,234 @@
+[
+    {
+        "name": "psr/log",
+        "version": "1.0.2",
+        "version_normalized": "1.0.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-fig/log.git",
+            "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+            "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2016-10-10 12:19:37",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Psr\\Log\\": "Psr/Log/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "PHP-FIG",
+                "homepage": "http://www.php-fig.org/"
+            }
+        ],
+        "description": "Common interface for logging libraries",
+        "homepage": "https://github.com/php-fig/log",
+        "keywords": [
+            "log",
+            "psr",
+            "psr-3"
+        ]
+    },
+    {
+        "name": "symfony/debug",
+        "version": "v3.1.6",
+        "version_normalized": "3.1.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/debug.git",
+            "reference": "e2b3f74a67fc928adc3c1b9027f73e1bc01190a8"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/debug/zipball/e2b3f74a67fc928adc3c1b9027f73e1bc01190a8",
+            "reference": "e2b3f74a67fc928adc3c1b9027f73e1bc01190a8",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5.9",
+            "psr/log": "~1.0"
+        },
+        "conflict": {
+            "symfony/http-kernel": ">=2.3,<2.3.24|~2.4.0|>=2.5,<2.5.9|>=2.6,<2.6.2"
+        },
+        "require-dev": {
+            "symfony/class-loader": "~2.8|~3.0",
+            "symfony/http-kernel": "~2.8|~3.0"
+        },
+        "time": "2016-09-06 11:02:40",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.1-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\Debug\\": ""
+            },
+            "exclude-from-classmap": [
+                "/Tests/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony Debug Component",
+        "homepage": "https://symfony.com"
+    },
+    {
+        "name": "symfony/polyfill-mbstring",
+        "version": "v1.2.0",
+        "version_normalized": "1.2.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/polyfill-mbstring.git",
+            "reference": "dff51f72b0706335131b00a7f49606168c582594"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/dff51f72b0706335131b00a7f49606168c582594",
+            "reference": "dff51f72b0706335131b00a7f49606168c582594",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "suggest": {
+            "ext-mbstring": "For best performance"
+        },
+        "time": "2016-05-18 14:26:46",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.2-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Polyfill\\Mbstring\\": ""
+            },
+            "files": [
+                "bootstrap.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Nicolas Grekas",
+                "email": "p@tchwork.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony polyfill for the Mbstring extension",
+        "homepage": "https://symfony.com",
+        "keywords": [
+            "compatibility",
+            "mbstring",
+            "polyfill",
+            "portable",
+            "shim"
+        ]
+    },
+    {
+        "name": "symfony/console",
+        "version": "v3.1.6",
+        "version_normalized": "3.1.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/console.git",
+            "reference": "c99da1119ae61e15de0e4829196b9fba6f73d065"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/console/zipball/c99da1119ae61e15de0e4829196b9fba6f73d065",
+            "reference": "c99da1119ae61e15de0e4829196b9fba6f73d065",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5.9",
+            "symfony/debug": "~2.8|~3.0",
+            "symfony/polyfill-mbstring": "~1.0"
+        },
+        "require-dev": {
+            "psr/log": "~1.0",
+            "symfony/event-dispatcher": "~2.8|~3.0",
+            "symfony/process": "~2.8|~3.0"
+        },
+        "suggest": {
+            "psr/log": "For using the console logger",
+            "symfony/event-dispatcher": "",
+            "symfony/process": ""
+        },
+        "time": "2016-10-06 01:44:51",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.1-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\Console\\": ""
+            },
+            "exclude-from-classmap": [
+                "/Tests/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony Console Component",
+        "homepage": "https://symfony.com"
+    }
+]

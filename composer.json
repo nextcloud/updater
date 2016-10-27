@@ -1,0 +1,10 @@
+{
+    "autoload" : {
+        "psr-4": {
+            "NC\\Updater\\": "lib/"
+        }
+    },
+    "require": {
+        "symfony/console": "^3.1"
+    }
+}
