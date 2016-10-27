@@ -35,9 +35,9 @@ class UpdateException extends \Exception {
 class LogException extends \Exception {
 }
 
-class RecursiveDirectoryIteratorWithoutData extends RecursiveFilterIterator {
+class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 	public function accept() {
-		/** @var DirectoryIterator $this */
+		/** @var \DirectoryIterator $this */
 		$excludes = [
 			'data',
 			'..',
@@ -209,7 +209,7 @@ class Updater {
 
 	/**
 	 * @return string
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function checkForUpdate() {
 		$response = $this->getUpdateServerResponse();
@@ -309,15 +309,15 @@ class Updater {
 	 * Gets the recursive directory iterator over the Nextcloud folder
 	 *
 	 * @param string $folder
-	 * @return RecursiveIteratorIterator
+	 * @return \RecursiveIteratorIterator
 	 */
 	private function getRecursiveDirectoryIterator($folder = null) {
 		if ($folder === null) {
 			$folder = __DIR__ . '/../';
 		}
-		return new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($folder, RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::CHILD_FIRST
+		return new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS),
+			\RecursiveIteratorIterator::CHILD_FIRST
 		);
 	}
 
@@ -329,7 +329,7 @@ class Updater {
 
 		$expectedElements = $this->getExpectedElementsList();
 		$unexpectedElements = [];
-		foreach (new DirectoryIterator(__DIR__ . '/../') as $fileInfo) {
+		foreach (new \DirectoryIterator(__DIR__ . '/../') as $fileInfo) {
 			if(array_search($fileInfo->getFilename(), $expectedElements) === false) {
 				$unexpectedElements[] = $fileInfo->getFilename();
 			}
@@ -348,9 +348,9 @@ class Updater {
 		$this->silentLog('[info] checkWritePermissions()');
 
 		$notWritablePaths = array();
-		$dir = new RecursiveDirectoryIterator(__DIR__ . '/../');
+		$dir = new \RecursiveDirectoryIterator(__DIR__ . '/../');
 		$filter = new RecursiveDirectoryIteratorWithoutData($dir);
-		$it = new RecursiveIteratorIterator($filter);
+		$it = new \RecursiveIteratorIterator($filter);
 
 		foreach ($it as $path => $dir) {
 			if(!is_writable($path)) {
@@ -368,7 +368,7 @@ class Updater {
 	 * Sets the maintenance mode to the defined value
 	 *
 	 * @param bool $state
-	 * @throws Exception when config.php can't be written
+	 * @throws \Exception when config.php can't be written
 	 */
 	public function setMaintenanceMode($state) {
 		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') .  '")');
@@ -401,7 +401,7 @@ class Updater {
 	/**
 	 * Creates a backup of all files and moves it into data/updater-$instanceid/backups/nextcloud-X-Y-Z/
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function createBackup() {
 		$this->silentLog('[info] createBackup()');
@@ -427,7 +427,7 @@ class Updater {
 
 		/**
 		 * @var string $path
-		 * @var SplFileInfo $fileInfo
+		 * @var \SplFileInfo $fileInfo
 		 */
 		foreach ($this->getRecursiveDirectoryIterator($currentDir) as $path => $fileInfo) {
 			$fileName = explode($currentDir, $path)[1];
@@ -471,7 +471,7 @@ class Updater {
 
 	/**
 	 * @return array
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	private function getUpdateServerResponse() {
 		$this->silentLog('[info] getUpdateServerResponse()');
@@ -524,7 +524,7 @@ class Updater {
 	/**
 	 * Downloads the nextcloud folder to $DATADIR/updater-$instanceid/downloads/$filename
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function downloadUpdate() {
 		$this->silentLog('[info] downloadUpdate()');
@@ -584,7 +584,7 @@ class Updater {
 	/**
 	 * Extracts the download
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function extractDownload() {
 		$this->silentLog('[info] extractDownload()');
@@ -598,7 +598,7 @@ class Updater {
 			throw new \Exception('Not exact 3 files existent in folder');
 		}
 
-		$zip = new ZipArchive;
+		$zip = new \ZipArchive;
 		$zipState = $zip->open($storageLocation . '/' . $files[2]);
 		if ($zipState === true) {
 			$zip->extractTo($storageLocation);
@@ -617,7 +617,7 @@ class Updater {
 	/**
 	 * Replaces the entry point files with files that only return a 503
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function replaceEntryPoints() {
 		$this->silentLog('[info] replaceEntryPoints()');
@@ -653,15 +653,15 @@ class Updater {
 	 * Recursively deletes the specified folder from the system
 	 *
 	 * @param string $folder
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	private function recursiveDelete($folder) {
 		if(!file_exists($folder)) {
 			return;
 		}
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($folder, RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::CHILD_FIRST
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS),
+			\RecursiveIteratorIterator::CHILD_FIRST
 		);
 
 		foreach ($iterator as $fileInfo) {
@@ -677,7 +677,7 @@ class Updater {
 	/**
 	 * Delete old files from the system as much as possible
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function deleteOldFiles() {
 		$this->silentLog('[info] deleteOldFiles()');
@@ -730,7 +730,7 @@ class Updater {
 		];
 		/**
 		 * @var string $path
-		 * @var SplFileInfo $fileInfo
+		 * @var \SplFileInfo $fileInfo
 		 */
 		foreach ($this->getRecursiveDirectoryIterator() as $path => $fileInfo) {
 			$currentDir = __DIR__ . '/../';
@@ -767,11 +767,11 @@ class Updater {
 	 *
 	 * @param string $dataLocation
 	 * @param array $excludedElements
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	private function moveWithExclusions($dataLocation, array $excludedElements) {
 		/**
-		 * @var SplFileInfo $fileInfo
+		 * @var \SplFileInfo $fileInfo
 		 */
 		foreach ($this->getRecursiveDirectoryIterator($dataLocation) as $path => $fileInfo) {
 			$fileName = explode($dataLocation, $path)[1];
@@ -818,7 +818,7 @@ class Updater {
 	/**
 	 * Moves the newly downloaded files into place
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function moveNewVersionInPlace() {
 		$this->silentLog('[info] moveNewVersionInPlace()');
@@ -865,7 +865,7 @@ class Updater {
 	/**
 	 * @param string $state
 	 * @param int $step
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	private function writeStep($state, $step) {
 		$updaterDir = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
@@ -890,7 +890,7 @@ class Updater {
 
 	/**
 	 * @param int $step
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function startStep($step) {
 		$this->silentLog('[info] startStep("' . $step . '")');
@@ -899,7 +899,7 @@ class Updater {
 
 	/**
 	 * @param int $step
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function endStep($step) {
 		$this->silentLog('[info] endStep("' . $step . '")');
@@ -908,7 +908,7 @@ class Updater {
 
 	/**
 	 * @return string
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function currentStep() {
 		$this->silentLog('[info] currentStep()');
@@ -933,7 +933,7 @@ class Updater {
 	 * Rollback the changes if $step has failed
 	 *
 	 * @param int $step
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function rollbackChanges($step) {
 		$this->silentLog('[info] rollbackChanges("' . $step . '")');
@@ -957,7 +957,7 @@ class Updater {
 	/**
 	 * Logs an exception with current datetime prepended to updater.log
 	 *
-	 * @param Exception $e
+	 * @param \Exception $e
 	 * @throws LogException
 	 */
 	public function logException(\Exception $e) {
@@ -986,7 +986,7 @@ class Updater {
 
 		$fh = fopen($updaterLogPath, 'a');
 		if($fh === false) {
-			throw new \LogException('Could not open updater.log');
+			throw new LogException('Could not open updater.log');
 		}
 
 		if($this->requestID === null) {
@@ -1003,7 +1003,7 @@ class Updater {
 
 		$result = fwrite($fh, $logLine);
 		if($result === false) {
-			throw new \LogException('Could not write to updater.log');
+			throw new LogException('Could not write to updater.log');
 		}
 
 		fclose($fh);
@@ -1085,12 +1085,12 @@ if(isset($_POST['step'])) {
 	set_time_limit(0);
 	try {
 		if(!$auth->isAuthenticated()) {
-			throw new Exception('Not authenticated');
+			throw new \Exception('Not authenticated');
 		}
 
 		$step = (int)$_POST['step'];
 		if($step > 11 || $step < 1) {
-			throw new Exception('Invalid step');
+			throw new \Exception('Invalid step');
 		}
 
 		$updater->startStep($step);
