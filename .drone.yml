@@ -16,6 +16,10 @@ pipeline:
     when:
       matrix:
         TESTS: signed-off-check
+  build:
+    commands:
+      - wget https://github.com/box-project/box2/releases/download/2.7.4/box-2.7.4.phar -O box
+      - php box build -c box.json
 matrix:
   include:
     - TESTS: signed-off-check
