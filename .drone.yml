@@ -17,19 +17,53 @@ pipeline:
       matrix:
         TESTS: signed-off-check
   check-same-code-base:
+    image: nextcloudci/php7.0:php7.0-2
     commands:
       - make check-same-code-base
     when:
       matrix:
         TESTS: check-same-code-base
-  test-cli:
+  test-cli-php54:
+    image: nextcloudci/php5.4:1.0.7
     commands:
       - make test
     when:
       matrix:
-        TESTS: test
+        TESTS: test-php54
+  test-cli-php55:
+    image: nextcloudci/php5.5:1.0.7
+    commands:
+      - make test
+    when:
+      matrix:
+        TESTS: test-php55
+  test-cli-php56:
+    image: nextcloudci/php5.6:php5.6-2
+    commands:
+      - make test
+    when:
+      matrix:
+        TESTS: test-php56
+  test-cli-php70:
+    image: nextcloudci/php7.0:php7.0-2
+    commands:
+      - make test
+    when:
+      matrix:
+        TESTS: test-php70
+  test-cli-php71:
+    image: nextcloudci/php7.1:php7.1-5
+    commands:
+      - make test
+    when:
+      matrix:
+        TESTS: test-php71
 matrix:
   include:
-    - TESTS: test
+    - TESTS: test-php54
+    - TESTS: test-php55
+    - TESTS: test-php56
+    - TESTS: test-php70
+    - TESTS: test-php71
     - TESTS: signed-off-check
     - TESTS: check-same-code-base
