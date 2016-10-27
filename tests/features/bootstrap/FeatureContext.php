@@ -10,14 +10,18 @@ class FeatureContext implements Context
 {
     protected $buildDir;
     protected $serverDir;
+    protected $updateServerDir;
     protected $tmpDownloadDir;
     protected $downloadURL = 'https://download.nextcloud.com/server/releases/';
+    /** @var resource */
+    protected $updaterServerProcess = null;
 
     public function __construct()
     {
         $baseDir = __DIR__ . '/../../data/';
         $this->serverDir = $baseDir . 'server/';
         $this->tmpDownloadDir = $baseDir . 'downloads/';
+        $this->updateServerDir = $baseDir . 'update-server/';
         $this->buildDir = $baseDir . '../../';
         if(!file_exists($baseDir) && !mkdir($baseDir)) {
             throw new RuntimeException('Creating tmp download dir failed');
@@ -27,6 +31,20 @@ class FeatureContext implements Context
         }
         if(!file_exists($this->tmpDownloadDir) && !mkdir($this->tmpDownloadDir)) {
             throw new RuntimeException('Creating tmp download dir failed');
+        }
+        if(!file_exists($this->updateServerDir) && !mkdir($this->updateServerDir)) {
+            throw new RuntimeException('Creating update server dir failed');
+        }
+    }
+
+    /**
+     * @AfterScenario
+     */
+    public function stopUpdateServer()
+    {
+        if(is_resource($this->updaterServerProcess)) {
+            proc_terminate($this->updaterServerProcess);
+            proc_close($this->updaterServerProcess);
         }
     }
 
@@ -118,7 +136,33 @@ class FeatureContext implements Context
      */
     public function thereIsAnUpdateToVersionAvailable($version)
     {
-        throw new PendingException();
+        if (!is_null($this->updaterServerProcess)) {
+            throw new Exception('Update server already started');
+        }
+
+        $cmd = "php -S localhost:8870 -t " . $this->updateServerDir;
+        $this->updaterServerProcess = proc_open($cmd, [], $pipes, $this->updateServerDir);
+
+        if(!is_resource($this->updaterServerProcess)) {
+            throw new Exception('Update server could not be started');
+        }
+
+        $content = '<?php
+        header("Content-Type: application/xml");
+        ?>
+<?xml version="1.0" encoding="UTF-8"?>
+<nextcloud>
+ <version>' . str_replace(['9.1', '9.2'], ['10.0', '11.0'], $version) . '</version>
+ <versionstring>Nextcloud ' . $version . '</versionstring>
+ <url>https://download.nextcloud.com/server/releases/nextcloud-' . $version . '.zip</url>
+ <web>https://docs.nextcloud.org/server/10/admin_manual/maintenance/manual_upgrade.html</web>
+ <autoupdater>1</autoupdater>
+</nextcloud>
+';
+        file_put_contents($this->updateServerDir . 'index.php', $content);
+
+        // to let the server start
+        sleep(1);
     }
 
     /**
