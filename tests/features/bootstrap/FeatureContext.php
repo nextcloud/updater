@@ -168,7 +168,7 @@ class FeatureContext implements Context
     /**
      * @Then /the installed version should be ([0-9.]+)/
      */
-    public function theInstalledVersionShouldBe2($version)
+	public function theInstalledVersionShouldBe2($version)
     {
         /** @var $OC_Version */
         require $this->serverDir . 'nextcloud/version.php';
@@ -180,5 +180,13 @@ class FeatureContext implements Context
         if (strpos($installedVersion, $version) !== 0) {
             throw new Exception('Version mismatch - Installed: ' . $installedVersion . ' Wanted: ' . $version);
         }
+    }
+
+    /**
+     * @Then /maintenance mode should be (on|off)/
+     */
+    public function maintenanceModeShouldBe($state)
+    {
+        throw new PendingException();
     }
 }

@@ -7,9 +7,6 @@ use Symfony\Component\Console\Application;
 use NC\Updater\UpdateCommand;
 
 $application = new Application();
-
 $application->add(new UpdateCommand());
-
 $application->setDefaultCommand('update');
-
 $application->run();
