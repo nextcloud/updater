@@ -18,7 +18,7 @@ class FeatureContext implements Context
         $baseDir = __DIR__ . '/../../data/';
         $this->serverDir = $baseDir . 'server/';
         $this->tmpDownloadDir = $baseDir . 'downloads/';
-        $this->buildDir = $baseDir . '../build/';
+        $this->buildDir = $baseDir . '../../';
         if(!file_exists($baseDir) && !mkdir($baseDir)) {
             throw new RuntimeException('Creating tmp download dir failed');
         }
@@ -31,7 +31,7 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given the current installed version is ([0-9.]+)
+     * @Given /the current installed version is ([0-9.]+)/
      */
     public function theCurrentInstalledVersionIs($version)
     {
@@ -100,8 +100,12 @@ class FeatureContext implements Context
      */
     public function theCliUpdaterIsRun()
     {
-        copy($this->buildDir . 'updater', $this->serverDir . 'nextcloud/updater/updater');
+        if(!file_exists($this->buildDir . 'updater.phar')) {
+            throw new Exception('updater.phar not available - please build it in advance via "box build -c box.json"');
+        }
+        copy($this->buildDir . 'updater.phar', $this->serverDir . 'nextcloud/updater/updater');
         chdir($this->serverDir . 'nextcloud/updater');
+        chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
         exec('./updater', $output, $returnCode);
 
         if ($returnCode !== 0) {
@@ -110,7 +114,7 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given there is an update to version ([0-9.]+) available
+     * @Given /there is an update to version ([0-9.]+) available/
      */
     public function thereIsAnUpdateToVersionAvailable($version)
     {
@@ -118,7 +122,7 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Then the installed version should be ([0-9.]+)
+     * @Then /the installed version should be ([0-9.]+)/
      */
     public function theInstalledVersionShouldBe2($version)
     {
