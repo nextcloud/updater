@@ -2,4 +2,6 @@ box
 tests/data
 tests/vendor
 updater.phar
+vendor/symfony/console/Tests
+vendor/symfony/debug/Tests
 
