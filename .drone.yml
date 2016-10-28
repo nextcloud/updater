@@ -38,7 +38,7 @@ pipeline:
       matrix:
         TESTS: test-php55
   test-cli-php56:
-    image: nextcloudci/php5.6:php5.6-4
+    image: nextcloudci/php5.6:php5.6-5
     commands:
       - make test
     when:
