@@ -24,21 +24,21 @@ pipeline:
       matrix:
         TESTS: check-same-code-base
   test-cli-php54:
-    image: nextcloudci/php5.4:php5.4-2
+    image: nextcloudci/php5.4:php5.4-3
     commands:
       - make test
     when:
       matrix:
         TESTS: test-php54
   test-cli-php55:
-    image: nextcloudci/php5.5:php5.5-2
+    image: nextcloudci/php5.5:php5.5-3
     commands:
       - make test
     when:
       matrix:
         TESTS: test-php55
   test-cli-php56:
-    image: nextcloudci/php5.6:php5.6-5
+    image: nextcloudci/php5.6:php5.6-4
     commands:
       - make test
     when:
