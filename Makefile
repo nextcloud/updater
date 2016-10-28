@@ -9,7 +9,10 @@ updater.phar: box updater.php lib/*.php
 clean:
 	rm updater.phar
 
-test: updater.phar
+test/vendor:
+	cd tests && composer install
+
+test: updater.phar test/vendor
 	cd tests && vendor/behat/behat/bin/behat
 
 check-same-code-base:
