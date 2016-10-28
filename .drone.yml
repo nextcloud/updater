@@ -3,7 +3,7 @@ pipeline:
     image: plugins/git
     depth: 1
   signed-off-check:
-    image: nextcloudci/php7.0:php7.0-2
+    image: nextcloudci/php7.0:php7.0-4
     environment:
       - APP_NAME=updater
       - CORE_BRANCH=master
@@ -17,42 +17,42 @@ pipeline:
       matrix:
         TESTS: signed-off-check
   check-same-code-base:
-    image: nextcloudci/php7.0:php7.0-3
+    image: nextcloudci/php7.0:php7.0-4
     commands:
       - make check-same-code-base
     when:
       matrix:
         TESTS: check-same-code-base
   test-cli-php54:
-    image: nextcloudci/php5.4:php5.4-1
+    image: nextcloudci/php5.4:php5.4-2
     commands:
       - make test
     when:
       matrix:
         TESTS: test-php54
   test-cli-php55:
-    image: nextcloudci/php5.5:php5.5-1
+    image: nextcloudci/php5.5:php5.5-2
     commands:
       - make test
     when:
       matrix:
         TESTS: test-php55
   test-cli-php56:
-    image: nextcloudci/php5.6:php5.6-4
+    image: nextcloudci/php5.6:php5.6-5
     commands:
       - make test
     when:
       matrix:
         TESTS: test-php56
   test-cli-php70:
-    image: nextcloudci/php7.0:php7.0-3
+    image: nextcloudci/php7.0:php7.0-4
     commands:
       - make test
     when:
       matrix:
         TESTS: test-php70
   test-cli-php71:
-    image: nextcloudci/php7.1:php7.1-7
+    image: nextcloudci/php7.1:php7.1-8
     commands:
       - make test
     when:
