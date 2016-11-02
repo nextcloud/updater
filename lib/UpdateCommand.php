@@ -27,6 +27,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCommand extends Command {
 
+	/** @var Updater */
+	protected $updater;
+
 	protected function configure() {
 		$this
 			->setName('update-code')
@@ -44,7 +47,118 @@ class UpdateCommand extends Command {
 		$output->writeln('Nextcloud Updater - version: ' . $version);
 		$output->writeln('');
 
-		// TODO
-	}
+		// Check if the config.php is at the expected place
+		try {
+			$this->updater = new Updater();
+		} catch (\Exception $e) {
+			// logging here is not possible because we don't know the data directory
+			$output->writeln($e->getMessage());
+			return -1;
+		}
 
+		// Check if the updater.log can be written to
+		try {
+			$this->updater->log('[info] updater cli is executed');
+		} catch (\Exception $e) {
+			// show logging error to user
+			$output->writeln($e->getMessage());
+			return -1;
+		}
+
+		// Check if already a step is in process
+		$currentStep = $this->updater->currentStep();
+		$stepNumber = 0;
+		if($currentStep !== []) {
+			$stepState = $currentStep['state'];
+			$stepNumber = $currentStep['step'];
+			$this->updater->log('[info] Step ' . $stepNumber . ' is in state "' . $stepState . '".');
+
+			if($stepState === 'start') {
+				$output->writeln(
+					sprintf(
+						'Step %s is currently in process. Please call this command later.',
+						$stepNumber
+					)
+				);
+				return -1;
+			}
+		}
+    }
+
+	/**
+	 * @param $step integer
+	 * @return array with options 'proceed' which is a boolean and defines if the step succeeded and an optional 'response' string
+	 */
+    protected function executeStep($step) {
+		$this->updater->log('[info] executeStep request for step "' . $step . '"');
+		try {
+			if($step > 11 || $step < 1) {
+				throw new \Exception('Invalid step');
+			}
+
+			$this->updater->startStep($step);
+			switch ($step) {
+				case 1:
+					$this->updater->checkForExpectedFilesAndFolders();
+					break;
+				case 2:
+					$this->updater->checkWritePermissions();
+					break;
+				case 3:
+					$this->updater->setMaintenanceMode(true);
+					break;
+				case 4:
+					$this->updater->createBackup();
+					break;
+				case 5:
+					$this->updater->downloadUpdate();
+					break;
+				case 6:
+					$this->updater->extractDownload();
+					break;
+				case 7:
+					$this->updater->replaceEntryPoints();
+					break;
+				case 8:
+					$this->updater->deleteOldFiles();
+					break;
+				case 9:
+					$this->updater->moveNewVersionInPlace();
+					break;
+				case 10:
+					// this is not needed in the CLI updater
+					//$this->updater->setMaintenanceMode(false);
+					break;
+				case 11:
+					$this->updater->finalize();
+					break;
+			}
+			$this->updater->endStep($step);
+			return ['proceed' => true];
+		} catch (UpdateException $e) {
+			$message = $e->getData();
+
+			try {
+				$this->updater->log('[error] executeStep request failed with UpdateException');
+				$this->updater->logException($e);
+			} catch (LogException $logE) {
+				$message .= ' (and writing to log failed also with: ' . $logE->getMessage() . ')';
+			}
+
+			$this->updater->rollbackChanges($step);
+			return ['proceed' => false, 'response' => $message];
+		} catch (\Exception $e) {
+			$message = $e->getMessage();
+
+			try {
+				$this->updater->log('[error] executeStep request failed with other exception');
+				$this->updater->logException($e);
+			} catch (LogException $logE) {
+				$message .= ' (and writing to log failed also with: ' . $logE->getMessage() . ')';
+			}
+
+			$this->updater->rollbackChanges($step);
+			return ['proceed' => false, 'response' => $message];
+		}
+	}
 }
