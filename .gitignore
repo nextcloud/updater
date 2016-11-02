@@ -1,4 +1,5 @@
 box
+lib/Version.php
 tests/data
 tests/vendor
 updater.phar
