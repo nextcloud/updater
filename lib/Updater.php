@@ -23,6 +23,8 @@
 namespace NC\Updater;
 
 class Updater {
+	/** @var string */
+	private $baseDir;
 	/** @var array */
 	private $configValues = [];
 	/** @var string */
@@ -34,13 +36,21 @@ class Updater {
 	/** @var string */
 	private $requestID = null;
 
-	public function __construct() {
+	/**
+	 * Updater constructor
+	 * @param $baseDir string the absolute path to the /updater/ directory in the Nextcloud root
+	 * @throws \Exception
+	 */
+	public function __construct($baseDir) {
+		$this->baseDir = $baseDir;
+
 		if($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
 			$configFileName = rtrim($dir, '/') . '/config.php';
 		} else {
-			$configFileName = __DIR__ . '/../config/config.php';
+			$configFileName = $this->baseDir . '/../config/config.php';
 		}
 		if (!file_exists($configFileName)) {
+			echo $configFileName;
 			throw new \Exception('Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?');
 		}
 
@@ -53,7 +63,7 @@ class Updater {
 			throw new \Exception('Could not read data directory from config.php.');
 		}
 
-		$versionFileName = __DIR__ . '/../version.php';
+		$versionFileName = $this->baseDir . '/../version.php';
 		if (!file_exists($versionFileName)) {
 			// fallback to version in config.php
 			$version = $this->getConfigOption('version');
@@ -196,7 +206,7 @@ class Updater {
 	 */
 	private function getRecursiveDirectoryIterator($folder = null) {
 		if ($folder === null) {
-			$folder = __DIR__ . '/../';
+			$folder = $this->baseDir . '/../';
 		}
 		return new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS),
@@ -212,7 +222,7 @@ class Updater {
 
 		$expectedElements = $this->getExpectedElementsList();
 		$unexpectedElements = [];
-		foreach (new \DirectoryIterator(__DIR__ . '/../') as $fileInfo) {
+		foreach (new \DirectoryIterator($this->baseDir . '/../') as $fileInfo) {
 			if(array_search($fileInfo->getFilename(), $expectedElements) === false) {
 				$unexpectedElements[] = $fileInfo->getFilename();
 			}
@@ -231,7 +241,7 @@ class Updater {
 		$this->silentLog('[info] checkWritePermissions()');
 
 		$notWritablePaths = array();
-		$dir = new \RecursiveDirectoryIterator(__DIR__ . '/../');
+		$dir = new \RecursiveDirectoryIterator($this->baseDir . '/../');
 		$filter = new RecursiveDirectoryIteratorWithoutData($dir);
 		$it = new \RecursiveIteratorIterator($filter);
 
@@ -259,7 +269,7 @@ class Updater {
 		if($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
 			$configFileName = rtrim($dir, '/') . '/config.php';
 		} else {
-			$configFileName = __DIR__ . '/../config/config.php';
+			$configFileName = $this->baseDir . '/../config/config.php';
 		}
 		$this->silentLog('[info] configFileName ' . $configFileName);
 
@@ -306,7 +316,7 @@ class Updater {
 		}
 
 		// Copy the backup files
-		$currentDir = __DIR__ . '/../';
+		$currentDir = $this->baseDir . '/../';
 
 		/**
 		 * @var string $path
@@ -516,14 +526,14 @@ class Updater {
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
 		foreach($filesToReplace as $file) {
 			$this->silentLog('[info] replace ' . $file);
-			$parentDir = dirname(__DIR__ . '/../' . $file);
+			$parentDir = dirname($this->baseDir . '/../' . $file);
 			if(!file_exists($parentDir)) {
 				$r = mkdir($parentDir);
 				if($r !== true) {
 					throw new \Exception('Can\'t create parent directory for entry point: ' . $file);
 				}
 			}
-			$state = file_put_contents(__DIR__  . '/../' . $file, $content);
+			$state = file_put_contents($this->baseDir  . '/../' . $file, $content);
 			if($state === false) {
 				throw new \Exception('Can\'t replace entry point: '.$file);
 			}
@@ -565,17 +575,17 @@ class Updater {
 	public function deleteOldFiles() {
 		$this->silentLog('[info] deleteOldFiles()');
 
-		$shippedAppsFile = __DIR__ . '/../core/shipped.json';
+		$shippedAppsFile = $this->baseDir . '/../core/shipped.json';
 		if(!file_exists($shippedAppsFile)) {
 			throw new \Exception('core/shipped.json is not available');
 		}
 		// Delete shipped apps
 		$shippedApps = json_decode(file_get_contents($shippedAppsFile), true);
 		foreach($shippedApps['shippedApps'] as $app) {
-			$this->recursiveDelete(__DIR__ . '/../apps/' . $app);
+			$this->recursiveDelete($this->baseDir . '/../apps/' . $app);
 		}
 
-		$configSampleFile = __DIR__ . '/../config/config.sample.php';
+		$configSampleFile = $this->baseDir . '/../config/config.sample.php';
 		if(file_exists($configSampleFile)) {
 			$this->silentLog('[info] config sample exists');
 
@@ -586,7 +596,7 @@ class Updater {
 			}
 		}
 
-		$themesReadme = __DIR__ . '/../themes/README';
+		$themesReadme = $this->baseDir . '/../themes/README';
 		if(file_exists($themesReadme)) {
 			$this->silentLog('[info] thmes README exists');
 
@@ -596,7 +606,7 @@ class Updater {
 				throw new \Exception('Could not delete themes README');
 			}
 		}
-		$this->recursiveDelete(__DIR__ . '/../themes/example/');
+		$this->recursiveDelete($this->baseDir . '/../themes/example/');
 
 		// Delete the rest
 		$excludedElements = [
@@ -616,7 +626,7 @@ class Updater {
 		 * @var \SplFileInfo $fileInfo
 		 */
 		foreach ($this->getRecursiveDirectoryIterator() as $path => $fileInfo) {
-			$currentDir = __DIR__ . '/../';
+			$currentDir = $this->baseDir . '/../';
 			$fileName = explode($currentDir, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
 			// Exclude the exclusions
@@ -672,19 +682,19 @@ class Updater {
 			}
 
 			if($fileInfo->isFile()) {
-				if(!file_exists(__DIR__ . '/../' . dirname($fileName))) {
-					$state = mkdir(__DIR__ . '/../' . dirname($fileName), 0755, true);
+				if(!file_exists($this->baseDir . '/../' . dirname($fileName))) {
+					$state = mkdir($this->baseDir . '/../' . dirname($fileName), 0755, true);
 					if($state === false) {
-						throw new \Exception('Could not mkdir ' . __DIR__  . '/../' . dirname($fileName));
+						throw new \Exception('Could not mkdir ' . $this->baseDir  . '/../' . dirname($fileName));
 					}
 				}
-				$state = rename($path, __DIR__  . '/../' . $fileName);
+				$state = rename($path, $this->baseDir  . '/../' . $fileName);
 				if($state === false) {
 					throw new \Exception(
 						sprintf(
 							'Could not rename %s to %s',
 							$path,
-							__DIR__ . '/../' . $fileName
+							$this->baseDir . '/../' . $fileName
 						)
 					);
 				}

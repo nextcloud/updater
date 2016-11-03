@@ -49,7 +49,12 @@ class UpdateCommand extends Command {
 
 		// Check if the config.php is at the expected place
 		try {
-			$this->updater = new Updater();
+			$path = dirname(__DIR__); // dirname() because we are inside the lib/ subfolder
+			$pharPath = \Phar::running(false);
+			if ($pharPath !== '') {
+				$path = dirname($pharPath);
+			}
+			$this->updater = new Updater($path);
 		} catch (\Exception $e) {
 			// logging here is not possible because we don't know the data directory
 			$output->writeln($e->getMessage());
@@ -83,6 +88,91 @@ class UpdateCommand extends Command {
 				return -1;
 			}
 		}
+
+		$this->updater->logVersion();
+
+		$output->writeln('Current version is ' . $this->updater->getCurrentVersion() . '.');
+		// TODO echo($updater->checkForUpdate());
+
+		if(!$this->updater->updateAvailable()) {
+			$output->writeln('Everything is up to date.');
+			return 0;
+		}
+
+			    /** initial view */
+
+    /*
+<ul id="progress" class="section">
+<li id="step-init" class="step icon-loading passed-step">
+<h2>Initializing</h2>
+<div class="output">Current version is <?php echo($updater->getCurrentVersion()); ?>.<br>
+<?php echo($updater->checkForUpdate()); ?><br>
+
+<?php
+if ($updater->updateAvailable() || $stepNumber > 0) {
+$buttonText = 'Start update';
+if($stepNumber > 0) {
+$buttonText = 'Continue update';
+}
+?>
+<button id="startUpdateButton"><?php echo $buttonText ?></button>
+<?php
+}
+?>
+<button id="retryUpdateButton" class="hidden">Retry update</button>
+</div>
+</li>
+<li id="step-check-files" class="step <?php if($stepNumber >= 1) { echo 'passed-step'; }?>">
+	<h2>Check for expected files</h2>
+	<div class="output hidden"></div>
+</li>
+<li id="step-check-permissions" class="step <?php if($stepNumber >= 2) { echo 'passed-step'; }?>">
+	<h2>Check for write permissions</h2>
+	<div class="output hidden"></div>
+</li>
+<li id="step-enable-maintenance" class="step <?php if($stepNumber >= 3) { echo 'passed-step'; }?>">
+	<h2>Enable maintenance mode</h2>
+	<div class="output hidden"></div>
+</li>
+<li id="step-backup" class="step <?php if($stepNumber >= 4) { echo 'passed-step'; }?>">
+	<h2>Create backup</h2>
+	<div class="output hidden"></div>
+</li>
+<li id="step-download" class="step <?php if($stepNumber >= 5) { echo 'passed-step'; }?>">
+	<h2>Downloading</h2>
+	<div class="output hidden"></div>
+</li>
+<li id="step-extract" class="step <?php if($stepNumber >= 6) { echo 'passed-step'; }?>">
+	<h2>Extracting</h2>
+	<div class="output hidden"></div>
+</li>
+<li id="step-entrypoints" class="step <?php if($stepNumber >= 7) { echo 'passed-step'; }?>">
+	<h2>Replace entry points</h2>
+	<div class="output hidden"></div>
+</li>
+<li id="step-delete" class="step <?php if($stepNumber >= 8) { echo 'passed-step'; }?>">
+	<h2>Delete old files</h2>
+	<div class="output hidden"></div>
+</li>
+<li id="step-move" class="step <?php if($stepNumber >= 9) { echo 'passed-step'; }?>">
+	<h2>Move new files in place</h2>
+	<div class="output hidden"></div>
+</li>
+<li id="step-maintenance-mode" class="step <?php if($stepNumber >= 10) { echo 'passed-step'; }?>">
+	<h2>Keep maintenance mode active?</h2>
+	<div class="output hidden">
+		<button id="maintenance-enable">Yes (for usage with command line tool)</button>
+		<button id="maintenance-disable">No (for usage of the web based updater)</button>
+	</div>
+</li>
+<li id="step-done" class="step <?php if($stepNumber >= 11) { echo 'passed-step'; }?>">
+	<h2>Done</h2>
+	<div class="output hidden">
+		<a class="button" href="<?php echo str_replace('/index.php', '/../', $updaterUrl); ?>">Go to back to your Nextcloud instance to finish the update</a>
+	</div>
+</li>
+</ul>
+*/
     }
 
 	/**
@@ -161,4 +251,7 @@ class UpdateCommand extends Command {
 			return ['proceed' => false, 'response' => $message];
 		}
 	}
+
+
+
 }
