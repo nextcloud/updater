@@ -1,5 +1,7 @@
 {
     "require-dev": {
-        "behat/behat": "^3.2"
+    },
+    "require": {
+        "behat/behat": "3.0.*"
     }
 }
