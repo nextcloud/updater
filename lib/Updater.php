@@ -50,7 +50,6 @@ class Updater {
 			$configFileName = $this->baseDir . '/../config/config.php';
 		}
 		if (!file_exists($configFileName)) {
-			echo $configFileName;
 			throw new \Exception('Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?');
 		}
 
