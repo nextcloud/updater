@@ -15,6 +15,10 @@ class FeatureContext implements Context
     protected $downloadURL = 'https://download.nextcloud.com/server/releases/';
     /** @var resource */
     protected $updaterServerProcess = null;
+	/** @var string[] */
+	protected $CLIOutput;
+	/** @var integer */
+	protected $CLIReturnCode;
 
     public function __construct()
     {
@@ -98,7 +102,7 @@ class FeatureContext implements Context
 
         chdir($this->serverDir . 'nextcloud');
         shell_exec('chmod +x occ');
-        exec('./occ maintenance:install --admin-user=admin --admin-pass=admin', $output, $returnCode);
+        exec('./occ maintenance:install --admin-user=admin --admin-pass=admin 2>&1', $output, $returnCode);
 
         if ($returnCode !== 0) {
             throw new Exception('Install failed' . PHP_EOL . join(PHP_EOL, $output));
@@ -116,6 +120,18 @@ class FeatureContext implements Context
 		file_put_contents($this->updateServerDir . 'index.php', $content);
     }
 
+	/**
+	 * @When the CLI updater is run successfully
+	 */
+	public function theCliUpdaterIsRunSuccessfully()
+	{
+		$this->theCliUpdaterIsRun();
+
+		if ($this->CLIReturnCode !== 0) {
+			throw new Exception('updater failed' . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
+		}
+	}
+
     /**
      * @When the CLI updater is run
      */
@@ -129,9 +145,8 @@ class FeatureContext implements Context
         chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
         exec('./updater -n', $output, $returnCode);
 
-		if ($returnCode !== 0) {
-            throw new Exception('updater failed' . PHP_EOL . join(PHP_EOL, $output));
-        }
+		$this->CLIOutput = $output;
+		$this->CLIReturnCode = $returnCode;
     }
 
     /**
@@ -200,11 +215,11 @@ class FeatureContext implements Context
         }
     }
 
-    /**
-     * @Then /maintenance mode should be (on|off)/
-     */
-    public function maintenanceModeShouldBe($state)
-    {
+	/**
+	 * @Then /maintenance mode should be (on|off)/
+	 */
+	public function maintenanceModeShouldBe($state)
+	{
 
 		chdir($this->serverDir . 'nextcloud');
 		shell_exec('chmod +x occ');
@@ -216,5 +231,53 @@ class FeatureContext implements Context
 		if ($returnCode !== 0 || strpos(join(PHP_EOL, $output), $expectedOutput) === false) {
 			throw new Exception('Maintenance mode does not match ' . PHP_EOL . join(PHP_EOL, $output));
 		}
-    }
+	}
+
+	/**
+	 * @Then /upgrade is (not required|required)/
+	 */
+	public function upgradeIs($state)
+	{
+
+		chdir($this->serverDir . 'nextcloud');
+		shell_exec('chmod +x occ');
+		exec('./occ status', $output, $returnCode);
+
+		$upgradeOutput = 'Nextcloud or one of the apps require upgrade';
+
+		$outputString = join(PHP_EOL, $output);
+		if ($returnCode !== 0) {
+			throw new Exception('Return code of status output does not match ' . PHP_EOL . $outputString);
+		}
+
+		if ($state === 'not required') {
+			if (strpos($outputString, $upgradeOutput) !== false) {
+				throw new Exception('Upgrade is required ' . PHP_EOL . join(PHP_EOL, $output));
+			}
+		} else {
+			if (strpos($outputString, $upgradeOutput) === false) {
+				throw new Exception('Upgrade is not required ' . PHP_EOL . join(PHP_EOL, $output));
+			}
+		}
+	}
+
+	/**
+	 * @Then /the return code should not be (\S*)/
+	 */
+	public function theReturnCodeShouldNotBe($expectedReturnCode)
+	{
+		if ($this->CLIReturnCode === (int)$expectedReturnCode) {
+			throw new Exception('Return code does match: ' . $this->CLIReturnCode . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
+		}
+	}
+
+	/**
+	 * @Then /the output should contain "(.*)"/
+	 */
+	public function theOutputShouldBe($expectedOutput)
+	{
+		if (strpos(join(PHP_EOL, $this->CLIOutput), $expectedOutput) === false) {
+			throw new Exception('Output does not match: ' . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
+		}
+	}
 }
