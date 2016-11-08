@@ -13,8 +13,8 @@ Feature: CLI updater
     And there is an update to version 10.0.1 available
     When the CLI updater is run successfully
     Then the installed version should be 10.0.1
-    And maintenance mode should be on
-    And upgrade is required
+    And maintenance mode should be off
+    And upgrade is not required
 
   Scenario: Invalid update is available - 10.0.0 to 10.0.503
     Given the current installed version is 10.0.0
@@ -23,6 +23,6 @@ Feature: CLI updater
     Then the return code should not be 0
     And the output should contain "Download failed - Not Found (HTTP 404)"
     And the installed version should be 10.0.0
-    #And maintenance mode should be off # TODO doesn't work currently - needs to be fixed later
+    And maintenance mode should be off
     And upgrade is not required
 
