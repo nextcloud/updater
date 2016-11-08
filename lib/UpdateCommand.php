@@ -245,7 +245,60 @@ class UpdateCommand extends Command {
 
 		$output->writeln('');
 		if ($i === 11) {
-			$output->writeln('Update successful.');
+			$this->updater->log('[info] update of code successful.');
+			$output->writeln('Update of code successful.');
+
+			if ($input->isInteractive()) {
+
+				$output->writeln('');
+
+				$helper = $this->getHelper('question');
+				$question = new ConfirmationQuestion('Should the "occ upgrade" command be executed? [Y/n] ', true);
+
+				if (!$helper->ask($input, $output, $question)) {
+					$output->writeln('Please now execute "./occ upgrade" to finish the upgrade.');
+					$this->updater->log('[info] updater finished');
+					return 0;
+				}
+			} else {
+				$this->updater->log('[info] updater run in non-interactive mode - occ upgrade is started');
+				$output->writeln('Updater run in non-interactive mode - will start "occ upgrade" now.');
+				$output->writeln('');
+			}
+
+			chdir($path . '/..');
+			chmod('occ', 0755); # TODO do this in the updater
+			system('./occ upgrade', $returnValue);
+
+			$output->writeln('');
+			if ($input->isInteractive()) {
+
+				$helper = $this->getHelper('question');
+				$question = new ConfirmationQuestion($this->checkTexts[10] . ' [y/N] ', false);
+
+				if ($helper->ask($input, $output, $question)) {
+					$output->writeln('Maintenance mode kept active');
+					$this->updater->log('[info] updater finished - maintenance mode kept active');
+					return $returnValue;
+				}
+			} else {
+				$this->updater->log('[info] updater run in non-interactive mode - disabling maintenance mode');
+				$output->writeln('Updater run in non-interactive mode - will disable maintenance mode now.');
+			}
+
+			try {
+				$this->updater->setMaintenanceMode(false);
+				$this->updater->log('[info] maintenance mode is disabled');
+				$output->writeln('');
+				$output->writeln('Maintenance mode is disabled');
+			} catch (\Exception $e) {
+				$this->updater->log('[info] maintenance mode can not be disabled');
+				$this->updater->logException($e);
+				$output->writeln('');
+				$output->writeln('Maintenance mode can not be disabled');
+			}
+
+			return $returnValue;
 		} else {
 			if ($this->shouldStop) {
 				$output->writeln('<error>Update stopped. To resume or retry just execute the updater again.</error>');
@@ -338,6 +391,7 @@ class UpdateCommand extends Command {
 	 * @param integer $stepNumber
 	 */
 	protected function showCurrentStatus(OutputInterface $output, $stepNumber) {
+		$output->writeln('Steps that will be executed:');
 		for ($i = 1; $i < sizeof($this->checkTexts); $i++) {
 			if ($i === 10) {
 				// no need to ask for maintenance mode on CLI - skip it
