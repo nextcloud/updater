@@ -124,7 +124,7 @@ class FeatureContext implements Context
         copy($this->buildDir . 'updater.phar', $this->serverDir . 'nextcloud/updater/updater');
         chdir($this->serverDir . 'nextcloud/updater');
         chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
-        exec('./updater', $output, $returnCode);
+        exec('./updater -n', $output, $returnCode);
 
         if ($returnCode !== 0) {
             throw new Exception('updater failed' . PHP_EOL . join(PHP_EOL, $output));
