@@ -19,3 +19,7 @@ test: updater.phar test/vendor
 
 check-same-code-base:
 	cd tests && php checkSameCodeBase.php
+
+build-and-local-test: updater.phar
+	cp updater.phar tests/data/server/nextcloud/updater/updater
+	cd tests/data/server/nextcloud/updater && ./updater
