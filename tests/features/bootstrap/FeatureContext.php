@@ -266,12 +266,8 @@ class FeatureContext implements Context
 	 */
 	public function theReturnCodeShouldNotBe($expectedReturnCode)
 	{
-		// in PHP 5.4 the return code somehow doesn't match
-		if (PHP_VERSION_ID < 50500) {
-			return;
-		}
 		if ($this->CLIReturnCode === (int)$expectedReturnCode) {
-			throw new Exception('Return code does match: ' . $this->CLIReturnCode . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
+			throw new Exception('Return code does match but should not match: ' . $this->CLIReturnCode . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
 		}
 	}
 
