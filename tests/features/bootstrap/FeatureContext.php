@@ -22,6 +22,7 @@ class FeatureContext implements Context
 
     public function __construct()
     {
+		date_default_timezone_set('UTC');
         $baseDir = __DIR__ . '/../../data/';
         $this->serverDir = $baseDir . 'server/';
         $this->tmpDownloadDir = $baseDir . 'downloads/';
