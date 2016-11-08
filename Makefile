@@ -12,7 +12,7 @@ clean:
 	rm updater.phar
 
 test/vendor:
-	cd tests && composer require behat/behat:3.0.*
+	cd tests && composer install
 
 test: updater.phar test/vendor
 	cd tests && vendor/behat/behat/bin/behat
