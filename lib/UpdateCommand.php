@@ -24,6 +24,7 @@ namespace NC\Updater;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
@@ -53,7 +54,7 @@ class UpdateCommand extends Command {
 
 	protected function configure() {
 		$this
-			->setName('update-code')
+			->setName('update')
 			->setDescription('Updates the code of an Nextcloud instance')
 			->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.");
 	}
@@ -132,22 +133,32 @@ class UpdateCommand extends Command {
 
 		$output->writeln('');
 
-		$this->showCurrentStatus($output, $stepNumber);
-
-		$output->writeln('');
-
 		$questionText = 'Start update';
 		if ($stepNumber > 0) {
 			$questionText = 'Continue update';
 		}
 
-		$helper = $this->getHelper('question');
-		$question = new ConfirmationQuestion($questionText . '? [y/N] ', false);
+		if ($input->isInteractive()) {
 
-		if (!$helper->ask($input, $output, $question)) {
-			$output->writeln('Updater stopped.');
-			return 0;
+			$this->showCurrentStatus($output, $stepNumber);
+
+			$output->writeln('');
+
+			$helper = $this->getHelper('question');
+			$question = new ConfirmationQuestion($questionText . '? [y/N] ', false);
+
+			if (!$helper->ask($input, $output, $question)) {
+				$output->writeln('Updater stopped.');
+				$this->updater->log('[info] updater stopped');
+				return 0;
+			}
+		} else {
+			$this->updater->log('[info] updater run in non-interactive mode');
+			$output->writeln('Updater run in non-interactive mode.');
+			$output->writeln('');
+			$output->writeln($questionText);
 		}
+		$this->updater->log('[info] updater started');
 
 		$output->writeln('');
 
@@ -204,26 +215,26 @@ class UpdateCommand extends Command {
 				$output->writeln('<error>[✘] ' . $this->checkTexts[$i] . ' failed</error>');
 
 				if ($i === 1) {
-					if(is_string($result['message'])) {
-						$output->writeln('<error>' . $result['message'] . '</error>');
+					if(is_string($result['response'])) {
+						$output->writeln('<error>' . $result['response'] . '</error>');
 					} else {
 						$output->writeln('<error>The following extra files have been found:</error>');
-						foreach ($result['message'] as $file) {
+						foreach ($result['response'] as $file) {
 							$output->writeln('<error>    ' . $file . '</error>');
 						}
 					}
 				} elseif ($i === 2) {
-					if(is_string($result['message'])) {
-						$output->writeln('<error>' . $result['message'] . '</error>');
+					if(is_string($result['response'])) {
+						$output->writeln('<error>' . $result['response'] . '</error>');
 					} else {
 						$output->writeln('<error>The following places can not be written to:</error>');
-						foreach ($result['message'] as $file) {
+						foreach ($result['response'] as $file) {
 							$output->writeln('<error>    ' . $file . '</error>');
 						}
 					}
 				} else {
-					if (is_string($result['message'])) {
-						$output->writeln('<error>' . $result['message'] .  '</error>');
+					if (is_string($result['response'])) {
+						$output->writeln('<error>' . $result['response'] .  '</error>');
 					} else {
 						$output->writeln('<error>Something has gone wrong. Please check the log file in the data dir.</error>');
 					}
@@ -232,12 +243,15 @@ class UpdateCommand extends Command {
 			}
 		}
 
+		$output->writeln('');
 		if ($i === 11) {
-			$output->writeln('');
 			$output->writeln('Update successful.');
 		} else {
-			$output->writeln('');
-			$output->writeln('<error>Update failed. To resume or retry just execute the updater again.</error>');
+			if ($this->shouldStop) {
+				$output->writeln('<error>Update stopped. To resume or retry just execute the updater again.</error>');
+			} else {
+				$output->writeln('<error>Update failed. To resume or retry just execute the updater again.</error>');
+			}
 			return -1;
 		}
     }
