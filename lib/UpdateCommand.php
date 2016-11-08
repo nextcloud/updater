@@ -22,13 +22,34 @@
 namespace NC\Updater;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class UpdateCommand extends Command {
 
 	/** @var Updater */
 	protected $updater;
+
+	/** @var bool */
+	protected $shouldStop = false;
+
+	/** @var array strings of text for stages of updater */
+	protected $checkTexts = [
+		0 => '',
+		1 => 'Check for expected files',
+		2 => 'Check for write permissions',
+		3 => 'Enable maintenance mode',
+		4 => 'Create backup',
+		5 => 'Downloading',
+		6 => 'Extracting',
+		7 => 'Replace entry points',
+		8 => 'Delete old files',
+		9 => 'Move new files in place',
+		10 => 'Keep maintenance mode active?',
+		11 => 'Done',
+	];
 
 	protected function configure() {
 		$this
@@ -38,6 +59,7 @@ class UpdateCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+
 		if (class_exists('NC\Updater\Version')) {
 			$versionClass = new Version();
 			$version = $versionClass->get();
@@ -92,87 +114,132 @@ class UpdateCommand extends Command {
 		$this->updater->logVersion();
 
 		$output->writeln('Current version is ' . $this->updater->getCurrentVersion() . '.');
-		// TODO echo($updater->checkForUpdate());
 
-		if(!$this->updater->updateAvailable()) {
+		// needs to be called that early because otherwise updateAvailable() returns false
+		$updateString = $this->updater->checkForUpdate();
+
+		if(!$this->updater->updateAvailable() && $stepNumber === 0) {
 			$output->writeln('Everything is up to date.');
 			return 0;
 		}
 
-			    /** initial view */
+		$output->writeln('');
 
-    /*
-<ul id="progress" class="section">
-<li id="step-init" class="step icon-loading passed-step">
-<h2>Initializing</h2>
-<div class="output">Current version is <?php echo($updater->getCurrentVersion()); ?>.<br>
-<?php echo($updater->checkForUpdate()); ?><br>
+		$indexOfBreak = strpos($updateString, '<br');
+		$output->writeln('<info>' . substr($updateString, 0, $indexOfBreak) . '</info>');
+		// strip HTML
+		$output->writeln(preg_replace('/<[^>]*>/', '', substr($updateString, $indexOfBreak)));
 
-<?php
-if ($updater->updateAvailable() || $stepNumber > 0) {
-$buttonText = 'Start update';
-if($stepNumber > 0) {
-$buttonText = 'Continue update';
-}
-?>
-<button id="startUpdateButton"><?php echo $buttonText ?></button>
-<?php
-}
-?>
-<button id="retryUpdateButton" class="hidden">Retry update</button>
-</div>
-</li>
-<li id="step-check-files" class="step <?php if($stepNumber >= 1) { echo 'passed-step'; }?>">
-	<h2>Check for expected files</h2>
-	<div class="output hidden"></div>
-</li>
-<li id="step-check-permissions" class="step <?php if($stepNumber >= 2) { echo 'passed-step'; }?>">
-	<h2>Check for write permissions</h2>
-	<div class="output hidden"></div>
-</li>
-<li id="step-enable-maintenance" class="step <?php if($stepNumber >= 3) { echo 'passed-step'; }?>">
-	<h2>Enable maintenance mode</h2>
-	<div class="output hidden"></div>
-</li>
-<li id="step-backup" class="step <?php if($stepNumber >= 4) { echo 'passed-step'; }?>">
-	<h2>Create backup</h2>
-	<div class="output hidden"></div>
-</li>
-<li id="step-download" class="step <?php if($stepNumber >= 5) { echo 'passed-step'; }?>">
-	<h2>Downloading</h2>
-	<div class="output hidden"></div>
-</li>
-<li id="step-extract" class="step <?php if($stepNumber >= 6) { echo 'passed-step'; }?>">
-	<h2>Extracting</h2>
-	<div class="output hidden"></div>
-</li>
-<li id="step-entrypoints" class="step <?php if($stepNumber >= 7) { echo 'passed-step'; }?>">
-	<h2>Replace entry points</h2>
-	<div class="output hidden"></div>
-</li>
-<li id="step-delete" class="step <?php if($stepNumber >= 8) { echo 'passed-step'; }?>">
-	<h2>Delete old files</h2>
-	<div class="output hidden"></div>
-</li>
-<li id="step-move" class="step <?php if($stepNumber >= 9) { echo 'passed-step'; }?>">
-	<h2>Move new files in place</h2>
-	<div class="output hidden"></div>
-</li>
-<li id="step-maintenance-mode" class="step <?php if($stepNumber >= 10) { echo 'passed-step'; }?>">
-	<h2>Keep maintenance mode active?</h2>
-	<div class="output hidden">
-		<button id="maintenance-enable">Yes (for usage with command line tool)</button>
-		<button id="maintenance-disable">No (for usage of the web based updater)</button>
-	</div>
-</li>
-<li id="step-done" class="step <?php if($stepNumber >= 11) { echo 'passed-step'; }?>">
-	<h2>Done</h2>
-	<div class="output hidden">
-		<a class="button" href="<?php echo str_replace('/index.php', '/../', $updaterUrl); ?>">Go to back to your Nextcloud instance to finish the update</a>
-	</div>
-</li>
-</ul>
-*/
+		$output->writeln('');
+
+		$this->showCurrentStatus($output, $stepNumber);
+
+		$output->writeln('');
+
+		$questionText = 'Start update';
+		if ($stepNumber > 0) {
+			$questionText = 'Continue update';
+		}
+
+		$helper = $this->getHelper('question');
+		$question = new ConfirmationQuestion($questionText . '? [y/N] ', false);
+
+		if (!$helper->ask($input, $output, $question)) {
+			$output->writeln('Updater stopped.');
+			return 0;
+		}
+
+		$output->writeln('');
+
+		if(function_exists('pcntl_signal')) {
+			// being able to handle stop/terminate command (Ctrl - C)
+			pcntl_signal(SIGTERM, [$this, 'stopCommand']);
+			pcntl_signal(SIGINT, [$this, 'stopCommand']);
+
+			$output->writeln('Info: Pressing Ctrl-C will finish the currently running step and then stops the updater.');
+			$output->writeln('');
+		} else {
+			$output->writeln('Info: Gracefully stopping the updater via Ctrl-C is not possible - PCNTL extension is not loaded.');
+			$output->writeln('');
+		}
+
+		// print already executed steps
+		for($i = 1; $i <= $stepNumber; $i++) {
+			if ($i === 10) {
+				// no need to ask for maintenance mode on CLI - skip it
+				continue;
+			}
+			$output->writeln('<info>[✔] ' . $this->checkTexts[$i] . '</info>');
+		}
+
+		$i = $stepNumber;
+		while ($i < 11) {
+			$i++;
+
+			if ($i === 10) {
+				// no need to ask for maintenance mode on CLI - skip it
+				continue;
+			}
+
+			if (function_exists('pcntl_signal_dispatch')) {
+				pcntl_signal_dispatch();
+				if ( $this->shouldStop ) {
+					break;
+				}
+			}
+
+			$output->write('[ ] ' . $this->checkTexts[$i] . ' ...');
+
+			$result = $this->executeStep($i);
+
+			// Move the cursor to the beginning of the line
+			$output->write("\x0D");
+
+			// Erase the line
+			$output->write("\x1B[2K");
+
+			if ($result['proceed'] === true) {
+				$output->writeln('<info>[✔] ' . $this->checkTexts[$i] . '</info>');
+			} else {
+				$output->writeln('<error>[✘] ' . $this->checkTexts[$i] . ' failed</error>');
+
+				if ($i === 1) {
+					if(is_string($result['message'])) {
+						$output->writeln('<error>' . $result['message'] . '</error>');
+					} else {
+						$output->writeln('<error>The following extra files have been found:</error>');
+						foreach ($result['message'] as $file) {
+							$output->writeln('<error>    ' . $file . '</error>');
+						}
+					}
+				} elseif ($i === 2) {
+					if(is_string($result['message'])) {
+						$output->writeln('<error>' . $result['message'] . '</error>');
+					} else {
+						$output->writeln('<error>The following places can not be written to:</error>');
+						foreach ($result['message'] as $file) {
+							$output->writeln('<error>    ' . $file . '</error>');
+						}
+					}
+				} else {
+					if (is_string($result['message'])) {
+						$output->writeln('<error>' . $result['message'] .  '</error>');
+					} else {
+						$output->writeln('<error>Something has gone wrong. Please check the log file in the data dir.</error>');
+					}
+				}
+				break;
+			}
+		}
+
+		if ($i === 11) {
+			$output->writeln('');
+			$output->writeln('Update successful.');
+		} else {
+			$output->writeln('');
+			$output->writeln('<error>Update failed. To resume or retry just execute the updater again.</error>');
+			return -1;
+		}
     }
 
 	/**
@@ -252,6 +319,32 @@ $buttonText = 'Continue update';
 		}
 	}
 
+	/**
+	 * @param OutputInterface $output
+	 * @param integer $stepNumber
+	 */
+	protected function showCurrentStatus(OutputInterface $output, $stepNumber) {
+		for ($i = 1; $i < sizeof($this->checkTexts); $i++) {
+			if ($i === 10) {
+				// no need to ask for maintenance mode on CLI - skip it
+				continue;
+			}
+			$statusBegin = '[ ] ';
+			$statusEnd = '';
+			if ($i <= $stepNumber) {
+				$statusBegin = '<info>[✔] ';
+				$statusEnd = '</info>';
+			}
+			$output->writeln($statusBegin . $this->checkTexts[$i] . $statusEnd);
+		}
+	}
+
+	/**
+	 * gets called by the PCNTL listener once the stop/terminate signal
+	 */
+	public function stopCommand() {
+		$this->shouldStop = true;
+	}
 
 
 }
