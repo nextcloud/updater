@@ -101,6 +101,7 @@ class FeatureContext implements Context
         exec('./occ maintenance:install --admin-user=admin --admin-pass=admin', $output, $returnCode);
 
         if ($returnCode !== 0) {
+			print_r(join(PHP_EOL, $output));
             throw new Exception('Install failed' . PHP_EOL . join(PHP_EOL, $output));
         }
     }
@@ -110,7 +111,10 @@ class FeatureContext implements Context
      */
     public function thereIsNoUpdateAvailable()
     {
-        #throw new PendingException();
+		$this->runUpdateServer();
+
+		$content = '';
+		file_put_contents($this->updateServerDir . 'index.php', $content);
     }
 
     /**
@@ -126,7 +130,8 @@ class FeatureContext implements Context
         chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
         exec('./updater -n', $output, $returnCode);
 
-        if ($returnCode !== 0) {
+		if ($returnCode !== 0) {
+			print_r(join(PHP_EOL, $output));
             throw new Exception('updater failed' . PHP_EOL . join(PHP_EOL, $output));
         }
     }
@@ -136,16 +141,7 @@ class FeatureContext implements Context
      */
     public function thereIsAnUpdateToVersionAvailable($version)
     {
-        if (!is_null($this->updaterServerProcess)) {
-            throw new Exception('Update server already started');
-        }
-
-        $cmd = "php -S localhost:8870 -t " . $this->updateServerDir;
-        $this->updaterServerProcess = proc_open($cmd, [], $pipes, $this->updateServerDir);
-
-        if(!is_resource($this->updaterServerProcess)) {
-            throw new Exception('Update server could not be started');
-        }
+		$this->runUpdateServer();
 
         $content = '<?php
         header("Content-Type: application/xml");
@@ -161,9 +157,33 @@ class FeatureContext implements Context
 ';
         file_put_contents($this->updateServerDir . 'index.php', $content);
 
-        // to let the server start
-        sleep(1);
     }
+
+	/**
+	 * runs the updater server
+	 * @throws Exception
+	 */
+    protected function runUpdateServer()
+	{
+		$configFile = $this->serverDir . 'nextcloud/config/config.php';
+		$content = file_get_contents($configFile);
+		$content = preg_replace('!\$CONFIG\s*=\s*array\s*\(!', "\$CONFIG = array(\n 'updater.server.url' => 'http://localhost:8870/',", $content );
+		file_put_contents($configFile, $content);
+
+		if (!is_null($this->updaterServerProcess)) {
+			throw new Exception('Update server already started');
+		}
+
+		$cmd = "php -S localhost:8870 -t " . $this->updateServerDir . " 2>/dev/null 1>/dev/null";
+		$this->updaterServerProcess = proc_open($cmd, [], $pipes, $this->updateServerDir);
+
+		if(!is_resource($this->updaterServerProcess)) {
+			throw new Exception('Update server could not be started');
+		}
+
+		// to let the server start
+		sleep(1);
+	}
 
     /**
      * @Then /the installed version should be ([0-9.]+)/
@@ -187,6 +207,16 @@ class FeatureContext implements Context
      */
     public function maintenanceModeShouldBe($state)
     {
-        throw new PendingException();
+
+		chdir($this->serverDir . 'nextcloud');
+		exec('../occ maintenance:mode', $output, $returnCode);
+
+		$expectedOutput = [
+			'Maintenance mode is currently ' . ($state === 'on' ? 'enabled' : 'disabled')
+		];
+
+		if ($returnCode !== 0 && $output === $expectedOutput) {
+			throw new Exception('Maintenance mode does not match ' . PHP_EOL . join(PHP_EOL, $output));
+		}
     }
 }
