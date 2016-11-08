@@ -101,7 +101,6 @@ class FeatureContext implements Context
         exec('./occ maintenance:install --admin-user=admin --admin-pass=admin', $output, $returnCode);
 
         if ($returnCode !== 0) {
-			print_r(join(PHP_EOL, $output));
             throw new Exception('Install failed' . PHP_EOL . join(PHP_EOL, $output));
         }
     }
@@ -131,7 +130,6 @@ class FeatureContext implements Context
         exec('./updater -n', $output, $returnCode);
 
 		if ($returnCode !== 0) {
-			print_r(join(PHP_EOL, $output));
             throw new Exception('updater failed' . PHP_EOL . join(PHP_EOL, $output));
         }
     }
@@ -209,13 +207,13 @@ class FeatureContext implements Context
     {
 
 		chdir($this->serverDir . 'nextcloud');
-		exec('../occ maintenance:mode', $output, $returnCode);
+		shell_exec('chmod +x occ');
+		exec('./occ maintenance:mode', $output, $returnCode);
 
-		$expectedOutput = [
-			'Maintenance mode is currently ' . ($state === 'on' ? 'enabled' : 'disabled')
-		];
+		$expectedOutput = 'Maintenance mode is currently ' .
+			($state === 'on' ? 'enabled' : 'disabled');
 
-		if ($returnCode !== 0 && $output === $expectedOutput) {
+		if ($returnCode !== 0 || strpos(join(PHP_EOL, $output), $expectedOutput) === false) {
 			throw new Exception('Maintenance mode does not match ' . PHP_EOL . join(PHP_EOL, $output));
 		}
     }
