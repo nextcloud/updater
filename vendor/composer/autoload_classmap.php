@@ -12,6 +12,7 @@ return array(
     'NC\\Updater\\UpdateCommand' => $baseDir . '/lib/UpdateCommand.php',
     'NC\\Updater\\UpdateException' => $baseDir . '/lib/UpdateException.php',
     'NC\\Updater\\Updater' => $baseDir . '/lib/Updater.php',
+    'NC\\Updater\\Version' => $baseDir . '/lib/Version.php',
     'Psr\\Log\\AbstractLogger' => $vendorDir . '/psr/log/Psr/Log/AbstractLogger.php',
     'Psr\\Log\\InvalidArgumentException' => $vendorDir . '/psr/log/Psr/Log/InvalidArgumentException.php',
     'Psr\\Log\\LogLevel' => $vendorDir . '/psr/log/Psr/Log/LogLevel.php',

@@ -4,6 +4,7 @@ box:
 
 updater.phar: box updater.php lib/*.php buildVersionFile.php
 	php buildVersionFile.php
+	composer dump-autoload
 	./box build -c box.json
 	chmod +x updater.phar
 	rm lib/Version.php
