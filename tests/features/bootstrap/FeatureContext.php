@@ -12,7 +12,9 @@ class FeatureContext implements Context
     protected $serverDir;
     protected $updateServerDir;
     protected $tmpDownloadDir;
-    protected $downloadURL = 'https://download.nextcloud.com/server/releases/';
+	protected $downloadURL = 'https://download.nextcloud.com/server/releases/';
+	protected $dailyDownloadURL = 'https://download.nextcloud.com/server/daily/latest-';
+	protected $prereleasesDownloadURL = 'https://download.nextcloud.com/server/prereleases/';
     /** @var resource */
     protected $updaterServerProcess = null;
 	/** @var string[] */
@@ -53,7 +55,7 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given /the current (installed )?version is ([0-9.]+)/
+     * @Given /the current (installed )?version is ([0-9.]+((beta|RC)[0-9]?)?|stable[0-9]+|master)/
      */
     public function theCurrentInstalledVersionIs($installed, $version)
     {
@@ -78,7 +80,13 @@ class FeatureContext implements Context
 
         if (!file_exists($this->tmpDownloadDir . $filename)) {
             $fp = fopen($this->tmpDownloadDir . $filename, 'w+');
-            $ch = curl_init($this->downloadURL . $filename);
+            $url = $this->downloadURL . $filename;
+            if (strpos($version, 'RC') !== false || strpos($version, 'beta') !== false) {
+            	$url = $this->prereleasesDownloadURL . $version . '.zip';
+			} else if(strpos($version, 'stable') !== false || strpos($version, 'master') !== false) {
+				$url = $this->dailyDownloadURL . $version . '.zip';
+			}
+            $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FILE, $fp);
             if(curl_exec($ch) === false) {
                 throw new \Exception('Curl error: ' . curl_error($ch));
@@ -176,6 +184,52 @@ class FeatureContext implements Context
         file_put_contents($this->updateServerDir . 'index.php', $content);
 
     }
+
+	/**
+	 * @Given /there is an update to prerelease version of (.*) available/
+	 */
+	public function thereIsAnUpdateToPrereleaseVersionAvailable($version)
+	{
+		$this->runUpdateServer();
+
+		$content = '<?php
+        header("Content-Type: application/xml");
+        ?>
+<?xml version="1.0" encoding="UTF-8"?>
+<nextcloud>
+ <version>' . str_replace(['9.1', '9.2'], ['10.0', '11.0'], $version) . '</version>
+ <versionstring>Nextcloud ' . $version . '</versionstring>
+ <url>https://download.nextcloud.com/server/prereleases/nextcloud-' . $version . '.zip</url>
+ <web>https://docs.nextcloud.org/server/10/admin_manual/maintenance/manual_upgrade.html</web>
+ <autoupdater>1</autoupdater>
+</nextcloud>
+';
+		file_put_contents($this->updateServerDir . 'index.php', $content);
+
+	}
+
+	/**
+	 * @Given /there is an update to daily version of (.*) available/
+	 */
+	public function thereIsAnUpdateToDailyVersionAvailable($version)
+	{
+		$this->runUpdateServer();
+
+		$content = '<?php
+        header("Content-Type: application/xml");
+        ?>
+<?xml version="1.0" encoding="UTF-8"?>
+<nextcloud>
+ <version>100.0.0.0</version>
+ <versionstring>Nextcloud ' . $version . '</versionstring>
+ <url>https://download.nextcloud.com/server/daily/latest-' . $version . '.zip</url>
+ <web>https://docs.nextcloud.org/server/10/admin_manual/maintenance/manual_upgrade.html</web>
+ <autoupdater>1</autoupdater>
+</nextcloud>
+';
+		file_put_contents($this->updateServerDir . 'index.php', $content);
+
+	}
 
 	/**
 	 * runs the updater server
@@ -284,5 +338,16 @@ class FeatureContext implements Context
 		if (strpos(join(PHP_EOL, $this->CLIOutput), $expectedOutput) === false) {
 			throw new Exception('Output does not match: ' . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
 		}
+	}
+
+	/**
+	 * @Given /the version number is decreased in the config.php to enforce upgrade/
+	 */
+	public function theVersionNumberIsDecreasedInTheConfigPHPToEnforceUpgrade()
+	{
+		$configFile = $this->serverDir . 'nextcloud/config/config.php';
+		$content = file_get_contents($configFile);
+		$content = preg_replace("!'version'\s*=>\s*'(\d+\.\d+\.\d+)\.\d+!", "'version' => '$1", $content);
+		file_put_contents($configFile, $content);
 	}
 }
