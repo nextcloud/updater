@@ -1,0 +1,15 @@
+{
+  "chmod": "0755",
+  "directories": ["lib"],
+  "files": ["version.php"],
+  "finder": [
+    {
+      "name": "*.php",
+      "exclude": ["Tests"],
+      "in": "vendor"
+    }
+  ],
+  "main": "updater.php",
+  "output": "updater.phar",
+  "stub": true
+}

@@ -1,0 +1,14 @@
+{
+    "autoload" : {
+        "psr-4": {
+            "NC\\Updater\\": "lib/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "classmap-authoritative": true
+    },
+    "require": {
+        "symfony/console": "^3.1"
+    }
+}

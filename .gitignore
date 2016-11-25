@@ -1,0 +1,7 @@
+box
+lib/Version.php
+tests/data
+tests/vendor
+vendor/symfony/console/Tests
+vendor/symfony/debug/Tests
+

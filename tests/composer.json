@@ -1,0 +1,7 @@
+{
+    "require-dev": {
+    },
+    "require": {
+        "behat/behat": "3.0.*"
+    }
+}
