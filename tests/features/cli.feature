@@ -2,7 +2,8 @@ Feature: CLI updater
 
   Scenario: No update is available - 10.0.0
     Given the current version is 10.0.0
-    When the CLI updater is run successfully
+    When the CLI updater is run
+    Then the output should contain "Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?"
 
   Scenario: No update is available - 10.0.0
     Given the current installed version is 10.0.0
