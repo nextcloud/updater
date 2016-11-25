@@ -53,9 +53,9 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given /the current installed version is ([0-9.]+)/
+     * @Given /the current (installed )?version is ([0-9.]+)/
      */
-    public function theCurrentInstalledVersionIs($version)
+    public function theCurrentInstalledVersionIs($installed, $version)
     {
         // recursive deletion of server folder
         if(file_exists($this->serverDir)) {
@@ -99,6 +99,11 @@ class FeatureContext implements Context
         } else {
             throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
         }
+
+        if($installed === '') {
+			// the instance should not be installed
+			return;
+		}
 
         chdir($this->serverDir . 'nextcloud');
         shell_exec('chmod +x occ');

@@ -191,6 +191,8 @@ class Updater {
 			'robots.txt',
 			'.htaccess',
 			'AUTHORS',
+			'CHANGELOG.md',
+			'COPYING',
 			'COPYING-AGPL',
 			'occ',
 			'db_structure.xml',

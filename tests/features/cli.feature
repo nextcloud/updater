@@ -1,6 +1,10 @@
 Feature: CLI updater
 
   Scenario: No update is available - 10.0.0
+    Given the current version is 10.0.0
+    When the CLI updater is run successfully
+
+  Scenario: No update is available - 10.0.0
     Given the current installed version is 10.0.0
     And there is no update available
     When the CLI updater is run successfully
