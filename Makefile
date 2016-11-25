@@ -18,6 +18,18 @@ test/vendor:
 test: updater.phar test/vendor
 	cd tests && vendor/behat/behat/bin/behat
 
+test-cli: updater.phar test/vendor
+	cd tests && vendor/behat/behat/bin/behat features/cli.feature
+
+test-stable9: updater.phar test/vendor
+	cd tests && vendor/behat/behat/bin/behat features/stable9.feature
+
+test-stable10: updater.phar test/vendor
+	cd tests && vendor/behat/behat/bin/behat features/stable10.feature
+
+test-master: updater.phar test/vendor
+	cd tests && vendor/behat/behat/bin/behat features/master.feature
+
 check-same-code-base:
 	cd tests && php checkSameCodeBase.php
 
