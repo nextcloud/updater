@@ -1,3 +1,5 @@
+.PHONY: updater.phar
+
 box:
 	curl -L https://github.com/box-project/box2/releases/download/2.7.4/box-2.7.4.phar -o box
 	chmod +x box
@@ -26,6 +28,9 @@ test-stable9: updater.phar test/vendor
 
 test-stable10: updater.phar test/vendor
 	cd tests && vendor/behat/behat/bin/behat features/stable10.feature
+
+test-stable11: updater.phar test/vendor
+	cd tests && vendor/behat/behat/bin/behat features/stable11.feature
 
 test-master: updater.phar test/vendor
 	cd tests && vendor/behat/behat/bin/behat features/master.feature

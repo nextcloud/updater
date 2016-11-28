@@ -12,15 +12,15 @@ class FeatureContext implements Context
     protected $serverDir;
     protected $updateServerDir;
     protected $tmpDownloadDir;
-	protected $downloadURL = 'https://download.nextcloud.com/server/releases/';
-	protected $dailyDownloadURL = 'https://download.nextcloud.com/server/daily/latest-';
-	protected $prereleasesDownloadURL = 'https://download.nextcloud.com/server/prereleases/';
+    protected $downloadURL = 'https://download.nextcloud.com/server/releases/';
+    protected $dailyDownloadURL = 'https://download.nextcloud.com/server/daily/latest-';
+    protected $prereleasesDownloadURL = 'https://download.nextcloud.com/server/prereleases/';
     /** @var resource */
     protected $updaterServerProcess = null;
-	/** @var string[] */
-	protected $CLIOutput;
-	/** @var integer */
-	protected $CLIReturnCode;
+    /** @var string[] */
+    protected $CLIOutput;
+    /** @var integer */
+    protected $CLIReturnCode;
 
     public function __construct()
     {
@@ -82,10 +82,10 @@ class FeatureContext implements Context
             $fp = fopen($this->tmpDownloadDir . $filename, 'w+');
             $url = $this->downloadURL . $filename;
             if (strpos($version, 'RC') !== false || strpos($version, 'beta') !== false) {
-            	$url = $this->prereleasesDownloadURL . $version . '.zip';
-			} else if(strpos($version, 'stable') !== false || strpos($version, 'master') !== false) {
-				$url = $this->dailyDownloadURL . $version . '.zip';
-			}
+                $url = $this->prereleasesDownloadURL . 'nextcloud-' . $version . '.zip';
+            } else if(strpos($version, 'stable') !== false || strpos($version, 'master') !== false) {
+                $url = $this->dailyDownloadURL . $version . '.zip';
+            }
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FILE, $fp);
             if(curl_exec($ch) === false) {
