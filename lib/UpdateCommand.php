@@ -84,6 +84,26 @@ class UpdateCommand extends Command {
 			return -1;
 		}
 
+		if (!function_exists('posix_getuid')) {
+			$output->writeln("The posix extensions are required - see http://php.net/manual/en/book.posix.php");
+			return -1;
+		}
+
+		if($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
+			$configFileName = rtrim($dir, '/') . '/config.php';
+		} else {
+			$configFileName = $path . '/../config/config.php';
+		}
+		$user = posix_getpwuid(posix_getuid());
+		$configUser = posix_getpwuid(fileowner($configFileName));
+		if ($user['name'] !== $configUser['name']) {
+			$output->writeln("Console has to be executed with the user that owns the file config/config.php");
+			$output->writeln("Current user: " . $user['name']);
+			$output->writeln("Owner of config.php: " . $configUser['name']);
+			$output->writeln("Try adding 'sudo -u " . $configUser['name'] . " ' to the beginning of the command (without the single quotes)");
+			return -1;
+		}
+
 		// Check if the updater.log can be written to
 		try {
 			$this->updater->log('[info] updater cli is executed');

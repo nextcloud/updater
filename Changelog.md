@@ -1,3 +1,7 @@
+# 1.0.2 - 2016-11-28
+
+- CLI: verify that owner of config.php and updater process user are the same
+
 # 1.0.1 - 2016-11-25
 
 - CLI: if the instance is not installed the updater exits properly with a exit code of 0

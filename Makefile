@@ -1,3 +1,5 @@
+.PHONY: updater.phar
+
 box:
 	curl -L https://github.com/box-project/box2/releases/download/2.7.4/box-2.7.4.phar -o box
 	chmod +x box
