@@ -1,6 +1,5 @@
 <?php
 
-
 $currentTag = trim(shell_exec('git describe --tags'));
 exec('git diff-files --quiet', $output, $returnValue);
 
