@@ -32,7 +32,7 @@ Feature: CLI updater - stable10 base
     And there is an update to daily version of stable10 available
     When the CLI updater is run successfully
     And the output should contain "Update successful"
-    Then the installed version should be 10.0.1
+    Then the installed version should be 10.0.2
     And maintenance mode should be off
     And upgrade is not required
 
@@ -41,7 +41,7 @@ Feature: CLI updater - stable10 base
     And there is an update to daily version of stable10 available
     When the CLI updater is run successfully
     And the output should contain "Update successful"
-    Then the installed version should be 10.0.1
+    Then the installed version should be 10.0.2
     And maintenance mode should be off
     And upgrade is not required
 
@@ -51,7 +51,7 @@ Feature: CLI updater - stable10 base
     And the version number is decreased in the config.php to enforce upgrade
     When the CLI updater is run successfully
     And the output should contain "Update successful"
-    Then the installed version should be 10.0.1
+    Then the installed version should be 10.0.2
     And maintenance mode should be off
     And upgrade is not required
 
