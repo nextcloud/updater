@@ -45,6 +45,24 @@ Feature: CLI updater - stable9 base
     And maintenance mode should be off
     And upgrade is not required
 
+  Scenario: Update is available - 9.0.53 to 9.0.55 RC1
+    Given the current installed version is 9.0.53
+    And there is an update to prerelease version 9.0.55RC1 available
+    When the CLI updater is run successfully
+    And the output should contain "Update successful"
+    Then the installed version should be 9.0.55
+    And maintenance mode should be off
+    And upgrade is not required
+
+  Scenario: Update is available - 9.0.54 to 9.0.55 RC1
+    Given the current installed version is 9.0.54
+    And there is an update to prerelease version 9.0.55RC1 available
+    When the CLI updater is run successfully
+    And the output should contain "Update successful"
+    Then the installed version should be 9.0.55
+    And maintenance mode should be off
+    And upgrade is not required
+
 # TODO running ./occ upgrade when maintenance mode is enabled causes return code of 2 instead of 0 saying that no update is available but the maintenance mode is active
 #  Scenario: Update is available - 9.0.54 to stable9 daily
 #    Given the current installed version is 9.0.54
@@ -98,6 +116,24 @@ Feature: CLI updater - stable9 base
     When the CLI updater is run successfully
     And the output should contain "Update successful"
     Then the installed version should be 10.0.1
+    And maintenance mode should be off
+    And upgrade is not required
+
+  Scenario: Update is available - 9.0.53 to 10.0.2RC1
+    Given the current installed version is 9.0.53
+    And there is an update to prerelease version 10.0.2RC1 available
+    When the CLI updater is run successfully
+    And the output should contain "Update successful"
+    Then the installed version should be 10.0.2
+    And maintenance mode should be off
+    And upgrade is not required
+
+  Scenario: Update is available - 9.0.54 to 10.0.2RC1
+    Given the current installed version is 9.0.54
+    And there is an update to prerelease version 10.0.2RC1 available
+    When the CLI updater is run successfully
+    And the output should contain "Update successful"
+    Then the installed version should be 10.0.2
     And maintenance mode should be off
     And upgrade is not required
 

@@ -99,3 +99,21 @@ Feature: CLI updater - stable10 base
     Then the installed version should be 11.0.0.5
     And maintenance mode should be off
     And upgrade is not required
+
+  Scenario: Update is available - 10.0.0 to 10.0.2RC1
+    Given the current installed version is 10.0.0
+    And there is an update to prerelease version of 10.0.2RC1 available
+    When the CLI updater is run successfully
+    And the output should contain "Update successful"
+    Then the installed version should be 10.0.2
+    And maintenance mode should be off
+    And upgrade is not required
+
+  Scenario: Update is available - 10.0.1 to 10.0.2RC1
+    Given the current installed version is 10.0.1
+    And there is an update to prerelease version of 10.0.2RC1 available
+    When the CLI updater is run successfully
+    And the output should contain "Update successful"
+    Then the installed version should be 10.0.2
+    And maintenance mode should be off
+    And upgrade is not required
