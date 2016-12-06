@@ -41,7 +41,7 @@ Feature: CLI updater - stable9 base
     And there is an update to daily version of stable9 available
     When the CLI updater is run successfully
     And the output should contain "Update successful"
-    Then the installed version should be 9.0.54
+    Then the installed version should be 9.0.55
     And maintenance mode should be off
     And upgrade is not required
 
