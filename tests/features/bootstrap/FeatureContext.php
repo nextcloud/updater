@@ -21,6 +21,8 @@ class FeatureContext implements Context
     protected $CLIOutput;
     /** @var integer */
     protected $CLIReturnCode;
+    /** @var string */
+    protected $autoupdater = '1';
 
     public function __construct()
     {
@@ -131,7 +133,14 @@ class FeatureContext implements Context
 
 		$content = '';
 		file_put_contents($this->updateServerDir . 'index.php', $content);
-    }
+	}
+
+	/**
+	 * @Given  the autoupdater is disabled
+	 */
+	public function theAutoupdaterIsDisabled() {
+		$this->autoupdater = '0';
+	}
 
 	/**
 	 * @When the CLI updater is run successfully
@@ -178,7 +187,7 @@ class FeatureContext implements Context
  <versionstring>Nextcloud ' . $version . '</versionstring>
  <url>https://download.nextcloud.com/server/releases/nextcloud-' . $version . '.zip</url>
  <web>https://docs.nextcloud.org/server/10/admin_manual/maintenance/manual_upgrade.html</web>
- <autoupdater>1</autoupdater>
+ <autoupdater>' . $this->autoupdater . '</autoupdater>
 </nextcloud>
 ';
         file_put_contents($this->updateServerDir . 'index.php', $content);

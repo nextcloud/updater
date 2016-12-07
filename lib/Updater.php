@@ -121,6 +121,12 @@ class Updater {
 			$updateText = 'No update available.';
 		}
 
+		if ($this->updateAvailable && isset($response['autoupdater']) && !($response['autoupdater'] === 1 || $response['autoupdater'] === '1')) {
+			$this->updateAvailable = false;
+
+			$updateText .= '<br />The updater is disabled for this update - please update manually.' . $response['autoupdater'];
+		}
+
 		$this->silentLog('[info] end of checkForUpdate() ' . $updateText);
 		return $updateText;
 	}
