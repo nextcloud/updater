@@ -488,7 +488,7 @@ class Updater {
 		$curl = curl_init();
 		curl_setopt_array($curl, [
 			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOption('version')) .'xxx'.$releaseChannel.'xx'.urlencode($this->buildTime),
+			CURLOPT_URL => $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOption('version')) .'xxx'.$releaseChannel.'xx'.urlencode($this->buildTime).'x'.PHP_MAJOR_VERSION.'x'.PHP_MINOR_VERSION.'x'.PHP_RELEASE_VERSION,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
 		]);
 		$response = curl_exec($curl);
