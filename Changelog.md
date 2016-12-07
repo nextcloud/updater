@@ -2,6 +2,7 @@
 
 - general: send PHP version to get compatible updates
 - CLI: check if update should be run based on updater server response
+a
 
 # 1.0.2 - 2016-11-28
 
