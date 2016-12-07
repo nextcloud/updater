@@ -139,19 +139,21 @@ class UpdateCommand extends Command {
 		// needs to be called that early because otherwise updateAvailable() returns false
 		$updateString = $this->updater->checkForUpdate();
 
-		if(!$this->updater->updateAvailable() && $stepNumber === 0) {
-			$output->writeln('Everything is up to date.');
-			return 0;
+		$output->writeln('');
+
+		$lines = explode('<br />', $updateString);
+
+		foreach ($lines as $line) {
+			// strip HTML
+			$output->writeln('<info>' . preg_replace('/<[^>]*>/', '', $line) . '</info>');
 		}
 
 		$output->writeln('');
 
-		$indexOfBreak = strpos($updateString, '<br');
-		$output->writeln('<info>' . substr($updateString, 0, $indexOfBreak) . '</info>');
-		// strip HTML
-		$output->writeln(preg_replace('/<[^>]*>/', '', substr($updateString, $indexOfBreak)));
-
-		$output->writeln('');
+		if(!$this->updater->updateAvailable() && $stepNumber === 0) {
+			$output->writeln('Nothing to do.');
+			return 0;
+		}
 
 		$questionText = 'Start update';
 		if ($stepNumber > 0) {
