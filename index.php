@@ -1502,7 +1502,7 @@ if(strpos($updaterUrl, 'index.php') === false) {
 				<li id="step-done" class="step <?php if($stepNumber >= 11) { echo 'passed-step'; }?>">
 					<h2>Done</h2>
 					<div class="output hidden">
-						<a class="button" href="<?php echo str_replace('/index.php', '/../', $updaterUrl); ?>">Go to back to your Nextcloud instance to finish the update</a>
+						<a class="button" href="<?php echo str_replace('/index.php', '/../', $updaterUrl); ?>">Go back to your Nextcloud instance to finish the update</a>
 					</div>
 				</li>
 			</ul>
