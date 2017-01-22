@@ -521,6 +521,15 @@ class Updater {
 			CURLOPT_URL => $updateURL,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
 		]);
+
+		if ($this->getConfigOption('proxy') !== null) {
+			curl_setopt_array($curl, [
+				CURLOPT_PROXY => $this->getConfigOption('proxy'),
+				CURLOPT_PROXYUSERPWD => $this->getConfigOption('proxyuserpwd'),
+				CURLOPT_HTTPPROXYTUNNEL => $this->getConfigOption('proxy') ? 1 : 0,
+			]);
+		}
+
 		$response = curl_exec($curl);
 		if($response === false) {
 			throw new \Exception('Could not do request to updater server: '.curl_error($curl));
@@ -569,7 +578,19 @@ class Updater {
 
 		$fp = fopen($storageLocation . basename($response['url']), 'w+');
 		$ch = curl_init($response['url']);
-		curl_setopt($ch, CURLOPT_FILE, $fp);
+		curl_setopt_array($ch, [
+			CURLOPT_FILE => $fp,
+			CURLOPT_USERAGENT => 'Nextcloud Updater',
+		]);
+
+		if ($this->getConfigOption('proxy') !== null) {
+			curl_setopt_array($ch, [
+				CURLOPT_PROXY => $this->getConfigOption('proxy'),
+				CURLOPT_PROXYUSERPWD => $this->getConfigOption('proxyuserpwd'),
+				CURLOPT_HTTPPROXYTUNNEL => $this->getConfigOption('proxy') ? 1 : 0,
+			]);
+		}
+
 		if(curl_exec($ch) === false) {
 			throw new \Exception('Curl error: ' . curl_error($ch));
 		}
