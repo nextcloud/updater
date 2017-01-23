@@ -9,3 +9,21 @@ Feature: CLI updater - stable11 base
     Then the installed version should be 11.0.0.5
     And maintenance mode should be off
     And upgrade is not required
+
+  Scenario: Update is available - 11.0.0 to master daily
+    Given the current installed version is 11.0.0
+    And there is an update to daily version of master available
+    When the CLI updater is run successfully
+    And the output should contain "Update successful"
+    Then the installed version should be 12.0
+    And maintenance mode should be off
+    And upgrade is not required
+
+  Scenario: Update is available - 11.0.1 to master daily
+    Given the current installed version is 11.0.1
+    And there is an update to daily version of master available
+    When the CLI updater is run successfully
+    And the output should contain "Update successful"
+    Then the installed version should be 12.0
+    And maintenance mode should be off
+    And upgrade is not required
