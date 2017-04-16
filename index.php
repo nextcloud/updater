@@ -240,7 +240,7 @@ class Updater {
 		if ($version !== '' && $version !== $this->currentVersion) {
 			$this->updateAvailable = true;
 			$releaseChannel = $this->getCurrentReleaseChannel();
-			$updateText = 'Update to ' . $versionString . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
+			$updateText = 'Update to ' . htmlentities($versionString) . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
 		} else {
 			$updateText = 'No update available.';
 		}
