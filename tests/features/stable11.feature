@@ -10,8 +10,8 @@ Feature: CLI updater - stable11 base
     And maintenance mode should be off
     And upgrade is not required
 
-  Scenario: Update is available - 11.0.0 to master daily
-    Given the current installed version is 11.0.0
+  Scenario: Update is available - 11.0.2 to master daily
+    Given the current installed version is 11.0.2
     And the current channel is "daily"
     And there is an update to daily version of master available
     When the CLI updater is run successfully
@@ -20,8 +20,8 @@ Feature: CLI updater - stable11 base
     And maintenance mode should be off
     And upgrade is not required
 
-  Scenario: Update is available - 11.0.1 to master daily
-    Given the current installed version is 11.0.1
+  Scenario: Update is available - 11.0.2 to master daily
+    Given the current installed version is 11.0.2
     And the current channel is "daily"
     And there is an update to daily version of master available
     When the CLI updater is run successfully
