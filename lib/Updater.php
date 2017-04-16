@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (c) 2016 Lukas Reschke <lukas@statuscode.ch>
+ * @copyright Copyright (c) 2016-2017 Lukas Reschke <lukas@statuscode.ch>
  * @copyright Copyright (c) 2016 Morris Jobke <hey@morrisjobke.de>
  *
  * @license GNU AGPL version 3 or any later version
@@ -102,6 +102,15 @@ class Updater {
 	}
 
 	/**
+	 * Returns currently used release channel
+	 *
+	 * @return string
+	 */
+	private function getCurrentReleaseChannel() {
+		return !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+	}
+
+	/**
 	 * @return string
 	 * @throws \Exception
 	 */
@@ -115,7 +124,7 @@ class Updater {
 
 		if ($version !== '' && $version !== $this->currentVersion) {
 			$this->updateAvailable = true;
-			$releaseChannel = !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+			$releaseChannel = $this->getCurrentReleaseChannel();
 			$updateText = 'Update to ' . $versionString . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
 		} else {
 			$updateText = 'No update available.';
@@ -124,7 +133,7 @@ class Updater {
 		if ($this->updateAvailable && isset($response['autoupdater']) && !($response['autoupdater'] === 1 || $response['autoupdater'] === '1')) {
 			$this->updateAvailable = false;
 
-			$updateText .= '<br />The updater is disabled for this update - please update manually.' . $response['autoupdater'];
+			$updateText .= '<br />The updater is disabled for this update - please update manually.';
 		}
 
 		$this->silentLog('[info] end of checkForUpdate() ' . $updateText);
@@ -383,7 +392,7 @@ class Updater {
 		}
 		$this->silentLog('[info] updaterServer: ' . $updaterServer);
 
-		$releaseChannel = !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+		$releaseChannel = $this->getCurrentReleaseChannel();
 		$this->silentLog('[info] releaseChannel: ' . $releaseChannel);
 		$this->silentLog('[info] internal version: ' . $this->getConfigOption('version'));
 
@@ -482,13 +491,10 @@ class Updater {
 	}
 
 	/**
-	 * Extracts the download
-	 *
-	 * @throws \Exception
+	 * @return string
+	 * @throws Exception
 	 */
-	public function extractDownload() {
-		$this->silentLog('[info] extractDownload()');
-
+	private function getDownloadedFilePath() {
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
@@ -497,15 +503,88 @@ class Updater {
 		if(count($files) !== 3) {
 			throw new \Exception('Not exact 3 files existent in folder');
 		}
+		return $storageLocation . '/' . $files[2];
+	}
+
+	/**
+	 * Verifies the integrity of the downloaded file
+	 *
+	 * @throws \Exception
+	 */
+	public function verifyIntegrity() {
+		$this->silentLog('[info] verifyIntegrity()');
+
+		if($this->getCurrentReleaseChannel() === 'daily') {
+			$this->silentLog('[info] current channel is "daily" which is not signed. Skipping verification.');
+			return;
+		}
+
+		$response = $this->getUpdateServerResponse();
+		if(!isset($response['signature'])) {
+			throw new \Exception('No signature specified for defined update');
+		}
+
+		$certificate = <<<EOF
+-----BEGIN CERTIFICATE-----
+MIIEojCCA4qgAwIBAgICEAAwDQYJKoZIhvcNAQELBQAwezELMAkGA1UEBhMCREUx
+GzAZBgNVBAgMEkJhZGVuLVd1ZXJ0dGVtYmVyZzEXMBUGA1UECgwOTmV4dGNsb3Vk
+IEdtYkgxNjA0BgNVBAMMLU5leHRjbG91ZCBDb2RlIFNpZ25pbmcgSW50ZXJtZWRp
+YXRlIEF1dGhvcml0eTAeFw0xNjA2MTIyMTA1MDZaFw00MTA2MDYyMTA1MDZaMGYx
+CzAJBgNVBAYTAkRFMRswGQYDVQQIDBJCYWRlbi1XdWVydHRlbWJlcmcxEjAQBgNV
+BAcMCVN0dXR0Z2FydDEXMBUGA1UECgwOTmV4dGNsb3VkIEdtYkgxDTALBgNVBAMM
+BGNvcmUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDUxcrn2DC892IX
+8+dJjZVh9YeHF65n2ha886oeAizOuHBdWBfzqt+GoUYTOjqZF93HZMcwy0P+xyCf
+Qqak5Ke9dybN06RXUuGP45k9UYBp03qzlUzCDalrkj+Jd30LqcSC1sjRTsfuhc+u
+vH1IBuBnf7SMUJUcoEffbmmpAPlEcLHxlUGlGnz0q1e8UFzjbEFj3JucMO4ys35F
+qZS4dhvCngQhRW3DaMlQLXEUL9k3kFV+BzlkPzVZEtSmk4HJujFCnZj1vMcjQBg/
+Bqq1HCmUB6tulnGcxUzt/Z/oSIgnuGyENeke077W3EyryINL7EIyD4Xp7sxLizTM
+FCFCjjH1AgMBAAGjggFDMIIBPzAJBgNVHRMEAjAAMBEGCWCGSAGG+EIBAQQEAwIG
+QDAzBglghkgBhvhCAQ0EJhYkT3BlblNTTCBHZW5lcmF0ZWQgU2VydmVyIENlcnRp
+ZmljYXRlMB0GA1UdDgQWBBQwc1H9AL8pRlW2e5SLCfPPqtqc0DCBpQYDVR0jBIGd
+MIGagBRt6m6qqTcsPIktFz79Ru7DnnjtdKF+pHwwejELMAkGA1UEBhMCREUxGzAZ
+BgNVBAgMEkJhZGVuLVd1ZXJ0dGVtYmVyZzESMBAGA1UEBwwJU3R1dHRnYXJ0MRcw
+FQYDVQQKDA5OZXh0Y2xvdWQgR21iSDEhMB8GA1UEAwwYTmV4dGNsb3VkIFJvb3Qg
+QXV0aG9yaXR5ggIQADAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUH
+AwEwDQYJKoZIhvcNAQELBQADggEBADZ6+HV/+0NEH3nahTBFxO6nKyR/VWigACH0
+naV0ecTcoQwDjKDNNFr+4S1WlHdwITlnNabC7v9rZ/6QvbkrOTuO9fOR6azp1EwW
+2pixWqj0Sb9/dSIVRpSq+jpBE6JAiX44dSR7zoBxRB8DgVO2Afy0s80xEpr5JAzb
+NYuPS7M5UHdAv2dr16fDcDIvn+vk92KpNh1NTeZFjBbRVQ9DXrgkRGW34TK8uSLI
+YG6jnfJ6eJgTaO431ywWPXNg1mUMaT/+QBOgB299QVCKQU+lcZWptQt+RdsJUm46
+NY/nARy4Oi4uOe88SuWITj9KhrFmEvrUlgM8FvoXA1ldrR7KiEg=
+-----END CERTIFICATE-----
+EOF;
+
+		$validSignature = (bool)openssl_verify(
+			file_get_contents($this->getDownloadedFilePath()),
+			base64_decode($response['signature']),
+			$certificate,
+			OPENSSL_ALGO_SHA512
+		);
+
+		if($validSignature === false) {
+			throw new \Exception('Signature of update is not valid');
+		}
+
+		$this->silentLog('[info] end of verifyIntegrity()');
+	}
+
+	/**
+	 * Extracts the download
+	 *
+	 * @throws \Exception
+	 */
+	public function extractDownload() {
+		$this->silentLog('[info] extractDownload()');
+		$downloadedFilePath = $this->getDownloadedFilePath();
 
 		$zip = new \ZipArchive;
-		$zipState = $zip->open($storageLocation . '/' . $files[2]);
+		$zipState = $zip->open($downloadedFilePath);
 		if ($zipState === true) {
-			$zip->extractTo($storageLocation);
+			$zip->extractTo(dirname($downloadedFilePath));
 			$zip->close();
-			$state = unlink($storageLocation . '/' . $files[2]);
+			$state = unlink($downloadedFilePath);
 			if($state === false) {
-				throw new \Exception('Cant unlink '. $storageLocation . '/' . $files[2]);
+				throw new \Exception('Cant unlink '. $downloadedFilePath);
 			}
 		} else {
 			throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
