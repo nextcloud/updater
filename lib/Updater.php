@@ -492,7 +492,7 @@ class Updater {
 
 	/**
 	 * @return string
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	private function getDownloadedFilePath() {
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
@@ -569,6 +569,24 @@ EOF;
 	}
 
 	/**
+	 * Gets the version as declared in $versionFile
+	 *
+	 * @param string $versionFile
+	 * @return string
+	 * @throws \Exception If $OC_Version is not defined in $versionFile
+	 */
+	private function getVersionByVersionFile($versionFile) {
+		require $versionFile;
+
+		if(isset($OC_Version)) {
+			/** @var array $OC_Version */
+			return implode('.', $OC_Version);
+		}
+
+		throw new \Exception("OC_Version not found in $versionFile");
+	}
+
+	/**
 	 * Extracts the download
 	 *
 	 * @throws \Exception
@@ -588,6 +606,13 @@ EOF;
 			}
 		} else {
 			throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
+		}
+
+		// Ensure that the downloaded version is not lower
+		$downloadedVersion = $this->getVersionByVersionFile(dirname($downloadedFilePath) . '/nextcloud/version.php');
+		$currentVersion = $this->getVersionByVersionFile($this->baseDir . '/../version.php');
+		if(version_compare($downloadedVersion, $currentVersion, '<')) {
+			throw new \Exception('Downloaded version is lower than installed version');
 		}
 
 		$this->silentLog('[info] end of extractDownload()');
