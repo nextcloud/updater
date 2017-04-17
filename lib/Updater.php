@@ -632,6 +632,7 @@ EOF;
 			'remote.php',
 			'public.php',
 			'ocs/v1.php',
+			'ocs/v2.php',
 		];
 
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
@@ -727,6 +728,7 @@ EOF;
 			'remote.php',
 			'public.php',
 			'ocs/v1.php',
+			'ocs/v2.php',
 			'config',
 			'themes',
 			'apps',
@@ -835,6 +837,7 @@ EOF;
 			'remote.php',
 			'public.php',
 			'ocs/v1.php',
+			'ocs/v2.php',
 		];
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
