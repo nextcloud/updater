@@ -1,6 +1,7 @@
 <?php
 /**
  * @copyright Copyright (c) 2016 Morris Jobke <hey@morrisjobke.de>
+ * @copyright Copyright (c) 2017 Lukas Reschke <lukas@statuscode.ch>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -44,12 +45,13 @@ class UpdateCommand extends Command {
 		3 => 'Enable maintenance mode',
 		4 => 'Create backup',
 		5 => 'Downloading',
-		6 => 'Extracting',
-		7 => 'Replace entry points',
-		8 => 'Delete old files',
-		9 => 'Move new files in place',
-		10 => 'Keep maintenance mode active?',
-		11 => 'Done',
+		6 => 'Verify integrity',
+		7 => 'Extracting',
+		8 => 'Replace entry points',
+		9 => 'Delete old files',
+		10 => 'Move new files in place',
+		11 => 'Keep maintenance mode active?',
+		12 => 'Done',
 	];
 
 	protected function configure() {
@@ -198,7 +200,7 @@ class UpdateCommand extends Command {
 
 		// print already executed steps
 		for($i = 1; $i <= $stepNumber; $i++) {
-			if ($i === 10) {
+			if ($i === 11) {
 				// no need to ask for maintenance mode on CLI - skip it
 				continue;
 			}
@@ -206,10 +208,10 @@ class UpdateCommand extends Command {
 		}
 
 		$i = $stepNumber;
-		while ($i < 11) {
+		while ($i < 12) {
 			$i++;
 
-			if ($i === 10) {
+			if ($i === 11) {
 				// no need to ask for maintenance mode on CLI - skip it
 				continue;
 			}
@@ -266,7 +268,7 @@ class UpdateCommand extends Command {
 		}
 
 		$output->writeln('');
-		if ($i === 11) {
+		if ($i === 12) {
 			$this->updater->log('[info] update of code successful.');
 			$output->writeln('Update of code successful.');
 
@@ -296,7 +298,7 @@ class UpdateCommand extends Command {
 			if ($input->isInteractive()) {
 
 				$helper = $this->getHelper('question');
-				$question = new ConfirmationQuestion($this->checkTexts[10] . ' [y/N] ', false);
+				$question = new ConfirmationQuestion($this->checkTexts[11] . ' [y/N] ', false);
 
 				if ($helper->ask($input, $output, $question)) {
 					$output->writeln('Maintenance mode kept active');
@@ -338,7 +340,7 @@ class UpdateCommand extends Command {
     protected function executeStep($step) {
 		$this->updater->log('[info] executeStep request for step "' . $step . '"');
 		try {
-			if($step > 11 || $step < 1) {
+			if($step > 12 || $step < 1) {
 				throw new \Exception('Invalid step');
 			}
 
@@ -360,22 +362,25 @@ class UpdateCommand extends Command {
 					$this->updater->downloadUpdate();
 					break;
 				case 6:
-					$this->updater->extractDownload();
+					$this->updater->verifyIntegrity();
 					break;
 				case 7:
-					$this->updater->replaceEntryPoints();
+					$this->updater->extractDownload();
 					break;
 				case 8:
-					$this->updater->deleteOldFiles();
+					$this->updater->replaceEntryPoints();
 					break;
 				case 9:
-					$this->updater->moveNewVersionInPlace();
+					$this->updater->deleteOldFiles();
 					break;
 				case 10:
+					$this->updater->moveNewVersionInPlace();
+					break;
+				case 11:
 					// this is not needed in the CLI updater
 					//$this->updater->setMaintenanceMode(false);
 					break;
-				case 11:
+				case 12:
 					$this->updater->finalize();
 					break;
 			}
@@ -415,7 +420,7 @@ class UpdateCommand extends Command {
 	protected function showCurrentStatus(OutputInterface $output, $stepNumber) {
 		$output->writeln('Steps that will be executed:');
 		for ($i = 1; $i < sizeof($this->checkTexts); $i++) {
-			if ($i === 10) {
+			if ($i === 11) {
 				// no need to ask for maintenance mode on CLI - skip it
 				continue;
 			}

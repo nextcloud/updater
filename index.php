@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (c) 2016 Lukas Reschke <lukas@statuscode.ch>
+ * @copyright Copyright (c) 2016-2017 Lukas Reschke <lukas@statuscode.ch>
  * @copyright Copyright (c) 2016 Morris Jobke <hey@morrisjobke.de>
  *
  * @license GNU AGPL version 3 or any later version
@@ -217,6 +217,15 @@ class Updater {
 	}
 
 	/**
+	 * Returns currently used release channel
+	 *
+	 * @return string
+	 */
+	private function getCurrentReleaseChannel() {
+		return !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+	}
+
+	/**
 	 * @return string
 	 * @throws \Exception
 	 */
@@ -230,7 +239,7 @@ class Updater {
 
 		if ($version !== '' && $version !== $this->currentVersion) {
 			$this->updateAvailable = true;
-			$releaseChannel = !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+			$releaseChannel = $this->getCurrentReleaseChannel();
 			$updateText = 'Update to ' . $versionString . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
 		} else {
 			$updateText = 'No update available.';
@@ -239,7 +248,7 @@ class Updater {
 		if ($this->updateAvailable && isset($response['autoupdater']) && !($response['autoupdater'] === 1 || $response['autoupdater'] === '1')) {
 			$this->updateAvailable = false;
 
-			$updateText .= '<br />The updater is disabled for this update - please update manually.' . $response['autoupdater'];
+			$updateText .= '<br />The updater is disabled for this update - please update manually.';
 		}
 
 		$this->silentLog('[info] end of checkForUpdate() ' . $updateText);
@@ -498,7 +507,7 @@ class Updater {
 		}
 		$this->silentLog('[info] updaterServer: ' . $updaterServer);
 
-		$releaseChannel = !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+		$releaseChannel = $this->getCurrentReleaseChannel();
 		$this->silentLog('[info] releaseChannel: ' . $releaseChannel);
 		$this->silentLog('[info] internal version: ' . $this->getConfigOption('version'));
 
@@ -597,13 +606,10 @@ class Updater {
 	}
 
 	/**
-	 * Extracts the download
-	 *
-	 * @throws \Exception
+	 * @return string
+	 * @throws Exception
 	 */
-	public function extractDownload() {
-		$this->silentLog('[info] extractDownload()');
-
+	private function getDownloadedFilePath() {
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
@@ -612,15 +618,88 @@ class Updater {
 		if(count($files) !== 3) {
 			throw new \Exception('Not exact 3 files existent in folder');
 		}
+		return $storageLocation . '/' . $files[2];
+	}
+
+	/**
+	 * Verifies the integrity of the downloaded file
+	 *
+	 * @throws \Exception
+	 */
+	public function verifyIntegrity() {
+		$this->silentLog('[info] verifyIntegrity()');
+
+		if($this->getCurrentReleaseChannel() === 'daily') {
+			$this->silentLog('[info] current channel is "daily" which is not signed. Skipping verification.');
+			return;
+		}
+
+		$response = $this->getUpdateServerResponse();
+		if(!isset($response['signature'])) {
+			throw new \Exception('No signature specified for defined update');
+		}
+
+		$certificate = <<<EOF
+-----BEGIN CERTIFICATE-----
+MIIEojCCA4qgAwIBAgICEAAwDQYJKoZIhvcNAQELBQAwezELMAkGA1UEBhMCREUx
+GzAZBgNVBAgMEkJhZGVuLVd1ZXJ0dGVtYmVyZzEXMBUGA1UECgwOTmV4dGNsb3Vk
+IEdtYkgxNjA0BgNVBAMMLU5leHRjbG91ZCBDb2RlIFNpZ25pbmcgSW50ZXJtZWRp
+YXRlIEF1dGhvcml0eTAeFw0xNjA2MTIyMTA1MDZaFw00MTA2MDYyMTA1MDZaMGYx
+CzAJBgNVBAYTAkRFMRswGQYDVQQIDBJCYWRlbi1XdWVydHRlbWJlcmcxEjAQBgNV
+BAcMCVN0dXR0Z2FydDEXMBUGA1UECgwOTmV4dGNsb3VkIEdtYkgxDTALBgNVBAMM
+BGNvcmUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDUxcrn2DC892IX
+8+dJjZVh9YeHF65n2ha886oeAizOuHBdWBfzqt+GoUYTOjqZF93HZMcwy0P+xyCf
+Qqak5Ke9dybN06RXUuGP45k9UYBp03qzlUzCDalrkj+Jd30LqcSC1sjRTsfuhc+u
+vH1IBuBnf7SMUJUcoEffbmmpAPlEcLHxlUGlGnz0q1e8UFzjbEFj3JucMO4ys35F
+qZS4dhvCngQhRW3DaMlQLXEUL9k3kFV+BzlkPzVZEtSmk4HJujFCnZj1vMcjQBg/
+Bqq1HCmUB6tulnGcxUzt/Z/oSIgnuGyENeke077W3EyryINL7EIyD4Xp7sxLizTM
+FCFCjjH1AgMBAAGjggFDMIIBPzAJBgNVHRMEAjAAMBEGCWCGSAGG+EIBAQQEAwIG
+QDAzBglghkgBhvhCAQ0EJhYkT3BlblNTTCBHZW5lcmF0ZWQgU2VydmVyIENlcnRp
+ZmljYXRlMB0GA1UdDgQWBBQwc1H9AL8pRlW2e5SLCfPPqtqc0DCBpQYDVR0jBIGd
+MIGagBRt6m6qqTcsPIktFz79Ru7DnnjtdKF+pHwwejELMAkGA1UEBhMCREUxGzAZ
+BgNVBAgMEkJhZGVuLVd1ZXJ0dGVtYmVyZzESMBAGA1UEBwwJU3R1dHRnYXJ0MRcw
+FQYDVQQKDA5OZXh0Y2xvdWQgR21iSDEhMB8GA1UEAwwYTmV4dGNsb3VkIFJvb3Qg
+QXV0aG9yaXR5ggIQADAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUH
+AwEwDQYJKoZIhvcNAQELBQADggEBADZ6+HV/+0NEH3nahTBFxO6nKyR/VWigACH0
+naV0ecTcoQwDjKDNNFr+4S1WlHdwITlnNabC7v9rZ/6QvbkrOTuO9fOR6azp1EwW
+2pixWqj0Sb9/dSIVRpSq+jpBE6JAiX44dSR7zoBxRB8DgVO2Afy0s80xEpr5JAzb
+NYuPS7M5UHdAv2dr16fDcDIvn+vk92KpNh1NTeZFjBbRVQ9DXrgkRGW34TK8uSLI
+YG6jnfJ6eJgTaO431ywWPXNg1mUMaT/+QBOgB299QVCKQU+lcZWptQt+RdsJUm46
+NY/nARy4Oi4uOe88SuWITj9KhrFmEvrUlgM8FvoXA1ldrR7KiEg=
+-----END CERTIFICATE-----
+EOF;
+
+		$validSignature = (bool)openssl_verify(
+			file_get_contents($this->getDownloadedFilePath()),
+			base64_decode($response['signature']),
+			$certificate,
+			OPENSSL_ALGO_SHA512
+		);
+
+		if($validSignature === false) {
+			throw new \Exception('Signature of update is not valid');
+		}
+
+		$this->silentLog('[info] end of verifyIntegrity()');
+	}
+
+	/**
+	 * Extracts the download
+	 *
+	 * @throws \Exception
+	 */
+	public function extractDownload() {
+		$this->silentLog('[info] extractDownload()');
+		$downloadedFilePath = $this->getDownloadedFilePath();
 
 		$zip = new \ZipArchive;
-		$zipState = $zip->open($storageLocation . '/' . $files[2]);
+		$zipState = $zip->open($downloadedFilePath);
 		if ($zipState === true) {
-			$zip->extractTo($storageLocation);
+			$zip->extractTo(dirname($downloadedFilePath));
 			$zip->close();
-			$state = unlink($storageLocation . '/' . $files[2]);
+			$state = unlink($downloadedFilePath);
 			if($state === false) {
-				throw new \Exception('Cant unlink '. $storageLocation . '/' . $files[2]);
+				throw new \Exception('Cant unlink '. $downloadedFilePath);
 			}
 		} else {
 			throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
@@ -1104,7 +1183,7 @@ if(isset($_POST['step'])) {
 		}
 
 		$step = (int)$_POST['step'];
-		if($step > 11 || $step < 1) {
+		if($step > 12 || $step < 1) {
 			throw new \Exception('Invalid step');
 		}
 
@@ -1126,21 +1205,24 @@ if(isset($_POST['step'])) {
 				$updater->downloadUpdate();
 				break;
 			case 6:
-				$updater->extractDownload();
+				$updater->verifyIntegrity();
 				break;
 			case 7:
-				$updater->replaceEntryPoints();
+				$updater->extractDownload();
 				break;
 			case 8:
-				$updater->deleteOldFiles();
+				$updater->replaceEntryPoints();
 				break;
 			case 9:
-				$updater->moveNewVersionInPlace();
+				$updater->deleteOldFiles();
 				break;
 			case 10:
-				$updater->setMaintenanceMode(false);
+				$updater->moveNewVersionInPlace();
 				break;
 			case 11:
+				$updater->setMaintenanceMode(false);
+				break;
+			case 12:
 				$updater->finalize();
 				break;
 		}
@@ -1476,30 +1558,34 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					<h2>Downloading</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-extract" class="step <?php if($stepNumber >= 6) { echo 'passed-step'; }?>">
+				<li id="step-verify-integrity" class="step <?php if($stepNumber >= 6) { echo 'passed-step'; }?>">
+					<h2>Verifying integrity</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-extract" class="step <?php if($stepNumber >= 7) { echo 'passed-step'; }?>">
 					<h2>Extracting</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-entrypoints" class="step <?php if($stepNumber >= 7) { echo 'passed-step'; }?>">
+				<li id="step-entrypoints" class="step <?php if($stepNumber >= 8) { echo 'passed-step'; }?>">
 					<h2>Replace entry points</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-delete" class="step <?php if($stepNumber >= 8) { echo 'passed-step'; }?>">
+				<li id="step-delete" class="step <?php if($stepNumber >= 9) { echo 'passed-step'; }?>">
 					<h2>Delete old files</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-move" class="step <?php if($stepNumber >= 9) { echo 'passed-step'; }?>">
+				<li id="step-move" class="step <?php if($stepNumber >= 10) { echo 'passed-step'; }?>">
 					<h2>Move new files in place</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-maintenance-mode" class="step <?php if($stepNumber >= 10) { echo 'passed-step'; }?>">
+				<li id="step-maintenance-mode" class="step <?php if($stepNumber >= 11) { echo 'passed-step'; }?>">
 					<h2>Keep maintenance mode active?</h2>
 					<div class="output hidden">
 						<button id="maintenance-enable">Yes (for usage with command line tool)</button>
 						<button id="maintenance-disable">No (for usage of the web based updater)</button>
 					</div>
 				</li>
-				<li id="step-done" class="step <?php if($stepNumber >= 11) { echo 'passed-step'; }?>">
+				<li id="step-done" class="step <?php if($stepNumber >= 12) { echo 'passed-step'; }?>">
 					<h2>Done</h2>
 					<div class="output hidden">
 						<a class="button" href="<?php echo str_replace('/index.php', '/../', $updaterUrl); ?>">Go back to your Nextcloud instance to finish the update</a>
@@ -1705,56 +1791,69 @@ if(strpos($updaterUrl, 'index.php') === false) {
 			5: function (response) {
 				if (response.proceed === true) {
 					successStep('step-download');
-					currentStep('step-extract');
+					currentStep('step-verify-integrity');
 					performStep(6, performStepCallbacks[6]);
 				} else {
-					errorStep('step-download', 5);
+					errorStep('step-verify-integrity', 5);
 
 					if(response.response) {
-						addStepText('step-download', escapeHTML(response.response));
+						addStepText('step-verify-integrity', escapeHTML(response.response));
 					}
 				}
 			},
 			6: function (response) {
 				if (response.proceed === true) {
-					successStep('step-extract');
-					currentStep('step-entrypoints');
+					successStep('step-verify-integrity');
+					currentStep('step-extract');
 					performStep(7, performStepCallbacks[7]);
 				} else {
-					errorStep('step-extract', 6);
+					errorStep('step-verify-integrity', 6);
+
+					if(response.response) {
+						addStepText('step-verify-integrity', escapeHTML(response.response));
+					}
+				}
+			},
+			7: function (response) {
+				if (response.proceed === true) {
+					successStep('step-extract');
+					currentStep('step-entrypoints');
+					performStep(8, performStepCallbacks[8]);
+				} else {
+					errorStep('step-extract', 7);
 
 					if(response.response) {
 						addStepText('step-extract', escapeHTML(response.response));
 					}
 				}
 			},
-			7: function (response) {
+			8: function (response) {
 				if (response.proceed === true) {
 					successStep('step-entrypoints');
 					currentStep('step-delete');
-					performStep(8, performStepCallbacks[8]);
+					performStep(9, performStepCallbacks[9]);
 				} else {
-					errorStep('step-entrypoints', 7);
+					errorStep('step-entrypoints', 8);
 
 					if(response.response) {
 						addStepText('step-entrypoints', escapeHTML(response.response));
 					}
 				}
 			},
-			8: function (response) {
+			9: function (response) {
 				if (response.proceed === true) {
 					successStep('step-delete');
 					currentStep('step-move');
-					performStep(9, performStepCallbacks[9]);
+					performStep(10, performStepCallbacks[10]);
 				} else {
-					errorStep('step-delete', 8);
+					errorStep('step-delete', 9);
 
 					if(response.response) {
 						addStepText('step-delete', escapeHTML(response.response));
 					}
 				}
 			},
-			9: function (response) {
+			10: function (response) {
 				if (response.proceed === true) {
 					successStep('step-move');
 
@@ -1764,27 +1863,27 @@ if(strpos($updaterUrl, 'index.php') === false) {
 						.getElementsByClassName('output')[0];
 					el.classList.remove('hidden');
 				} else {
-					errorStep('step-move', 9);
+					errorStep('step-move', 10);
 
 					if(response.response) {
 						addStepText('step-move', escapeHTML(response.response));
 					}
 				}
 			},
-			10: function (response) {
+			11: function (response) {
 				if (response.proceed === true) {
 					successStep('step-maintenance-mode');
 					currentStep('step-done');
-					performStep(11, performStepCallbacks[11]);
+					performStep(12, performStepCallbacks[12]);
 				} else {
-					errorStep('step-maintenance-mode', 10);
+					errorStep('step-maintenance-mode', 11);
 
 					if(response.response) {
 						addStepText('step-maintenance-mode', escapeHTML(response.response));
 					}
 				}
 			},
-			11: function (response) {
+			12: function (response) {
 				if (response.proceed === true) {
 					successStep('step-done');
 
@@ -1833,11 +1932,11 @@ if(strpos($updaterUrl, 'index.php') === false) {
 				el.innerHTML = 'Maintenance mode will kept active.<br>Now trigger the migration via command line: <code>./occ upgrade</code><br>';
 				successStep('step-maintenance-mode');
 				currentStep('step-done');
-				performStep(11, performStepCallbacks[11]);
+				performStep(12, performStepCallbacks[12]);
 			} else {
 				el.innerHTML = 'Maintenance mode will get disabled.<br>';
 				currentStep('step-maintenance-mode');
-				performStep(10, performStepCallbacks[10]);
+				performStep(11, performStepCallbacks[11]);
 			}
 		}
 

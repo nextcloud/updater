@@ -1,12 +1,11 @@
 <?php
 
-use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Behat\Context\SnippetAcceptingContext;
 
 /**
  * Defines application features from the specific context.
  */
-class FeatureContext implements Context
+class FeatureContext implements SnippetAcceptingContext
 {
     protected $buildDir;
     protected $serverDir;
@@ -171,6 +170,57 @@ class FeatureContext implements Context
 		$this->CLIReturnCode = $returnCode;
     }
 
+	/**
+	 * @param $version
+	 * @return string
+	 */
+    public function getSignatureForVersion($version) {
+    	$signatures = [
+    		'9.0.54' => 'wVgtLXquICXsmfJwRUD8tJiFzYJAIdQfjAcOzvKGDYh96NMT6MGVEMYQgAfyYvq0
+tuAcqsU87CDc1IQ14y2GmkSnwnXJrCXEJFaYqBGyXJtbzRukby5k+IVx2NTBaNjL
+XMC1irGa7tnCC/pyn9K+RDDHSTa3aQ7W0Z2MIq+TpNuASwshOGaep9IP7bmVvEsS
+CC8df8qp8xBkUA6PLxDkrHHGe1dTauuMYc0hUkzclC+fD2wFzV4ks1RpX6V4dLlZ
+4+nzlDeepIAVOnoaIaxLv4DmITD5Mg408z/CCB2YBBntFC9wIlfErr9X4JqQWVEQ
+Xpo6Rlr6bSFMHcDn3Bjn+Q==',
+    		'9.0.55RC1' => 'uUGqJ6shKJCxoP9UvPclGewzN3jxX1blMyB27RsLN/jEf1Y6nnxz3kVyeXQcUuvV
+P54w4cyKBnj8+mMJV57bnIUf42B1GFIiHTILpauDcC6KqsEt/kGIUDiHtZjZAJKr
+jzuUjSAXKjTxeAQv0l9H7nQaa7Xs7LgWTV9LycQVLksYoV0MDBMOjBuxH017jgQH
+AAzqdiQguM2pv5+j6AZcP6q1YRueLePTcM2q+AlDB52LYA1Dfmj81jsP1J9WmbXJ
+IfbjOzrkifG5mJB+Q7/HOJjQYevaxjL6prSp0yym7nqSy63vH8GDxKa+gIK5Gfj+
+0mo/sSnvB5vobDDb/TO8og==',
+    		'10.0.1' => 'w64N/qoNW2jiStnNXWJBhVkD0eLs75ELvbAnDY2wCyFM5TlqTeKlBnwK7zuIOzwD
+h5/k0tExXra1fBPic6qUF30Z9n1O6C60z0zKQYOaHrR4I4EN1SdHFsjbLyXxm/Ua
+F3DwREXcYMT4r7XAl/PfX0zkpIMMmCu5GEd1GlxReY8sUcVcJmMf1/7x2NYNuQgV
+UY4SEY7zFbybOcT8XfXNxod0isDkkOSj8B1TtTjlBZ6wyHSTVBtKg2fVKcTdOvxp
+IlWHCJCnDFD9Nwz5bBTUd8ssNYqFBVNT2viyR696ObpIE1f7AJHpsgY9FJ4psDDf
+D0kiMCecZa45XkBwFvg41Q==',
+			'10.0.2RC1' => 'ScJSe22yoHYtwFH8nydZoWOgxRgWq6JlthFw7/BvTvUGMejaB4hD/s5hFKE4Luvs
+GjV3/UtKpnBUpZSByQyEM/BbD+fyhbU3L+v6CQQYgjbtcRTyNmqdsFwZ+T1MXhTZ
+Be10XmB2QB6Xi0jvxjD9d3AYUFPH8Chy8rF6Wth7V7Eexyuh+4secrvuv7pqbuNt
+AmVRSYigLgIB5oVDd5BSvpeDe4ZhKN8qE1fDDTQX29iPvTn6M/FJZ3pH3ZrLRzgl
+9n97PTVFgtC2NdLYc7GD9bHxTUL1/iKvp7s9I6Tp6oxyBfOJwC4AqRTwURnG1ouZ
+EjMJzAibeG1AVDDbaU6irQ==',
+			'11.0.0beta' => 'LflrJaVMjHH1ntRlQ1mkgvQ86VTSFxvw77kcPt33tWVk6GLSMxpy+/71V3nGNHM2
+STd1czLzm+AUWdWWVluAci6XjJ7x+Tlsg5S7+ofuiwO1/m1nf5yXeHEf9q9ATqzy
+UkzEhCEbMF+9Zxd5WZZkexUZyVf/cfx8MBEsvsqqysHGgZJKmoJEwN2jCnKYIQzL
+yAvOWXjOA0xarzXxwdlTnkFEnzBvFeYAThcfBDdUBRbyCqVbpU7IBQoXZYCSAtac
+FBKNj6b48LDvE4BDnid8y/91q88WdL4QLy4wVFVPxbMIObfDeAnyLvG+p7La7V5G
+iPnnYL0Y2XIhbshkwWhS/Q==',
+			'11.0.0beta2' => 'WAzWUB8rgr/deeOnlBn084ysJe3Z8J2dSunkJNlNEtbbCBr2ALwZh6Xe41MXr2F/
+S6riPZk2uRmx5W2XZ+IUHSTVlAOKOQaflTlo3xConuKfcyojJ3PGsO8x7awtRNA7
+2GBBBTNKY9/q8eONztsBWY7O2pWMTqJKEuXiXQyAQ3IkqxQkMWoyxKU/zGWBdZad
+QYwN9zVszIoWo31nlVz7QSzUZ4iyEVnbY4gT5EVPKfflIPQblp2bN485pYamuPe5
+CYB6S4AUzuyYS2zxt7MMdoaWHXY8hxdst1AF/kGKZ5Bdct4qVw7pup77c+uMNBvT
+jFSE6+KKI+HAE132eaXY5A==',
+		];
+
+    	if(isset($signatures[$version])) {
+			return $signatures[$version];
+		}
+
+		return '';
+    }
+
     /**
      * @Given /there is an update to version ([0-9.]+) available/
      */
@@ -188,6 +238,7 @@ class FeatureContext implements Context
  <url>https://download.nextcloud.com/server/releases/nextcloud-' . $version . '.zip</url>
  <web>https://docs.nextcloud.org/server/10/admin_manual/maintenance/manual_upgrade.html</web>
  <autoupdater>' . $this->autoupdater . '</autoupdater>
+ <signature>'.$this->getSignatureForVersion($version).'</signature>
 </nextcloud>
 ';
         file_put_contents($this->updateServerDir . 'index.php', $content);
@@ -195,7 +246,7 @@ class FeatureContext implements Context
     }
 
 	/**
-	 * @Given /there is an update to prerelease version of (.*) available/
+	 * @Given there is an update to prerelease version :version available
 	 */
 	public function thereIsAnUpdateToPrereleaseVersionAvailable($version)
 	{
@@ -211,6 +262,7 @@ class FeatureContext implements Context
  <url>https://download.nextcloud.com/server/prereleases/nextcloud-' . $version . '.zip</url>
  <web>https://docs.nextcloud.org/server/10/admin_manual/maintenance/manual_upgrade.html</web>
  <autoupdater>1</autoupdater>
+ <signature>'.$this->getSignatureForVersion($version).'</signature>
 </nextcloud>
 ';
 		file_put_contents($this->updateServerDir . 'index.php', $content);
@@ -299,6 +351,18 @@ class FeatureContext implements Context
 		if ($returnCode !== 0 || strpos(join(PHP_EOL, $output), $expectedOutput) === false) {
 			throw new Exception('Maintenance mode does not match ' . PHP_EOL . join(PHP_EOL, $output));
 		}
+	}
+
+	/**
+	 * @Given the current channel is :channel
+	 * @param string $channel
+	 */
+	public function theCurrentChannelIs($channel)
+	{
+
+		chdir($this->serverDir . 'nextcloud');
+		shell_exec('chmod +x occ');
+		exec('./occ config:system:set --value '.$channel.' updater.release.channel');
 	}
 
 	/**
