@@ -511,11 +511,14 @@ class Updater {
 		$this->silentLog('[info] releaseChannel: ' . $releaseChannel);
 		$this->silentLog('[info] internal version: ' . $this->getConfigOption('version'));
 
+		$updateURL = $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOption('version')) .'xxx'.$releaseChannel.'xx'.urlencode($this->buildTime).'x'.PHP_MAJOR_VERSION.'x'.PHP_MINOR_VERSION.'x'.PHP_RELEASE_VERSION;
+		$this->silentLog('[info] updateURL: ' . $updateURL);
+
 		// Download update response
 		$curl = curl_init();
 		curl_setopt_array($curl, [
 			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOption('version')) .'xxx'.$releaseChannel.'xx'.urlencode($this->buildTime).'x'.PHP_MAJOR_VERSION.'x'.PHP_MINOR_VERSION.'x'.PHP_RELEASE_VERSION,
+			CURLOPT_URL => $updateURL,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
 		]);
 		$response = curl_exec($curl);
