@@ -869,6 +869,12 @@ EOF;
 		if($state === false) {
 			throw new \Exception('Could not rmdir .step');
 		}
+
+		if (function_exists('opcache_reset')) {
+			$this->silentLog('[info] call opcache_reset()');
+			opcache_reset();
+		}
+
 		$this->silentLog('[info] end of finalize()');
 	}
 
