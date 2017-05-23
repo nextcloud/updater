@@ -1,5 +1,6 @@
 <?php
 
+
 $excludedFiles = [
 	'CommandApplication.php',
 	'UpdateCommand.php',
