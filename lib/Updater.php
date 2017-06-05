@@ -671,11 +671,24 @@ EOF;
 			new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS),
 			\RecursiveIteratorIterator::CHILD_FIRST
 		);
-
+		
+		$directories = array();
+		$files = array();
 		foreach ($iterator as $fileInfo) {
-			$action = $fileInfo->isDir() ? 'rmdir' : 'unlink';
-			$action($fileInfo->getRealPath());
+			if ($fileInfo->isDir()) {
+				$directories[] = $fileInfo->getRealPath();
+			} else {
+				$files[] = $fileInfo->getRealPath();
+			}
 		}
+		
+		foreach ($files as $file) {
+			unlink($file);
+		}
+		foreach ($directories as $dir) {
+			rmdir($dir);	
+		}
+		
 		$state = rmdir($folder);
 		if($state === false) {
 			throw new \Exception('Could not rmdir ' . $folder);
