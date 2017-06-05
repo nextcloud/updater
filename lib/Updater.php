@@ -671,7 +671,6 @@ EOF;
 			new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS),
 			\RecursiveIteratorIterator::CHILD_FIRST
 		);
-		
 		$directories = array();
 		$files = array();
 		foreach ($iterator as $fileInfo) {
