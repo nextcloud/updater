@@ -423,4 +423,38 @@ jFSE6+KKI+HAE132eaXY5A==',
 		$content = preg_replace("!'version'\s*=>\s*'(\d+\.\d+\.\d+)\.\d+!", "'version' => '$1", $content);
 		file_put_contents($configFile, $content);
 	}
+
+	/**
+	 * @Given there is a folder called :name
+	 */
+	public function thereIsAFolderCalled($name)
+	{
+		mkdir($this->serverDir . 'nextcloud/' . $name);
+	}
+
+	/**
+	 * @Given there is a config for a secondary apps directory called :name
+	 */
+	public function thereIsAConfigForASecondaryAppsDirectoryCalled($name)
+	{
+		$configFile = $this->serverDir . 'nextcloud/config/config.php';
+		$content = file_get_contents($configFile);
+		$appsPaths = <<<EOF
+	'apps_paths' => [
+		[
+			'path'=> dirname(__DIR__) . '/apps',
+			'url' => '/apps',
+			'writable' => true,
+		],
+		[
+			'path'=> dirname(__DIR__) . '/%s',
+			'url' => '/%s',
+			'writable' => true,
+		],
+	],
+EOF;
+		$appsPaths = sprintf($appsPaths, $name, $name);
+		$content = preg_replace("!\);!", $appsPaths . ');', $content);
+		file_put_contents($configFile, $content);
+	}
 }
