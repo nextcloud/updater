@@ -106,7 +106,7 @@ Feature: CLI updater - stable10 base
 
   Scenario: Update is available - 10.0.2 RC1 to 10.0.2RC1 to check if the updater will run on the RC onwards
     Given the current installed version is 10.0.2RC1
-    And there is an update to prerelease version of 10.0.2RC1 available
+    And there is an update to prerelease version "10.0.2RC1" available
     And the version number is decreased in the config.php to enforce upgrade
     When the CLI updater is run successfully
     And the output should contain "Update successful"
