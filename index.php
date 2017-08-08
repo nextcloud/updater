@@ -289,7 +289,7 @@ class Updater {
 	 * @return array
 	 */
 	private function getExpectedElementsList() {
-		return [
+		$expected = [
 			// Generic
 			'.',
 			'..',
@@ -327,6 +327,26 @@ class Updater {
 			'occ',
 			'db_structure.xml',
 		];
+		return array_merge($expected, $this->getAppDirectories());
+	}
+
+	/**
+	 * Returns app directories specified in config.php
+	 *
+	 * @return array
+	 */
+	private function getAppDirectories() {
+		$expected = [];
+		if($appsPaths = $this->getConfigOption('apps_paths')) {
+			foreach ($appsPaths as $appsPath) {
+				$parentDir = realpath($this->baseDir . '/../');
+				$appDir = basename($appsPath['path']);
+				if(strpos($appsPath['path'], $parentDir) === 0 && $appDir !== 'apps') {
+					$expected[] = $appDir;
+				}
+			}
+		}
+		return $expected;
 	}
 
 	/**
@@ -873,6 +893,7 @@ EOF;
 			'apps',
 			'updater',
 		];
+		$excludedElements = array_merge($excludedElements, $this->getAppDirectories());
 		/**
 		 * @var string $path
 		 * @var \SplFileInfo $fileInfo
