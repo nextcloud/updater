@@ -48,7 +48,7 @@ Feature: CLI updater - stable9 base
 
   Scenario: Update is available - 9.0.53 to 9.0.55 RC1
     Given the current installed version is 9.0.53
-    And there is an update to prerelease version 9.0.55RC1 available
+    And there is an update to prerelease version "9.0.55RC1" available
     When the CLI updater is run successfully
     And the output should contain "Update successful"
     Then the installed version should be 9.0.55

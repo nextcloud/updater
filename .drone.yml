@@ -23,13 +23,6 @@ pipeline:
     when:
       matrix:
         TESTS: check-same-code-base
-  php54-cli:
-    image: nextcloudci/php5.4:php5.4-5
-    commands:
-      - make test-cli
-    when:
-      matrix:
-        TESTS: php54-cli
   php55-cli:
     image: nextcloudci/php5.5:php5.5-5
     commands:
@@ -58,13 +51,6 @@ pipeline:
     when:
       matrix:
         TESTS: php71-cli
-  php54-stable9:
-    image: nextcloudci/php5.4:php5.4-5
-    commands:
-      - make test-stable9
-    when:
-      matrix:
-        TESTS: php54-stable9
   php55-stable9:
     image: nextcloudci/php5.5:php5.5-5
     commands:
@@ -128,6 +114,27 @@ pipeline:
     when:
       matrix:
         TESTS: php71-stable11
+  php56-stable12:
+    image: nextcloudci/php5.6:php5.6-7
+    commands:
+      - make test-stable12
+    when:
+      matrix:
+        TESTS: php56-stable12
+  php70-stable12:
+    image: nextcloudci/php7.0:php7.0-6
+    commands:
+      - make test-stable12
+    when:
+      matrix:
+        TESTS: php70-stable12
+  php71-stable12:
+    image: nextcloudci/php7.1:php7.1-9
+    commands:
+      - make test-stable12
+    when:
+      matrix:
+        TESTS: php71-stable12
   php56-master:
     image: nextcloudci/php5.6:php5.6-7
     commands:
@@ -151,12 +158,9 @@ pipeline:
         TESTS: php71-master
 matrix:
   include:
-    #- TESTS: php54-cli # TODO currently the php built in server can't be used
-    - TESTS: php55-cli
     - TESTS: php56-cli
     - TESTS: php70-cli
-    #- TESTS: php71-cli - not supported on Nextcloud up to 10
-    #- TESTS: php54-stable9 # TODO currently the php built in server can't be used
+    - TESTS: php71-cli
     - TESTS: php55-stable9
     - TESTS: php56-stable9
     - TESTS: php70-stable9
@@ -165,6 +169,9 @@ matrix:
     - TESTS: php56-stable11
     - TESTS: php70-stable11
     - TESTS: php71-stable11
+    - TESTS: php56-stable12
+    - TESTS: php70-stable12
+    - TESTS: php71-stable12
     - TESTS: php56-master
     - TESTS: php70-master
     - TESTS: php71-master
