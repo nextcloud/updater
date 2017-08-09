@@ -1,6 +1,7 @@
 clone:
-  image: plugins/git
-  depth: 1
+  git:
+    image: plugins/git
+    depth: 1
 
 pipeline:
   signed-off-check:
