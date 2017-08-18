@@ -796,7 +796,6 @@ EOF;
 				$files[] = $fileInfo->getRealPath();
 			}
 		}
-		
 		foreach ($files as $file) {
 			unlink($file);
 		}
