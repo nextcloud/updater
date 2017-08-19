@@ -172,3 +172,5 @@ matrix:
     - TESTS: php71-master
     - TESTS: signed-off-check
     - TESTS: check-same-code-base
+
+branches: [ master, stable* ]
