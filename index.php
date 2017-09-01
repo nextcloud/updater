@@ -1590,6 +1590,11 @@ if(strpos($updaterUrl, 'index.php') === false) {
 			border: 1px solid rgba(240,240,240,.9);
 		}
 
+		.section {
+			max-width: 600px;
+			margin: 0 auto;
+		}
+
 	</style>
 </head>
 <body>
@@ -1603,11 +1608,6 @@ if(strpos($updaterUrl, 'index.php') === false) {
 <div id="content-wrapper">
 	<div id="content">
 
-		<div id="app-navigation">
-			<ul>
-				<li><a href="#progress">Update</a></li>
-			</ul>
-		</div>
 		<div id="app-content">
 		<?php if($auth->isAuthenticated()): ?>
 			<ul id="progress" class="section">
