@@ -767,7 +767,7 @@ EOF;
 
 		$themesReadme = $this->baseDir . '/../themes/README';
 		if(file_exists($themesReadme)) {
-			$this->silentLog('[info] thmes README exists');
+			$this->silentLog('[info] themes README exists');
 
 			// Delete themes
 			$state = unlink($themesReadme);
