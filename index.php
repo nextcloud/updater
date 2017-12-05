@@ -294,6 +294,7 @@ class Updater {
 			'.',
 			'..',
 			// Folders
+			'.well-known',
 			'3rdparty',
 			'apps',
 			'config',
