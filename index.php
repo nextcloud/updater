@@ -757,14 +757,17 @@ EOF;
 		$zip = new \ZipArchive;
 		$zipState = $zip->open($downloadedFilePath);
 		if ($zipState === true) {
-			$zip->extractTo(dirname($downloadedFilePath));
+			$extraction = $zip->extractTo(dirname($downloadedFilePath));
+			if($extraction === false) {
+				throw new \Exception('Error during unpacking zipfile: '.($zip->getStatusString()));
+			}
 			$zip->close();
 			$state = unlink($downloadedFilePath);
 			if($state === false) {
-				throw new \Exception('Cant unlink '. $downloadedFilePath);
+				throw new \Exception('Can\'t unlink '. $downloadedFilePath);
 			}
 		} else {
-			throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
+			throw new \Exception('Can\'t handle ZIP file. Error code is: '.$zipState);
 		}
 
 		// Ensure that the downloaded version is not lower
