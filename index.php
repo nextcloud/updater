@@ -764,10 +764,10 @@ EOF;
 			$zip->close();
 			$state = unlink($downloadedFilePath);
 			if($state === false) {
-				throw new \Exception('Can\'t unlink '. $downloadedFilePath);
+				throw new \Exception("Can't unlink ". $downloadedFilePath);
 			}
 		} else {
-			throw new \Exception('Can\'t handle ZIP file. Error code is: '.$zipState);
+			throw new \Exception("Can't handle ZIP file. Error code is: ".$zipState);
 		}
 
 		// Ensure that the downloaded version is not lower
