@@ -837,7 +837,11 @@ EOF;
 			if ($fileInfo->isDir()) {
 				$directories[] = $fileInfo->getRealPath();
 			} else {
-				$files[] = $fileInfo->getRealPath();
+				if ($fileInfo->isLink()) {
+				    $files[] = $fileInfo->getPathName();
+				} else {
+				    $files[] = $fileInfo->getRealPath();
+				}
 			}
 		}
 		
