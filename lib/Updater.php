@@ -722,7 +722,11 @@ EOF;
 			if ($fileInfo->isDir()) {
 				$directories[] = $fileInfo->getRealPath();
 			} else {
-				$files[] = $fileInfo->getRealPath();
+				if ($fileInfo->isLink()) {
+				    $files[] = $fileInfo->getPathName();
+				} else {
+				    $files[] = $fileInfo->getRealPath();
+				}
 			}
 		}
 		
@@ -813,7 +817,7 @@ EOF;
 					continue;
 				}
 			}
-			if($fileInfo->isFile()) {
+			if($fileInfo->isFile() || $fileInfo->isLink()) {
 				$state = unlink($path);
 				if($state === false) {
 					throw new \Exception('Could not unlink: '.$path);
