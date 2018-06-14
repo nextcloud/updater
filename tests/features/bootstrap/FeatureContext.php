@@ -183,6 +183,8 @@ class FeatureContext implements SnippetAcceptingContext
         chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
         exec('./updater -n', $output, $returnCode);
 
+        // sleep to let the opcache do it's work and invalidate the status.php
+        sleep(5);
 		$this->CLIOutput = $output;
 		$this->CLIReturnCode = $returnCode;
     }
