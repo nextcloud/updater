@@ -1291,19 +1291,19 @@ if(isset($_POST['step'])) {
 				$updater->checkWritePermissions();
 				break;
 			case 3:
-				$updater->setMaintenanceMode(true);
-				break;
-			case 4:
 				$updater->createBackup();
 				break;
-			case 5:
+			case 4:
 				$updater->downloadUpdate();
 				break;
-			case 6:
+			case 5:
 				$updater->verifyIntegrity();
 				break;
-			case 7:
+			case 6:
 				$updater->extractDownload();
+				break;
+			case 7:
+				$updater->setMaintenanceMode(true);
 				break;
 			case 8:
 				$updater->replaceEntryPoints();
@@ -1641,24 +1641,24 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					<h2>Check for write permissions</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-enable-maintenance" class="step <?php if($stepNumber >= 3) { echo 'passed-step'; }?>">
-					<h2>Enable maintenance mode</h2>
-					<div class="output hidden"></div>
-				</li>
-				<li id="step-backup" class="step <?php if($stepNumber >= 4) { echo 'passed-step'; }?>">
+				<li id="step-backup" class="step <?php if($stepNumber >= 3) { echo 'passed-step'; }?>">
 					<h2>Create backup</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-download" class="step <?php if($stepNumber >= 5) { echo 'passed-step'; }?>">
+				<li id="step-download" class="step <?php if($stepNumber >= 4) { echo 'passed-step'; }?>">
 					<h2>Downloading</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-verify-integrity" class="step <?php if($stepNumber >= 6) { echo 'passed-step'; }?>">
+				<li id="step-verify-integrity" class="step <?php if($stepNumber >= 5) { echo 'passed-step'; }?>">
 					<h2>Verifying integrity</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-extract" class="step <?php if($stepNumber >= 7) { echo 'passed-step'; }?>">
+				<li id="step-extract" class="step <?php if($stepNumber >= 6) { echo 'passed-step'; }?>">
 					<h2>Extracting</h2>
+					<div class="output hidden"></div>
+				</li>
+				<li id="step-enable-maintenance" class="step <?php if($stepNumber >= 7) { echo 'passed-step'; }?>">
+					<h2>Enable maintenance mode</h2>
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-entrypoints" class="step <?php if($stepNumber >= 8) { echo 'passed-step'; }?>">
@@ -1839,7 +1839,7 @@ if(strpos($updaterUrl, 'index.php') === false) {
 			2: function(response) {
 				if(response.proceed === true) {
 					successStep('step-check-permissions');
-					currentStep('step-enable-maintenance');
+					currentStep('step-backup');
 					performStep(3, performStepCallbacks[3]);
 				} else {
 					errorStep('step-check-permissions', 2);
@@ -1857,36 +1857,36 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					addStepText('step-check-permissions', text);
 				}
 			},
-			3: function(response) {
-				if(response.proceed === true) {
-					successStep('step-enable-maintenance');
-					currentStep('step-backup');
-					performStep(4, performStepCallbacks[4]);
-				} else {
-					errorStep('step-enable-maintenance', 3);
-
-					if(response.response) {
-						addStepText('step-enable-maintenance', escapeHTML(response.response));
-					}
-				}
-			},
-			4: function (response) {
+			3: function (response) {
 				if (response.proceed === true) {
 					successStep('step-backup');
 					currentStep('step-download');
-					performStep(5, performStepCallbacks[5]);
+					performStep(4, performStepCallbacks[4]);
 				} else {
-					errorStep('step-backup', 4);
+					errorStep('step-backup', 3);
 
 					if(response.response) {
 						addStepText('step-backup', escapeHTML(response.response));
 					}
 				}
 			},
-			5: function (response) {
+			4: function (response) {
 				if (response.proceed === true) {
 					successStep('step-download');
 					currentStep('step-verify-integrity');
+					performStep(5, performStepCallbacks[5]);
+				} else {
+					errorStep('step-verify-integrity', 4);
+
+					if(response.response) {
+						addStepText('step-verify-integrity', escapeHTML(response.response));
+					}
+				}
+			},
+			5: function (response) {
+				if (response.proceed === true) {
+					successStep('step-verify-integrity');
+					currentStep('step-extract');
 					performStep(6, performStepCallbacks[6]);
 				} else {
 					errorStep('step-verify-integrity', 5);
@@ -1898,27 +1898,27 @@ if(strpos($updaterUrl, 'index.php') === false) {
 			},
 			6: function (response) {
 				if (response.proceed === true) {
-					successStep('step-verify-integrity');
-					currentStep('step-extract');
+					successStep('step-extract');
+					currentStep('step-enable-maintenance');
 					performStep(7, performStepCallbacks[7]);
 				} else {
-					errorStep('step-verify-integrity', 6);
+					errorStep('step-extract', 6);
 
 					if(response.response) {
-						addStepText('step-verify-integrity', escapeHTML(response.response));
+						addStepText('step-extract', escapeHTML(response.response));
 					}
 				}
 			},
 			7: function (response) {
 				if (response.proceed === true) {
-					successStep('step-extract');
+					successStep('step-enable-maintenance');
 					currentStep('step-entrypoints');
 					performStep(8, performStepCallbacks[8]);
 				} else {
-					errorStep('step-extract', 7);
+					errorStep('step-enable-maintenance', 7);
 
 					if(response.response) {
-						addStepText('step-extract', escapeHTML(response.response));
+						addStepText('step-enable-maintenance', escapeHTML(response.response));
 					}
 				}
 			},
