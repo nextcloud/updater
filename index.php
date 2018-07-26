@@ -303,6 +303,7 @@ class Updater {
 			'lib',
 			'ocs',
 			'ocs-provider',
+			'ocm-provider',
 			'resources',
 			'settings',
 			'themes',
