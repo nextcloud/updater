@@ -1909,10 +1909,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					currentStep('step-verify-integrity');
 					performStep(5, performStepCallbacks[5]);
 				} else {
-					errorStep('step-verify-integrity', 4);
+					errorStep('step-download', 4);
 
 					if(response.response) {
-						addStepText('step-verify-integrity', escapeHTML(response.response));
+						addStepText('step-download', escapeHTML(response.response));
 					}
 				}
 			},
