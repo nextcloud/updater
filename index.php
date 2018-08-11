@@ -500,13 +500,29 @@ class Updater {
 			if($fileInfo->isFile()) {
 				$state = copy($fileInfo->getRealPath(), $backupFolderLocation . $fileName);
 				if($state === false) {
-					throw new \Exception(
-						sprintf(
-							'Could not copy "%s" to "%s"',
-							$fileInfo->getRealPath(),
-							$backupFolderLocation . $fileName
-						)
+					$message = sprintf(
+						'Could not copy "%s" to "%s"',
+						$fileInfo->getRealPath(),
+						$backupFolderLocation . $fileName
 					);
+
+					if(is_readable($fileInfo->getRealPath()) === false) {
+						$message = sprintf(
+							'%s. Source %s is not readable',
+							$message,
+							$fileInfo->getRealPath()
+						);
+					}
+
+					if(is_writable($backupFolderLocation . $fileName) === false) {
+						$message = sprintf(
+							'%s. Destination %s is not writable',
+							$message,
+							$backupFolderLocation . $fileName
+						);
+					}
+
+					throw new \Exception($message);
 				}
 			}
 		}
