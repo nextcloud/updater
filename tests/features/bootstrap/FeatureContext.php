@@ -22,6 +22,8 @@ class FeatureContext implements SnippetAcceptingContext
     protected $CLIReturnCode;
     /** @var string */
     protected $autoupdater = '1';
+    /** @var bool */
+    protected $skipIt = false;
 
     public function __construct()
     {
@@ -60,6 +62,9 @@ class FeatureContext implements SnippetAcceptingContext
      */
     public function theCurrentInstalledVersionIs($installed, $version)
     {
+		if ($this->skipIt) {
+			return;
+		}
         // recursive deletion of server folder
         if(file_exists($this->serverDir)) {
             $iterator = new RecursiveIteratorIterator(
@@ -128,6 +133,9 @@ class FeatureContext implements SnippetAcceptingContext
      */
     public function thereIsNoUpdateAvailable()
     {
+		if ($this->skipIt) {
+			return;
+		}
 		$this->runUpdateServer();
 
 		$content = '';
@@ -138,6 +146,9 @@ class FeatureContext implements SnippetAcceptingContext
 	 * @Given  the autoupdater is disabled
 	 */
 	public function theAutoupdaterIsDisabled() {
+		if ($this->skipIt) {
+			return;
+		}
 		$this->autoupdater = '0';
 	}
 
@@ -146,6 +157,9 @@ class FeatureContext implements SnippetAcceptingContext
 	 */
 	public function theCliUpdaterIsRunSuccessfully()
 	{
+		if ($this->skipIt) {
+			return;
+		}
 		$this->theCliUpdaterIsRun();
 
 		if ($this->CLIReturnCode !== 0) {
@@ -158,6 +172,9 @@ class FeatureContext implements SnippetAcceptingContext
      */
     public function theCliUpdaterIsRun()
     {
+		if ($this->skipIt) {
+			return;
+		}
         if(!file_exists($this->buildDir . 'updater.phar')) {
             throw new Exception('updater.phar not available - please build it in advance via "box build -c box.json"');
         }
@@ -166,6 +183,8 @@ class FeatureContext implements SnippetAcceptingContext
         chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
         exec('./updater -n', $output, $returnCode);
 
+        // sleep to let the opcache do it's work and invalidate the status.php
+        sleep(5);
 		$this->CLIOutput = $output;
 		$this->CLIReturnCode = $returnCode;
     }
@@ -248,6 +267,24 @@ qd9CCurtREBZVmaQLy79+aXvan+pSvq4f9kl9jVVDp/v9QDpaHSLtKrUCHGgyQZO
 0APf4QTMn+Jlw40JD3vbQSPkxWb7dcQEE6gGg6htN7iLHRRVXf8sJWFrLGotCHCH
 RVY+A9o0d/+e49hXBsqNA03y1ZETQkVle1X7618aFj+Rfekq+yANXG1w2yD69Erv
 DB8RQvd5QS/1Igt4LyTdMw==',
+			'13.0.0beta2' => 'nSIJYm2Bys4Hp3Vpv5aOEo7QY+rgdVKKqL5J9wv/VSRRcJIL2JcuJmdrHtXc5fsR
+aBdpLVRrtBuXi6l92M3/8+GnycNBj62OEKECa5KNl1pOInwTTrmwLFNa/S9ooG4y
+Ntb9nkGUIpQjfFbgYSBdLPNuP6tZcA3AGM7IjNNCEE4ai+4n5Q+j/d/9mcV54qzV
+BZjRQzqQ9QPTxq45i9ZO8GZhKBIXzWzt6TwtKQY8pds6uCrilHuw/QI6fCmOHfSH
+mlGSfQdip562QrdH1YE1bmgPdSZ2eC4k8rAbMQSRQc6XZhbNpwGKs0lcPxvaVTqP
+xofdQ77i4w95e0fNOH3mzQ==',
+			'13.0.1' => 'AG3egWHJkQaqCraVLiRq5Q7GvqArmBgVv8PNAfVYTOXPN6xWmw8cbUeBvBZ3OS1/
+bup1ktLDwTLDjWm1XMBUhhQCxVDLtEd3A6WfaVJz9BWoz1MyxUGlaIJSzTHLoEfz
+nFVUdoGH0mAdq8WtxRQSNwQWeKn+iF1jpbtIbDc29POtWvvzEgT/KW8MDzeidx6s
+W78tH4vldR0/aBn1D3hwnkQEQ8+Kz+Y4ItjHHi6XpJEfRQzYD0j9T+VTQ9IX4Xf/
+XqTrcaUCqwOlSC4pM7aUUzgaePPcYU2zrRDRaEgLma9eSkVMzkkc4kfM3izBG0Iv
+STb5hZFB2HMLyJxuj1l05w==',
+			'13.0.4' => 'OogV1NE98yxer6atJPOgXBxnVgAuME94UoZ1TlgTGUw0KYqvKNwKKQ+gqzJ3ZL9t
+XJuHAYQi2Uk0iblIA3TFuDALU/wA3th2PMoobHtzR4FFzDUvb88FdgKxBAOhh9n0
+1PwiLBYT1FuDJn+fQLmbXWbPVlfFOOsyPFxysl1nXztxSJ7FsPgIE/MGvqKnk4L3
+5iG3o/UAbqmmKNQpn7gJw4BYdf3mkJcBOgdRrcy3MXqLh9dIAXkK5HcKOD3A+Uvy
+amApr7+j7zp0QlnhrObLBWramdSqmS2Udt/TdN1XhMF/9Nzq+qod6aJ8qCz9aqEb
+PUPFcPmm6YQgra/1OoMTpg==',
 		];
 
     	if(isset($signatures[$version])) {
@@ -262,6 +299,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
      */
     public function thereIsAnUpdateToVersionAvailable($version)
     {
+		if ($this->skipIt) {
+			return;
+		}
 		$this->runUpdateServer();
 
         $content = '<?php
@@ -286,6 +326,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function thereIsAnUpdateToPrereleaseVersionAvailable($version)
 	{
+		if ($this->skipIt) {
+			return;
+		}
 		$this->runUpdateServer();
 
 		$content = '<?php
@@ -310,6 +353,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function thereIsAnUpdateToDailyVersionAvailable($version)
 	{
+		if ($this->skipIt) {
+			return;
+		}
 		$this->runUpdateServer();
 
 		$content = '<?php
@@ -359,6 +405,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
      */
 	public function theInstalledVersionShouldBe2($version)
     {
+		if ($this->skipIt) {
+			return;
+		}
         /** @var $OC_Version */
         require $this->serverDir . 'nextcloud/version.php';
 
@@ -376,6 +425,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function maintenanceModeShouldBe($state)
 	{
+		if ($this->skipIt) {
+			return;
+		}
 
 		chdir($this->serverDir . 'nextcloud');
 		shell_exec('chmod +x occ');
@@ -395,6 +447,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function theCurrentChannelIs($channel)
 	{
+		if ($this->skipIt) {
+			return;
+		}
 
 		chdir($this->serverDir . 'nextcloud');
 		shell_exec('chmod +x occ');
@@ -406,6 +461,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function upgradeIs($state)
 	{
+		if ($this->skipIt) {
+			return;
+		}
 
 		chdir($this->serverDir . 'nextcloud');
 		shell_exec('chmod +x occ');
@@ -434,6 +492,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function theReturnCodeShouldNotBe($expectedReturnCode)
 	{
+		if ($this->skipIt) {
+			return;
+		}
 		if ($this->CLIReturnCode === (int)$expectedReturnCode) {
 			throw new Exception('Return code does match but should not match: ' . $this->CLIReturnCode . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
 		}
@@ -444,6 +505,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function theOutputShouldBe($expectedOutput)
 	{
+		if ($this->skipIt) {
+			return;
+		}
 		if (strpos(join(PHP_EOL, $this->CLIOutput), $expectedOutput) === false) {
 			throw new Exception('Output does not match: ' . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
 		}
@@ -454,6 +518,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function theVersionNumberIsDecreasedInTheConfigPHPToEnforceUpgrade()
 	{
+		if ($this->skipIt) {
+			return;
+		}
 		$configFile = $this->serverDir . 'nextcloud/config/config.php';
 		$content = file_get_contents($configFile);
 		$content = preg_replace("!'version'\s*=>\s*'(\d+\.\d+\.\d+)\.\d+!", "'version' => '$1", $content);
@@ -465,6 +532,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function thereIsAFolderCalled($name)
 	{
+		if ($this->skipIt) {
+			return;
+		}
 		mkdir($this->serverDir . 'nextcloud/' . $name);
 	}
 
@@ -473,6 +543,9 @@ DB8RQvd5QS/1Igt4LyTdMw==',
 	 */
 	public function thereIsAConfigForASecondaryAppsDirectoryCalled($name)
 	{
+		if ($this->skipIt) {
+			return;
+		}
 		$configFile = $this->serverDir . 'nextcloud/config/config.php';
 		$content = file_get_contents($configFile);
 		$appsPaths = <<<EOF
@@ -492,5 +565,13 @@ EOF;
 		$appsPaths = sprintf($appsPaths, $name, $name);
 		$content = preg_replace("!\);!", $appsPaths . ');', $content);
 		file_put_contents($configFile, $content);
+	}
+
+	/**
+	 * @Given /PHP is at least in version ([0-9.]+)/
+	 */
+	public function phpIsAtLeastInVersion($version)
+	{
+		$this->skipIt = !version_compare($version, PHP_VERSION, '<');
 	}
 }

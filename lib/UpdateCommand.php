@@ -42,11 +42,11 @@ class UpdateCommand extends Command {
 		0 => '',
 		1 => 'Check for expected files',
 		2 => 'Check for write permissions',
-		3 => 'Enable maintenance mode',
-		4 => 'Create backup',
-		5 => 'Downloading',
-		6 => 'Verify integrity',
-		7 => 'Extracting',
+		3 => 'Create backup',
+		4 => 'Downloading',
+		5 => 'Verify integrity',
+		6 => 'Extracting',
+		7 => 'Enable maintenance mode',
 		8 => 'Replace entry points',
 		9 => 'Delete old files',
 		10 => 'Move new files in place',
@@ -353,19 +353,19 @@ class UpdateCommand extends Command {
 					$this->updater->checkWritePermissions();
 					break;
 				case 3:
-					$this->updater->setMaintenanceMode(true);
-					break;
-				case 4:
 					$this->updater->createBackup();
 					break;
-				case 5:
+				case 4:
 					$this->updater->downloadUpdate();
 					break;
-				case 6:
+				case 5:
 					$this->updater->verifyIntegrity();
 					break;
-				case 7:
+				case 6:
 					$this->updater->extractDownload();
+					break;
+				case 7:
+					$this->updater->setMaintenanceMode(true);
 					break;
 				case 8:
 					$this->updater->replaceEntryPoints();
