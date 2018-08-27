@@ -727,7 +727,7 @@ EOF;
                     $files[] = $fileInfo->getPathName();
                 } else {
                     $files[] = $fileInfo->getRealPath();
-                }			 
+                }
 			}
 		}
 		
