@@ -179,6 +179,7 @@ class Updater {
 			'.',
 			'..',
 			// Folders
+			'.well-known',
 			'3rdparty',
 			'apps',
 			'config',
@@ -337,6 +338,7 @@ class Updater {
 		$this->silentLog('[info] createBackup()');
 
 		$excludedElements = [
+			'.well-known',
 			'data',
 		];
 
@@ -803,6 +805,7 @@ EOF;
 
 		// Delete the rest
 		$excludedElements = [
+			'.well-known',
 			'data',
 			'index.php',
 			'status.php',

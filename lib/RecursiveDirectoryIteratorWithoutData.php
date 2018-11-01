@@ -26,6 +26,7 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 	public function accept() {
 		/** @var \DirectoryIterator $this */
 		$excludes = [
+			'.well-known',
 			'data',
 			'..',
 		];

@@ -39,6 +39,7 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 	public function accept() {
 		/** @var \DirectoryIterator $this */
 		$excludes = [
+			'.well-known',
 			'data',
 			'..',
 		];
@@ -294,6 +295,7 @@ class Updater {
 			'.',
 			'..',
 			// Folders
+			'.well-known',
 			'3rdparty',
 			'apps',
 			'config',
@@ -452,6 +454,7 @@ class Updater {
 		$this->silentLog('[info] createBackup()');
 
 		$excludedElements = [
+			'.well-known',
 			'data',
 		];
 
@@ -918,6 +921,7 @@ EOF;
 
 		// Delete the rest
 		$excludedElements = [
+			'.well-known',
 			'data',
 			'index.php',
 			'status.php',
