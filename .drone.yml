@@ -103,6 +103,27 @@ pipeline:
     when:
       matrix:
         TESTS: php72-stable13
+  php70-stable14:
+    image: nextcloudci/php7.0:php7.0-19
+    commands:
+      - make test-stable14
+    when:
+      matrix:
+        TESTS: php70-stable14
+  php71-stable14:
+    image: nextcloudci/php7.1:php7.1-16
+    commands:
+      - make test-stable14
+    when:
+      matrix:
+        TESTS: php71-stable14
+  php72-stable14:
+    image: nextcloudci/php7.2:php7.2-12
+    commands:
+      - make test-stable14
+    when:
+      matrix:
+        TESTS: php72-stable14
   php70-master:
     image: nextcloudci/php7.0:php7.0-19
     commands:
@@ -136,6 +157,9 @@ matrix:
     - TESTS: php70-stable13
     - TESTS: php71-stable13
     - TESTS: php72-stable13
+    - TESTS: php70-stable14
+    - TESTS: php71-stable14
+    - TESTS: php72-stable14
     - TESTS: php70-master
     - TESTS: php71-master
     - TESTS: php72-master

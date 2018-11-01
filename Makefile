@@ -29,6 +29,9 @@ test-stable12: updater.phar test/vendor
 test-stable13: updater.phar test/vendor
 	cd tests && vendor/behat/behat/bin/behat features/stable13.feature
 
+test-stable14: updater.phar test/vendor
+	cd tests && vendor/behat/behat/bin/behat features/stable14.feature
+
 test-master: updater.phar test/vendor
 	cd tests && vendor/behat/behat/bin/behat features/master.feature
 
