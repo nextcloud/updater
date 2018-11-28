@@ -1273,7 +1273,7 @@ try {
 }
 
 // Check for authentication
-$password = isset($_SERVER['HTTP_X_UPDATER_AUTH']) ? $_SERVER['HTTP_X_UPDATER_AUTH'] : '';
+$password = isset($_SERVER['HTTP_X_UPDATER_AUTH']) ? $_SERVER['HTTP_X_UPDATER_AUTH'] : (isset($_POST['updater-secret-input']) ? $_POST['updater-secret-input'] : '');
 $auth = new Auth($updater, $password);
 
 // Check if already a step is in process
@@ -1646,9 +1646,13 @@ if(strpos($updaterUrl, 'index.php') === false) {
 		}
 
 		#login input {
-			padding: 5px;
 			border-radius: 3px;
 			border: 1px solid rgba(240,240,240,.9);
+			margin: 3px 3px 3px 0;
+			padding: 9px 6px;
+			font-size: 13px;
+			outline: none;
+			cursor: text;
 		}
 
 		.section {
@@ -1754,13 +1758,13 @@ if(strpos($updaterUrl, 'index.php') === false) {
 				<code>php -r '$password = trim(shell_exec("openssl rand -base64 48"));if(strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";}else{echo "Could not execute OpenSSL.\n";};'</code>
 				<form method="post" name="login">
 					<fieldset>
-						<input type="password" id="updater-secret-input" value=""
+						<input type="password" name="updater-secret-input" value=""
 							   placeholder="Secret"
 							   autocomplete="on" required>
 						<button id="updater-secret-submit">Login</button>
 					</fieldset>
 				</form>
-				<?php if(isset($_SERVER['HTTP_X_UPDATER_AUTH']) && !$auth->isAuthenticated()): ?>
+				<?php if(isset($_POST['updater-secret-input']) && !$auth->isAuthenticated()): ?>
 				<p>Invalid password</p>
 				<?php endif; ?>
 			</div>
@@ -2126,26 +2130,6 @@ if(strpos($updaterUrl, 'index.php') === false) {
 				return 'Update is in progress. Are you sure, you want to close?';
 			}
 		}
-	</script>
-<?php else: ?>
-	<script>
-		function login() {
-			var xhr = new XMLHttpRequest();
-			xhr.open('GET', window.location.href, true);
-			xhr.setRequestHeader('X-Updater-Auth', document.getElementById('updater-secret-input').value);
-			xhr.onreadystatechange = function () {
-				if (xhr.readyState === 4) {
-					document.getElementsByTagName('html')[0].innerHTML = xhr.responseText;
-					eval(document.getElementsByTagName('script')[0].innerHTML);
-				}
-			};
-			xhr.send();
-		}
-
-		document.getElementById('updater-secret-submit').onclick = function(e) {
-			e.preventDefault();
-			login();
-		};
 	</script>
 <?php endif; ?>
 
