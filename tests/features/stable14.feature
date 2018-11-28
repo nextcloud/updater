@@ -22,8 +22,8 @@ Feature: CLI updater - stable14 base
   Scenario: Update is available - 14.0.1 to master daily
     Given the current installed version is 14.0.1
     And PHP is at least in version 7.0
-    And the current channel is "daily"
-    And there is an update to daily version of master available
+    And the current channel is "beta"
+    And there is an update to prerelease version of 15.0.0RC1 available
     When the CLI updater is run successfully
     And the output should contain "Update successful"
     Then the installed version should be 15.0
