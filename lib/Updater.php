@@ -117,7 +117,6 @@ class Updater {
 	 */
 	public function checkForUpdate() {
 		$response = $this->getUpdateServerResponse();
-		$changelogURL = $this->getChangelogURL();
 
 		$this->silentLog('[info] checkForUpdate() ' . print_r($response, true));
 
@@ -127,7 +126,13 @@ class Updater {
 		if ($version !== '' && $version !== $this->currentVersion) {
 			$this->updateAvailable = true;
 			$releaseChannel = $this->getCurrentReleaseChannel();
-			$updateText = 'Update to ' . htmlentities($versionString) . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code><br /><a class="external_link" href="' . $changelogURL . '" target="_blank" rel="noreferrer noopener">Open changelog ↗</a>';
+			$updateText = 'Update to ' . htmlentities($versionString) . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
+
+			// only show changelog link for stable releases (non-RC & non-beta)
+			if (!preg_match('!(rc|beta)!i', $versionString)) {
+				$changelogURL = $this->getChangelogURL(substr($version, 0, strrpos($version, '.')));
+				$updateText .= '<br /><a class="external_link" href="' . $changelogURL . '" target="_blank" rel="noreferrer noopener">Open changelog ↗</a>';
+			}
 		} else {
 			$updateText = 'No update available.';
 		}
@@ -419,15 +424,10 @@ class Updater {
 		$this->silentLog('[info] end of createBackup()');
 	}
 
-	/**
-	* Returns a link to the changelog
-	* @return string
-	*
-	*/
-	private function getChangelogURL() {
+	private function getChangelogURL($versionString) {
 		$this->silentLog('[info] getChangelogURL()');
 		$changelogWebsite = 'https://nextcloud.com/changelog/';
-		$changelogURL = $changelogWebsite . '#' . str_replace('.', '-', substr($this->getConfigOption('version'),0,-2));
+		$changelogURL = $changelogWebsite . '#' . str_replace('.', '-', $versionString);
 		return $changelogURL;
 	}
 
@@ -762,14 +762,14 @@ EOF;
 				}
 			}
 		}
-		
+
 		foreach ($files as $file) {
 			unlink($file);
 		}
 		foreach ($directories as $dir) {
-			rmdir($dir);	
+			rmdir($dir);
 		}
-		
+
 		$state = rmdir($folder);
 		if($state === false) {
 			throw new \Exception('Could not rmdir ' . $folder);
