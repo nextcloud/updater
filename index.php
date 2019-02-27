@@ -2,6 +2,7 @@
 /**
  * @copyright Copyright (c) 2016-2017 Lukas Reschke <lukas@statuscode.ch>
  * @copyright Copyright (c) 2016 Morris Jobke <hey@morrisjobke.de>
+ * @copyright Copyright (c) 2018 Jonas Sulzer <jonas@violoncello.ch>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -242,6 +243,12 @@ class Updater {
 			$this->updateAvailable = true;
 			$releaseChannel = $this->getCurrentReleaseChannel();
 			$updateText = 'Update to ' . htmlentities($versionString) . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
+
+			// only show changelog link for stable releases (non-RC & non-beta)
+			if (!preg_match('!(rc|beta)!i', $versionString)) {
+				$changelogURL = $this->getChangelogURL(substr($version, 0, strrpos($version, '.')));
+				$updateText .= '<br /><a class="external_link" href="' . $changelogURL . '" target="_blank" rel="noreferrer noopener">Open changelog ↗</a>';
+			}
 		} else {
 			$updateText = 'No update available.';
 		}
@@ -531,6 +538,13 @@ class Updater {
 			}
 		}
 		$this->silentLog('[info] end of createBackup()');
+	}
+
+	private function getChangelogURL($versionString) {
+		$this->silentLog('[info] getChangelogURL()');
+		$changelogWebsite = 'https://nextcloud.com/changelog/';
+		$changelogURL = $changelogWebsite . '#' . str_replace('.', '-', $versionString);
+		return $changelogURL;
 	}
 
 	/**
@@ -864,14 +878,14 @@ EOF;
 				}
 			}
 		}
-		
+
 		foreach ($files as $file) {
 			unlink($file);
 		}
 		foreach ($directories as $dir) {
-			rmdir($dir);	
+			rmdir($dir);
 		}
-		
+
 		$state = rmdir($folder);
 		if($state === false) {
 			throw new \Exception('Could not rmdir ' . $folder);
@@ -1419,6 +1433,9 @@ if(strpos($updaterUrl, 'index.php') === false) {
 			color: #000;
 			text-decoration: none;
 			cursor: pointer;
+		}
+		.external_link {
+			text-decoration: underline;
 		}
 		ul {
 			list-style: none;
