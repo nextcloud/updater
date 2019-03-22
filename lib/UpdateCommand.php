@@ -292,7 +292,7 @@ class UpdateCommand extends Command {
 
 			chdir($path . '/..');
 			chmod('occ', 0755); # TODO do this in the updater
-			system('./occ upgrade', $returnValue);
+			system('./occ upgrade -v', $returnValue);
 
 			$output->writeln('');
 			if ($input->isInteractive()) {
