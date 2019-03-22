@@ -311,8 +311,8 @@ class UpdateCommand extends Command {
 			}
 
 			try {
-				$this->updater->setMaintenanceMode(false);
-				$this->updater->log('[info] maintenance mode is disabled');
+				system('./occ maintenance:mode --off', $returnValueMaintenanceMode);
+				$this->updater->log('[info] maintenance mode is disabled - return code: ' . $returnValueMaintenanceMode);
 				$output->writeln('');
 				$output->writeln('Maintenance mode is disabled');
 			} catch (\Exception $e) {
