@@ -28,8 +28,7 @@ Feature: CLI updater
     Then the return code should not be 0
     And the output should contain "Download failed - Not Found (HTTP 404)"
     And the installed version should be 12.0.0
-    # known issue - TODO - it should be:
-    #And maintenance mode should be off
+    And maintenance mode should be off
     And upgrade is not required
 
   Scenario: Update without valid signature is being offered - 11.0.0 to 11.0.1
@@ -40,8 +39,7 @@ Feature: CLI updater
     Then the return code should not be 0
     And the output should contain "Signature of update is not valid"
     And the installed version should be 11.0.0
-    # known issue - TODO - it should be:
-    #And maintenance mode should be off
+    And maintenance mode should be off
     And upgrade is not required
 
   Scenario: Update to older version - 12.0.0 to 11.0.2
@@ -51,8 +49,7 @@ Feature: CLI updater
     Then the return code should not be 0
     And the output should contain "Downloaded version is lower than installed version"
     And the installed version should be 12.0.0
-    # known issue - TODO - it should be:
-    #And maintenance mode should be off
+    And maintenance mode should be off
     And upgrade is not required
 
   Scenario: Update is available but autoupdate is disabled - 12.0.0 to 12.0.1
