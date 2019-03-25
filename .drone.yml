@@ -103,13 +103,6 @@ pipeline:
     when:
       matrix:
         TESTS: php72-stable13
-  php70-master:
-    image: nextcloudci/php7.0:php7.0-19
-    commands:
-      - make test-master
-    when:
-      matrix:
-        TESTS: php70-master
   php71-master:
     image: nextcloudci/php7.1:php7.1-16
     commands:
@@ -136,7 +129,6 @@ matrix:
     - TESTS: php70-stable13
     - TESTS: php71-stable13
     - TESTS: php72-stable13
-    - TESTS: php70-master
     - TESTS: php71-master
     - TESTS: php72-master
     - TESTS: signed-off-check
