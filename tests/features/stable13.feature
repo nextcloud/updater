@@ -28,22 +28,22 @@ Feature: CLI updater - stable13 base
     And maintenance mode should be off
     And upgrade is not required
 
-  Scenario: Update is available - 13.0.1 to master daily
+  Scenario: Update is available - 13.0.1 to stable14 daily
     Given the current installed version is 13.0.1
     And PHP is at least in version 7.0
     And the current channel is "daily"
-    And there is an update to daily version of master available
+    And there is an update to daily version of stable14 available
     When the CLI updater is run successfully
     And the output should contain "Update successful"
     Then the installed version should be 14.0
     And maintenance mode should be off
     And upgrade is not required
 
-  Scenario: Update is available - 13.0.1 to master daily
+  Scenario: Update is available - 13.0.1 to stable14 daily
     Given the current installed version is 13.0.1
     And PHP is at least in version 7.0
     And the current channel is "daily"
-    And there is an update to daily version of master available
+    And there is an update to daily version of stable14 available
     When the CLI updater is run successfully
     And the output should contain "Update successful"
     Then the installed version should be 14.0
