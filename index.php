@@ -557,7 +557,7 @@ class Updater {
 		$updaterServer = $this->getConfigOption('updater.server.url');
 		if($updaterServer === null) {
 			// FIXME: used deployed URL
-			$updaterServer = 'https://updates.nextcloud.org/updater_server/';
+			$updaterServer = 'https://updates.nextcloud.com/updater_server/';
 		}
 		$this->silentLog('[info] updaterServer: ' . $updaterServer);
 
