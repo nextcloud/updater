@@ -1,145 +1,232 @@
-clone:
-  git:
-    image: plugins/git
-    depth: 1
+kind: pipeline
+name: check-same-code-base
 
-pipeline:
-  check-same-code-base:
+steps:
+  - name: check-same-code-base
     image: nextcloudci/php7.0:php7.0-19
     commands:
       - make check-same-code-base
-    when:
-      matrix:
-        TESTS: check-same-code-base
-  php56-cli:
-    image: nextcloudci/php5.6:php5.6-7
-    commands:
-      - make test-cli
-    when:
-      matrix:
-        TESTS: php56-cli
-  php70-cli:
-    image: nextcloudci/php7.0:php7.0-19
-    commands:
-      - make test-cli
-    when:
-      matrix:
-        TESTS: php70-cli
-  php71-cli:
-    image: nextcloudci/php7.1:php7.1-16
-    commands:
-      - make test-cli
-    when:
-      matrix:
-        TESTS: php71-cli
-  php72-cli:
-    image: nextcloudci/php7.2:php7.2-12
-    commands:
-      - make test-cli
-    when:
-      matrix:
-        TESTS: php72-cli
-  php56-stable12:
-    image: nextcloudci/php5.6:php5.6-7
-    commands:
-      - make test-stable12
-    when:
-      matrix:
-        TESTS: php56-stable12
-  php70-stable12:
-    image: nextcloudci/php7.0:php7.0-19
-    commands:
-      - make test-stable12
-    when:
-      matrix:
-        TESTS: php70-stable12
-  php71-stable12:
-    image: nextcloudci/php7.1:php7.1-16
-    commands:
-      - make test-stable12
-    when:
-      matrix:
-        TESTS: php71-stable12
-  php56-stable13:
-    image: nextcloudci/php5.6:php5.6-7
-    commands:
-      - make test-stable13
-    when:
-      matrix:
-        TESTS: php56-stable13
-  php70-stable13:
-    image: nextcloudci/php7.0:php7.0-19
-    commands:
-      - make test-stable13
-    when:
-      matrix:
-        TESTS: php70-stable13
-  php71-stable13:
-    image: nextcloudci/php7.1:php7.1-16
-    commands:
-      - make test-stable13
-    when:
-      matrix:
-        TESTS: php71-stable13
-  php72-stable13:
-    image: nextcloudci/php7.2:php7.2-12
-    commands:
-      - make test-stable13
-    when:
-      matrix:
-        TESTS: php72-stable13
-  php70-stable14:
-    image: nextcloudci/php7.0:php7.0-19
-    commands:
-      - make test-stable14
-    when:
-      matrix:
-        TESTS: php70-stable14
-  php71-stable14:
-    image: nextcloudci/php7.1:php7.1-16
-    commands:
-      - make test-stable14
-    when:
-      matrix:
-        TESTS: php71-stable14
-  php72-stable14:
-    image: nextcloudci/php7.2:php7.2-12
-    commands:
-      - make test-stable14
-    when:
-      matrix:
-        TESTS: php72-stable14
-  php71-master:
-    image: nextcloudci/php7.1:php7.1-16
-    commands:
-      - make test-master
-    when:
-      matrix:
-        TESTS: php71-master
-  php72-master:
-    image: nextcloudci/php7.2:php7.2-12
-    commands:
-      - make test-master
-    when:
-      matrix:
-        TESTS: php72-master
-matrix:
-  include:
-    - TESTS: php56-cli
-    - TESTS: php70-cli
-    - TESTS: php71-cli
-    - TESTS: php56-stable12
-    - TESTS: php70-stable12
-    - TESTS: php71-stable12
-    - TESTS: php56-stable13
-    - TESTS: php70-stable13
-    - TESTS: php71-stable13
-    - TESTS: php72-stable13
-    - TESTS: php70-stable14
-    - TESTS: php71-stable14
-    - TESTS: php72-stable14
-    - TESTS: php71-master
-    - TESTS: php72-master
-    - TESTS: check-same-code-base
 
-branches: [ master, stable* ]
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php70-cli
+
+steps:
+  - name: php70-cli
+    image: nextcloudci/php7.0:php7.0-19
+    commands:
+      - make test-cli
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php71-cli
+
+steps:
+  - name: php71-cli
+    image: nextcloudci/php7.1:php7.1-16
+    commands:
+      - make test-cli
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+#---
+#kind: pipeline
+#name: php72-cli
+#
+#steps:
+#  - name: php72-cli
+#    image: nextcloudci/php7.2:php7.2-12
+#    commands:
+#      - make test-cli
+#
+#trigger:
+#  branch:
+#    - master
+#    - stable*
+#  event:
+#    - pull_request
+#    - push
+#
+---
+kind: pipeline
+name: php70-stable14
+
+steps:
+  - name: php70-stable14
+    image: nextcloudci/php7.0:php7.0-19
+    commands:
+      - make test-stable14
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php71-stable14
+
+steps:
+  - name: php71-stable14
+    image: nextcloudci/php7.1:php7.1-16
+    commands:
+      - make test-stable14
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php72-stable14
+
+steps:
+  - name: php72-stable14
+    image: nextcloudci/php7.2:php7.2-12
+    commands:
+      - make test-stable14
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php71-stable15
+
+steps:
+  - name: php71-stable15
+    image: nextcloudci/php7.1:php7.1-16
+    commands:
+      - make test-stable15
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php72-stable15
+
+steps:
+  - name: php72-stable15
+    image: nextcloudci/php7.2:php7.2-12
+    commands:
+      - make test-stable15
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php73-stable15
+
+steps:
+  - name: php73-stable15
+    image: nextcloudci/php7.3:php7.3-2
+    commands:
+      - make test-stable15
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php71-master
+
+steps:
+  - name: php71-master
+    image: nextcloudci/php7.1:php7.1-16
+    commands:
+      - make test-master
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php72-master
+
+steps:
+  - name: php72-master
+    image: nextcloudci/php7.2:php7.2-12
+    commands:
+      - make test-master
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
+
+---
+kind: pipeline
+name: php73-master
+
+steps:
+  - name: php73-master
+    image: nextcloudci/php7.3:php7.3-2
+    commands:
+      - make test-master
+
+trigger:
+  branch:
+    - master
+    - stable*
+  event:
+    - pull_request
+    - push
