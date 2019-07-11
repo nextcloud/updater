@@ -596,6 +596,13 @@ class Updater {
 			return;
 		}
 
+		if ($this->getConfigOption('updater.skipIntegrityVerification')) {
+			// openssl_verify() may fail on systems with very low PHP memory (e.g. 64MB).
+			// For this case, the integrity check may be skipped
+			$this->silentLog('[notice] The integrity verification has been explicitly skipped.');
+			return;
+		}
+
 		$response = $this->getUpdateServerResponse();
 		if(!isset($response['signature'])) {
 			throw new \Exception('No signature specified for defined update');
