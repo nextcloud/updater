@@ -1,4 +1,4 @@
-Feature: CLI updater - stable14 base
+Feature: CLI updater - stable16 base
 
   Scenario: Update is available - 16.0.1 to 16.0.3
     Given the current installed version is 16.0.0

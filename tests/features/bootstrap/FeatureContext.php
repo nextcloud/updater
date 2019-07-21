@@ -249,6 +249,12 @@ WbRmf4trGwDdCA/kQ59LInfLR8KFfEiiOH2p2NijgXuWm49tdr7N1062diP4Dzwd
 WlWfRoT8G5DDQPGdj5a72+sQLjf3ZhjqgeQbGLwht/NonWLZhmmW/NgmylbCb9Ob
 a7NE4Vf792DrmBvq4HCHUexg+upaJ0s4sJLGqg3sWF8iUEnLyGePyL/Bw6MeLvjD
 sSD0Xb5oawIjTVHVAuL+3Q==',
+			'15.0.10' => '1FcyXT8cgPMctfn+S5QLGbPrkeXEWyaIGh1T9mP7BHaF5AHamuAGDzk04FKHYB/e
+OylmXzDBE2w1LG5AOABAw3idwIJpfvH2dyi8tsBNdcGKY01DmMYEzn4y5i2r5Duv
+lRjhRfuk/MrjUOH1XkGO1xPI8zXp8eI7Y53jHswbUayJGszzgCKcuC6z+QEUkf7v
+p15duG8nbbF1c3CAh/dVsJ2AKKpcnLYJPC8UgGDXMtalSoPUv9QTWPrS7AqQRsVD
+7xJThvWdx3aSV3aKREBzw5ddHUAIEENQ0aBdabgAXbBZEfLrMMG2XaHtdXGLpQs8
+ypwcWVvLfYk9e+YEMdhMNg==',
 			'16.0.3' => 'TYiUB/+l2uXNpiHGuMhchHzzyMn8eiL2mzBD+fmwqUXU29UYK4FFvTbDEWWXxXF9
 XeOXXBTkWltQ6A5K+nwFx4Phf4VPznaGn3U/1hsLSLBy9p9qqBMQdmDvCxl4dJmP
 R0Ttz6sGcC1AsYwW2Q5Z1lywpmk1Ax5YcJesbjOFTU9HXIOI2s9YyPX4bP3L1rkH
@@ -382,8 +388,6 @@ b813iKq4+cn3CjTunREm6A==',
         require $this->serverDir . 'nextcloud/version.php';
 
         $installedVersion = join('.', $OC_Version);
-        // Hack for version number mapping
-        $installedVersion = str_replace(['9.1', '9.2'], ['10.0', '11.0'], $installedVersion);
 
         if (strpos($installedVersion, $version) !== 0) {
             throw new Exception('Version mismatch - Installed: ' . $installedVersion . ' Wanted: ' . $version);
