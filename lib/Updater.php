@@ -202,6 +202,7 @@ class Updater {
 			'themes',
 			'updater',
 			// Files
+			'.rnd',
 			'index.html',
 			'indie.json',
 			'.user.ini',
@@ -345,6 +346,7 @@ class Updater {
 		$this->silentLog('[info] createBackup()');
 
 		$excludedElements = [
+			'.rnd',
 			'.well-known',
 			'data',
 		];
