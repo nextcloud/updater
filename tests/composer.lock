@@ -1,11 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "be15623e1087bc2b39437a77e003ced7",
-    "content-hash": "df392ce5112262b549f29ddd5f5340c5",
+    "content-hash": "9b56ee7076ed0f05c7e44411892e139a",
     "packages": [
         {
             "name": "behat/behat",
@@ -86,7 +85,7 @@
                 "symfony",
                 "testing"
             ],
-            "time": "2015-02-22 14:10:33"
+            "time": "2015-02-22T14:10:33+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -145,7 +144,7 @@
                 "gherkin",
                 "parser"
             ],
-            "time": "2016-10-30 11:50:56"
+            "time": "2016-10-30T11:50:56+00:00"
         },
         {
             "name": "behat/transliterator",
@@ -185,7 +184,7 @@
                 "slug",
                 "transliterator"
             ],
-            "time": "2015-09-28 16:26:35"
+            "time": "2015-09-28T16:26:35+00:00"
         },
         {
             "name": "psr/log",
@@ -232,7 +231,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2016-10-10T12:19:37+00:00"
         },
         {
             "name": "symfony/class-loader",
@@ -285,7 +284,7 @@
             ],
             "description": "Symfony ClassLoader Component",
             "homepage": "https://symfony.com",
-            "time": "2016-09-06 23:19:39"
+            "time": "2016-09-06T23:19:39+00:00"
         },
         {
             "name": "symfony/config",
@@ -338,7 +337,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2016-09-14 20:31:12"
+            "time": "2016-09-14T20:31:12+00:00"
         },
         {
             "name": "symfony/console",
@@ -399,7 +398,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2016-10-06 01:43:09"
+            "time": "2016-10-06T01:43:09+00:00"
         },
         {
             "name": "symfony/debug",
@@ -456,20 +455,20 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2016-09-06 10:55:00"
+            "time": "2016-09-06T10:55:00+00:00"
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v2.8.13",
+            "version": "v2.8.52",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "3d61c765daa1a5832f1d7c767f48886b8d8ea64c"
+                "reference": "c306198fee8f872a8f5f031e6e4f6f83086992d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/3d61c765daa1a5832f1d7c767f48886b8d8ea64c",
-                "reference": "3d61c765daa1a5832f1d7c767f48886b8d8ea64c",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/c306198fee8f872a8f5f031e6e4f6f83086992d8",
+                "reference": "c306198fee8f872a8f5f031e6e4f6f83086992d8",
                 "shasum": ""
             },
             "require": {
@@ -519,7 +518,7 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2016-10-24 15:52:36"
+            "time": "2019-04-16T11:33:46+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -579,7 +578,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2016-10-13 01:43:15"
+            "time": "2016-10-13T01:43:15+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -628,7 +627,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2016-10-18 04:28:30"
+            "time": "2016-10-18T04:28:30+00:00"
         },
         {
             "name": "symfony/polyfill-apcu",
@@ -681,7 +680,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2016-05-18 14:26:46"
+            "time": "2016-05-18T14:26:46+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -740,7 +739,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2016-05-18 14:26:46"
+            "time": "2016-05-18T14:26:46+00:00"
         },
         {
             "name": "symfony/translation",
@@ -804,7 +803,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2016-10-18 04:28:30"
+            "time": "2016-10-18T04:28:30+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -853,7 +852,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-10-21 20:59:10"
+            "time": "2016-10-21T20:59:10+00:00"
         }
     ],
     "packages-dev": [],
@@ -863,5 +862,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }
