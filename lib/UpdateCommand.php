@@ -292,7 +292,7 @@ class UpdateCommand extends Command {
 
 			chdir($path . '/..');
 			chmod('occ', 0755); # TODO do this in the updater
-			system('./occ upgrade -v', $returnValue);
+			system(PHP_BINARY . ' ./occ upgrade -v', $returnValue);
 
 			$output->writeln('');
 			if ($input->isInteractive()) {
@@ -311,7 +311,7 @@ class UpdateCommand extends Command {
 			}
 
 			try {
-				system('./occ maintenance:mode --off', $returnValueMaintenanceMode);
+				system(PHP_BINARY . ' ./occ maintenance:mode --off', $returnValueMaintenanceMode);
 				$this->updater->log('[info] maintenance mode is disabled - return code: ' . $returnValueMaintenanceMode);
 				$output->writeln('');
 				$output->writeln('Maintenance mode is disabled');
