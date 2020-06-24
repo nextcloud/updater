@@ -94,6 +94,7 @@ class FeatureContext implements SnippetAcceptingContext
             }
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Nextcloud Updater');
             if(curl_exec($ch) === false) {
                 throw new \Exception('Curl error: ' . curl_error($ch));
             }
