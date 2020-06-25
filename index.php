@@ -903,9 +903,9 @@ EOF;
 	public function deleteOldFiles() {
 		$this->silentLog('[info] deleteOldFiles()');
 
-		$shippedAppsFile = $this->baseDir . '/../core/shipped.json';
+		$shippedAppsFile = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/core/shipped.json';
 		if(!file_exists($shippedAppsFile)) {
-			throw new \Exception('core/shipped.json is not available');
+			throw new \Exception('core/shipped.json is not available in the new release');
 		}
 		// Delete shipped apps
 		$shippedApps = json_decode(file_get_contents($shippedAppsFile), true);
