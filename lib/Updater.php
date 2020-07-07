@@ -786,13 +786,22 @@ EOF;
 	public function deleteOldFiles() {
 		$this->silentLog('[info] deleteOldFiles()');
 
-		$shippedAppsFile = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/core/shipped.json';
+		$shippedAppsFile = $this->baseDir . '/../core/shipped.json';
 		if(!file_exists($shippedAppsFile)) {
+			throw new \Exception('core/shipped.json is not available');
+		}
+
+		$newShippedAppsFile = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/core/shipped.json';
+		if(!file_exists($newShippedAppsFile)) {
 			throw new \Exception('core/shipped.json is not available in the new release');
 		}
+
 		// Delete shipped apps
-		$shippedApps = json_decode(file_get_contents($shippedAppsFile), true);
-		foreach($shippedApps['shippedApps'] as $app) {
+		$shippedApps = array_merge(
+			json_decode(file_get_contents($shippedAppsFile), true)['shippedApps'],
+			json_decode(file_get_contents($newShippedAppsFile), true)['shippedApps']
+		);
+		foreach($shippedApps as $app) {
 			$this->recursiveDelete($this->baseDir . '/../apps/' . $app);
 		}
 
