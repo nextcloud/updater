@@ -37,6 +37,9 @@ class UpdateCommand extends Command {
 	/** @var bool */
 	protected $shouldStop = false;
 
+	/** @var bool */
+	protected $skipBackup = false;
+
 	/** @var array strings of text for stages of updater */
 	protected $checkTexts = [
 		0 => '',
@@ -58,10 +61,12 @@ class UpdateCommand extends Command {
 		$this
 			->setName('update')
 			->setDescription('Updates the code of an Nextcloud instance')
-			->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.");
+			->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.")
+			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$this->skipBackup = $input->getOption('no-backup');
 
 		if (class_exists('NC\Updater\Version')) {
 			$versionClass = new Version();
@@ -353,7 +358,9 @@ class UpdateCommand extends Command {
 					$this->updater->checkWritePermissions();
 					break;
 				case 3:
-					$this->updater->createBackup();
+					if ($this->skipBackup === false) {
+						$this->updater->createBackup();
+					}
 					break;
 				case 4:
 					$this->updater->downloadUpdate();
