@@ -575,14 +575,14 @@ class Updater {
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
 		$filesInStorageLocation = scandir($storageLocation);
-		$files = array_filter($filesInStorageLocation, function($path){
+		$files = array_values(array_filter($filesInStorageLocation, function($path){
 			return $path !== '.' && $path !== '..';
-		});
+		}));
 		// only the downloaded archive
 		if(count($files) !== 1) {
 			throw new \Exception('There are more files than the downloaded archive in the downloads/ folder.');
 		}
-		return $storageLocation . '/' . $files[2];
+		return $storageLocation . '/' . $files[0];
 	}
 
 	/**
