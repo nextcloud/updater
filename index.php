@@ -470,11 +470,8 @@ class Updater {
 
 		// Create new folder for the backup
 		$backupFolderLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid').'/backups/nextcloud-'.$this->getConfigOption('version') . '-' . time() . '/';
-		if(file_exists($backupFolderLocation)) {
-			$this->silentLog('[info] backup folder location exists');
+		$this->silentLog('[info] backup folder location: ' . $backupFolderLocation);
 
-			$this->recursiveDelete($backupFolderLocation);
-		}
 		$state = mkdir($backupFolderLocation, 0750, true);
 		if($state === false) {
 			throw new \Exception('Could not create backup folder location');
