@@ -574,10 +574,13 @@ class Updater {
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
-		$files = scandir($storageLocation);
-		// ., .. and downloaded zip archive
-		if(count($files) !== 3) {
-			throw new \Exception('Not exact 3 files existent in folder');
+		$filesInStorageLocation = scandir($storageLocation);
+		$files = array_filter($filesInStorageLocation, function($path){
+			return $path !== '.' && $path !== '..';
+		});
+		// only the downloaded archive
+		if(count($files) !== 1) {
+			throw new \Exception('There are more files than the downloaded archive in the downloads/ folder.');
 		}
 		return $storageLocation . '/' . $files[2];
 	}
