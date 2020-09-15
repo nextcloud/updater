@@ -1686,6 +1686,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 			margin: 0 auto;
 		}
 
+		pre {
+			word-wrap: break-word;
+		}
+
 	</style>
 </head>
 <body>
@@ -1885,7 +1889,8 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					// it seems that this is not a JSON object
 					var response = {
 						processed: false,
-						response: 'Parsing response failed. ' + httpRequest.responseText
+						response: 'Parsing response failed.',
+						detailedResponseText: httpRequest.responseText,
 					};
 					callback(response);
 				} else {
@@ -1914,6 +1919,8 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					var text = '';
 					if (typeof response['response'] === 'string') {
 						text = escapeHTML(response['response']);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response['detailedResponseText']) + '</code></pre></details>';
 					} else {
 						text = 'The following extra files have been found:<ul>';
 						response['response'].forEach(function(file) {
@@ -1935,6 +1942,8 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					var text = '';
 					if (typeof response['response'] === 'string') {
 						text = escapeHTML(response['response']);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response['detailedResponseText']) + '</code></pre></details>';
 					} else {
 						text = 'The following places can not be written to:<ul>';
 						response['response'].forEach(function(file) {
@@ -1954,7 +1963,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					errorStep('step-backup', 3);
 
 					if(response.response) {
-						addStepText('step-backup', escapeHTML(response.response));
+						var text = escapeHTML(response.response);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+						addStepText('step-backup', text);
 					}
 				}
 			},
@@ -1967,7 +1979,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					errorStep('step-download', 4);
 
 					if(response.response) {
-						addStepText('step-download', escapeHTML(response.response));
+						var text = escapeHTML(response.response);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+						addStepText('step-download', text);
 					}
 				}
 			},
@@ -1980,7 +1995,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					errorStep('step-verify-integrity', 5);
 
 					if(response.response) {
-						addStepText('step-verify-integrity', escapeHTML(response.response));
+						var text = escapeHTML(response.response);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+						addStepText('step-verify-integrity', text);
 					}
 				}
 			},
@@ -1993,7 +2011,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					errorStep('step-extract', 6);
 
 					if(response.response) {
-						addStepText('step-extract', escapeHTML(response.response));
+						var text = escapeHTML(response.response);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+						addStepText('step-extract', text);
 					}
 				}
 			},
@@ -2006,7 +2027,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					errorStep('step-enable-maintenance', 7);
 
 					if(response.response) {
-						addStepText('step-enable-maintenance', escapeHTML(response.response));
+						var text = escapeHTML(response.response);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+						addStepText('step-enable-maintenance', text);
 					}
 				}
 			},
@@ -2019,7 +2043,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					errorStep('step-entrypoints', 8);
 
 					if(response.response) {
-						addStepText('step-entrypoints', escapeHTML(response.response));
+						var text = escapeHTML(response.response);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+						addStepText('step-entrypoints', text);
 					}
 				}
 			},
@@ -2032,7 +2059,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					errorStep('step-delete', 9);
 
 					if(response.response) {
-						addStepText('step-delete', escapeHTML(response.response));
+						var text = escapeHTML(response.response);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+						addStepText('step-delete', text);
 					}
 				}
 			},
@@ -2049,7 +2079,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					errorStep('step-move', 10);
 
 					if(response.response) {
-						addStepText('step-move', escapeHTML(response.response));
+						var text = escapeHTML(response.response);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+						addStepText('step-move', text);
 					}
 				}
 			},
@@ -2062,7 +2095,10 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					errorStep('step-maintenance-mode', 11);
 
 					if(response.response) {
-						addStepText('step-maintenance-mode', escapeHTML(response.response));
+						var text = escapeHTML(response.response);
+						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+						addStepText('step-maintenance-mode', text);
 					}
 				}
 			},
