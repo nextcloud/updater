@@ -431,6 +431,37 @@ class Updater {
 	}
 
 	/**
+	 * Gets the updater URL for this nextcloud instance
+	 * Supports reverse proxy configurations (overwrite*)
+	 * @return string
+	 */
+	public function getUpdaterUrl() {
+		$this->silentLog('[info] getUpdaterUrl()');
+
+		// Start from the request URI of the server, and get our updater sub-path
+		// from the URI, typically this is "/updater/"
+		$updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+		$this->silentLog('[debug] getUpdaterUrl() initial from _SERVER array: ' . $updaterUrl);
+
+		// Ensure updater URL is suffixed with /index.php
+		if(strpos($updaterUrl, 'index.php') === false) {
+			$updaterUrl = rtrim($updaterUrl, '/') . '/index.php';
+		}
+		$this->silentLog('[debug] getUpdaterUrl() after trimming and index.php suffix: ' . $updaterUrl);
+
+		// Support reverse proxy configuration
+		// https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/reverse_proxy_configuration.html#overwrite-parameters
+		$overwriteWebRootConfig = $this -> getConfigOption('overwritewebroot');
+		if(!empty($overwriteWebRootConfig)) {
+			$this->silentLog('[info] getUpdaterUrl() detected overwrite web root configuration >' . $overwriteWebRootConfig . '<, updating for reverse proxy');
+			$updaterUrl = $overwriteWebRootConfig . $updaterUrl;
+		}
+		$this->silentLog('[info] getUpdaterUrl() final: ' . $updaterUrl);
+
+		return $updaterUrl;
+	}
+
+	/**
 	 * @return array
 	 * @throws \Exception
 	 */
