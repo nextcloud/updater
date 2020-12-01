@@ -9,6 +9,6 @@
         "classmap-authoritative": true
     },
     "require": {
-        "symfony/console": "^3.1"
+        "symfony/console": "^5.2"
     }
 }
