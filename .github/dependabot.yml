@@ -1,0 +1,19 @@
+version: 2
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: monthly
+    time: "03:00"
+    timezone: Europe/Paris
+  open-pull-requests-limit: 10
+  reviewers:
+  - rullzer
+  - MorrisJobke
+- package-ecosystem: composer
+  directory: "/tests"
+  schedule:
+    interval: monthly
+    time: "03:00"
+    timezone: Europe/Paris
+  open-pull-requests-limit: 10
