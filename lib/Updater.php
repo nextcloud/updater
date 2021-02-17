@@ -36,6 +36,8 @@ class Updater {
 	private $updateAvailable = false;
 	/** @var string */
 	private $requestID = null;
+	/** @var bool */
+	private $disabled = false;
 
 	/**
 	 * Updater constructor
@@ -57,6 +59,12 @@ class Updater {
 		/** @var array $CONFIG */
 		require_once $configFileName;
 		$this->configValues = $CONFIG;
+
+		if (php_sapi_name() !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false)) {
+			// updater disabled
+			$this->disabled = true;
+			return;
+		}
 
 		$dataDir = $this->getDataDirectoryLocation();
 		if(empty($dataDir) || !is_string($dataDir)) {
@@ -91,6 +99,15 @@ class Updater {
 
 		$this->currentVersion = implode('.', $splittedVersion);
 		$this->buildTime = $buildTime;
+	}
+
+	/**
+	 * Returns whether the web updater is disabled
+	 *
+	 * @return bool
+	 */
+	public function isDisabled() {
+		return $this->disabled;
 	}
 
 	/**
