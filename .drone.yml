@@ -233,24 +233,6 @@ trigger:
 
 ---
 kind: pipeline
-name: php72-master
-
-steps:
-  - name: php72-master
-    image: nextcloudci/php7.2:php7.2-12
-    commands:
-      - make test-master
-
-trigger:
-  branch:
-    - master
-    - stable*
-  event:
-    - pull_request
-    - push
-
----
-kind: pipeline
 name: php73-master
 
 steps:
