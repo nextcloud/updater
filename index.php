@@ -177,7 +177,7 @@ class Updater {
 		require_once $configFileName;
 		$this->configValues = $CONFIG;
 
-		if ($this->configValues['upgrade.disable-web'] ?? false) {
+		if (php_sapi_name() !== 'cli' && $this->configValues['upgrade.disable-web'] ?? false) {
 			// updater disabled
 			$this->disabled = true;
 			return;
