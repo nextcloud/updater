@@ -125,13 +125,13 @@ trigger:
 
 ---
 kind: pipeline
-name: php71-stable15
+name: php73-stable20
 
 steps:
-  - name: php71-stable15
-    image: nextcloudci/php7.1:php7.1-16
+  - name: php73-stable20
+    image: nextcloudci/php7.3:php7.3-5
     commands:
-      - make test-stable15
+      - make test-stable20
 
 trigger:
   branch:
@@ -143,31 +143,13 @@ trigger:
 
 ---
 kind: pipeline
-name: php72-stable15
+name: php74-stable20
 
 steps:
-  - name: php72-stable15
-    image: nextcloudci/php7.2:php7.2-12
+  - name: php74-stable20
+    image: nextcloudci/php7.4:php7.4-3
     commands:
-      - make test-stable15
-
-trigger:
-  branch:
-    - master
-    - stable*
-  event:
-    - pull_request
-    - push
-
----
-kind: pipeline
-name: php73-stable15
-
-steps:
-  - name: php73-stable15
-    image: nextcloudci/php7.3:php7.3-2
-    commands:
-      - make test-stable15
+      - make test-stable20
 
 trigger:
   branch:
