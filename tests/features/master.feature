@@ -7,6 +7,6 @@ Feature: CLI updater - master base
     And the version number is decreased in the config.php to enforce upgrade
     When the CLI updater is run successfully
     And the output should contain "Update successful"
-    Then the installed version should be 20.0
+    Then the installed version should be 22.0
     And maintenance mode should be off
     And upgrade is not required
