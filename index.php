@@ -1791,10 +1791,9 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-maintenance-mode" class="step <?php if($stepNumber >= 11) { echo 'passed-step'; }?>">
-					<h2>Keep maintenance mode active?</h2>
+					<h2>Continue with web based updater</h2>
 					<div class="output hidden">
-						<button id="maintenance-enable">Yes (for usage with command line tool)</button>
-						<button id="maintenance-disable">No (for usage of the web based updater)</button>
+						<button id="maintenance-disable">Disable maintenance mode and continue in the web based updater</button>
 					</div>
 				</li>
 				<li id="step-done" class="step <?php if($stepNumber >= 12) { echo 'passed-step'; }?>">
@@ -2128,6 +2127,8 @@ if(strpos($updaterUrl, 'index.php') === false) {
 				}
 			},
 			12: function (response) {
+				done = true;
+				window.removeEventListener('beforeunload', confirmExit);
 				if (response.proceed === true) {
 					successStep('step-done');
 
@@ -2135,10 +2136,16 @@ if(strpos($updaterUrl, 'index.php') === false) {
 					var el = document.getElementById('step-done')
 						.getElementsByClassName('output')[0];
 					el.classList.remove('hidden');
+
+					// above is the fallback if the Javascript redirect doesn't work
+					window.location.href = "<?php echo htmlspecialchars(str_replace('/index.php', '/../', $updaterUrl), ENT_QUOTES); ?>";
 				} else {
-					errorStep('step-done', 11);
+					errorStep('step-done', 12);
+					var text = escapeHTML(response.response);
+					text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+						escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					addStepText('step-done', text);
 				}
-				done = true;
 			},
 		};
 
@@ -2169,19 +2176,12 @@ if(strpos($updaterUrl, 'index.php') === false) {
 			startUpdate();
 		}
 
-		function askForMaintenance(keepActive) {
+		function askForMaintenance() {
 			var el = document.getElementById('step-maintenance-mode')
 				.getElementsByClassName('output')[0];
-			if (keepActive) {
-				el.innerHTML = 'Maintenance mode will kept active.<br>Now trigger the migration via command line: <code>./occ upgrade</code><br>';
-				successStep('step-maintenance-mode');
-				currentStep('step-done');
-				performStep(12, performStepCallbacks[12]);
-			} else {
-				el.innerHTML = 'Maintenance mode will get disabled.<br>';
-				currentStep('step-maintenance-mode');
-				performStep(11, performStepCallbacks[11]);
-			}
+			el.innerHTML = 'Maintenance mode will get disabled.<br>';
+			currentStep('step-maintenance-mode');
+			performStep(11, performStepCallbacks[11]);
 		}
 
 		if(document.getElementById('startUpdateButton')) {
@@ -2197,26 +2197,21 @@ if(strpos($updaterUrl, 'index.php') === false) {
 				retryUpdate();
 			};
 		}
-		if(document.getElementById('maintenance-enable')) {
-			document.getElementById('maintenance-enable').onclick = function (e) {
-				e.preventDefault();
-				askForMaintenance(true);
-			};
-		}
 		if(document.getElementById('maintenance-disable')) {
 			document.getElementById('maintenance-disable').onclick = function (e) {
 				e.preventDefault();
-				askForMaintenance(false);
+				askForMaintenance();
 			};
 		}
 
 		// Show a popup when user tries to close page
-		window.onbeforeunload = confirmExit;
 		function confirmExit() {
 			if (done === false && started === true) {
 				return 'Update is in progress. Are you sure, you want to close?';
 			}
 		}
+		// this is unregistered in step 12
+		window.addEventListener('beforeunload', confirmExit);
 	</script>
 <?php endif; ?>
 
