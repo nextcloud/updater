@@ -516,10 +516,13 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function downloadUpdate() {
+	public function downloadUpdate($targetVersion=null) {
 		$this->silentLog('[info] downloadUpdate()');
-
-		$response = $this->getUpdateServerResponse();
+		if ($targetVersion == null){
+			$response = $this->getUpdateServerResponse();
+		}else{
+			$response["url"]=  'https://download.nextcloud.com/server/releases/nextcloud-'.$targetVersion.'.zip';
+		}
 		$storageLocation = $this->getDataDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		if(file_exists($storageLocation)) {
 			$this->silentLog('[info] storage location exists');

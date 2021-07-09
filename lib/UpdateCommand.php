@@ -62,11 +62,14 @@ class UpdateCommand extends Command {
 			->setName('update')
 			->setDescription('Updates the code of an Nextcloud instance')
 			->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.")
-			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version');
+			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version')
+			->addOption('target-version', null,InputOption::VALUE_REQUIRED, 'The target version that you want to update too', null);
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->skipBackup = $input->getOption('no-backup');
+		$this->targetVersion = $input->getOption('target-version');
+
 
 		if (class_exists('NC\Updater\Version')) {
 			$versionClass = new Version();
