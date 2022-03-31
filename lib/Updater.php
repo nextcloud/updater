@@ -209,6 +209,7 @@ class Updater {
 			'config',
 			'core',
 			'data',
+			'dist',
 			'l10n',
 			'lib',
 			'ocs',
