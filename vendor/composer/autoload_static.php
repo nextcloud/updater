@@ -51,6 +51,7 @@ class ComposerStaticInit994b8d870ddb923ebc3ff0ceaaaa96a6
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'NC\\Updater\\CommandApplication' => __DIR__ . '/../..' . '/lib/CommandApplication.php',
         'NC\\Updater\\LogException' => __DIR__ . '/../..' . '/lib/LogException.php',
         'NC\\Updater\\RecursiveDirectoryIteratorWithoutData' => __DIR__ . '/../..' . '/lib/RecursiveDirectoryIteratorWithoutData.php',
@@ -66,7 +67,6 @@ class ComposerStaticInit994b8d870ddb923ebc3ff0ceaaaa96a6
         'Psr\\Log\\LoggerInterface' => __DIR__ . '/..' . '/psr/log/Psr/Log/LoggerInterface.php',
         'Psr\\Log\\LoggerTrait' => __DIR__ . '/..' . '/psr/log/Psr/Log/LoggerTrait.php',
         'Psr\\Log\\NullLogger' => __DIR__ . '/..' . '/psr/log/Psr/Log/NullLogger.php',
-        'Psr\\Log\\Test\\DummyTest' => __DIR__ . '/..' . '/psr/log/Psr/Log/Test/LoggerInterfaceTest.php',
         'Psr\\Log\\Test\\LoggerInterfaceTest' => __DIR__ . '/..' . '/psr/log/Psr/Log/Test/LoggerInterfaceTest.php',
         'Symfony\\Component\\Console\\Application' => __DIR__ . '/..' . '/symfony/console/Application.php',
         'Symfony\\Component\\Console\\Command\\Command' => __DIR__ . '/..' . '/symfony/console/Command/Command.php',
