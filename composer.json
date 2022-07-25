@@ -9,6 +9,14 @@
         "classmap-authoritative": true
     },
     "require": {
-        "symfony/console": "^3.1"
+        "symfony/console": "^4.4"
+    },
+    "scripts": {
+        "cs:fix": "php-cs-fixer fix",
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "lint": "find . -name \\*.php -not -path './vendor/*' -not -path './build/*' -not -path './node_modules/*' -print0 | xargs -0 -n1 php -l"
+    },
+    "require-dev": {
+        "nextcloud/coding-standard": "^1.0"
     }
 }
