@@ -5,135 +5,130 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 /**
  * Defines application features from the specific context.
  */
-class FeatureContext implements SnippetAcceptingContext
-{
-    protected $buildDir;
-    protected $serverDir;
-    protected $updateServerDir;
-    protected $tmpDownloadDir;
-    protected $downloadURL = 'https://download.nextcloud.com/server/releases/';
-    protected $dailyDownloadURL = 'https://download.nextcloud.com/server/daily/latest-';
-    protected $prereleasesDownloadURL = 'https://download.nextcloud.com/server/prereleases/';
-    /** @var resource */
-    protected $updaterServerProcess = null;
-    /** @var string[] */
-    protected $CLIOutput;
-    /** @var integer */
-    protected $CLIReturnCode;
-    /** @var string */
-    protected $autoupdater = '1';
-    /** @var bool */
-    protected $skipIt = false;
+class FeatureContext implements SnippetAcceptingContext {
+	protected $buildDir;
+	protected $serverDir;
+	protected $updateServerDir;
+	protected $tmpDownloadDir;
+	protected $downloadURL = 'https://download.nextcloud.com/server/releases/';
+	protected $dailyDownloadURL = 'https://download.nextcloud.com/server/daily/latest-';
+	protected $prereleasesDownloadURL = 'https://download.nextcloud.com/server/prereleases/';
+	/** @var resource */
+	protected $updaterServerProcess = null;
+	/** @var string[] */
+	protected $CLIOutput;
+	/** @var integer */
+	protected $CLIReturnCode;
+	/** @var string */
+	protected $autoupdater = '1';
+	/** @var bool */
+	protected $skipIt = false;
 
-    public function __construct()
-    {
-        $baseDir = __DIR__ . '/../../data/';
-        $this->serverDir = $baseDir . 'server/';
-        $this->tmpDownloadDir = $baseDir . 'downloads/';
-        $this->updateServerDir = $baseDir . 'update-server/';
-        $this->buildDir = $baseDir . '../../';
-        if(!file_exists($baseDir) && !mkdir($baseDir)) {
-            throw new RuntimeException('Creating tmp download dir failed');
-        }
-        if(!file_exists($this->serverDir) && !mkdir($this->serverDir)) {
-            throw new RuntimeException('Creating server dir failed');
-        }
-        if(!file_exists($this->tmpDownloadDir) && !mkdir($this->tmpDownloadDir)) {
-            throw new RuntimeException('Creating tmp download dir failed');
-        }
-        if(!file_exists($this->updateServerDir) && !mkdir($this->updateServerDir)) {
-            throw new RuntimeException('Creating update server dir failed');
-        }
-    }
+	public function __construct() {
+		$baseDir = __DIR__ . '/../../data/';
+		$this->serverDir = $baseDir . 'server/';
+		$this->tmpDownloadDir = $baseDir . 'downloads/';
+		$this->updateServerDir = $baseDir . 'update-server/';
+		$this->buildDir = $baseDir . '../../';
+		if (!file_exists($baseDir) && !mkdir($baseDir)) {
+			throw new RuntimeException('Creating tmp download dir failed');
+		}
+		if (!file_exists($this->serverDir) && !mkdir($this->serverDir)) {
+			throw new RuntimeException('Creating server dir failed');
+		}
+		if (!file_exists($this->tmpDownloadDir) && !mkdir($this->tmpDownloadDir)) {
+			throw new RuntimeException('Creating tmp download dir failed');
+		}
+		if (!file_exists($this->updateServerDir) && !mkdir($this->updateServerDir)) {
+			throw new RuntimeException('Creating update server dir failed');
+		}
+	}
 
-    /**
-     * @AfterScenario
-     */
-    public function stopUpdateServer()
-    {
-        if(is_resource($this->updaterServerProcess)) {
-            proc_terminate($this->updaterServerProcess);
-            proc_close($this->updaterServerProcess);
-        }
-    }
+	/**
+	 * @AfterScenario
+	 */
+	public function stopUpdateServer() {
+		if (is_resource($this->updaterServerProcess)) {
+			proc_terminate($this->updaterServerProcess);
+			proc_close($this->updaterServerProcess);
+		}
+	}
 
-    /**
-     * @Given /the current (installed )?version is ([0-9.]+((beta|RC)[0-9]?)?|stable[0-9]+|master)/
-     */
-    public function theCurrentInstalledVersionIs($installed, $version)
-    {
+	/**
+	 * @Given /the current (installed )?version is ([0-9.]+((beta|RC)[0-9]?)?|stable[0-9]+|master)/
+	 */
+	public function theCurrentInstalledVersionIs($installed, $version) {
 		if ($this->skipIt) {
 			return;
 		}
-        // recursive deletion of server folder
-        if(file_exists($this->serverDir)) {
-            $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($this->serverDir, RecursiveDirectoryIterator::SKIP_DOTS),
-                RecursiveIteratorIterator::CHILD_FIRST
-            );
+		// recursive deletion of server folder
+		if (file_exists($this->serverDir)) {
+			$iterator = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator($this->serverDir, RecursiveDirectoryIterator::SKIP_DOTS),
+				RecursiveIteratorIterator::CHILD_FIRST
+			);
 
-            foreach ($iterator as $fileInfo) {
-                $action = $fileInfo->isDir() ? 'rmdir' : 'unlink';
-                $action($fileInfo->getRealPath());
-            }
-            $state = rmdir($this->serverDir);
-            if($state === false) {
-                throw new \Exception('Could not rmdir ' . $this->serverDir);
-            }
-        }
+			foreach ($iterator as $fileInfo) {
+				$action = $fileInfo->isDir() ? 'rmdir' : 'unlink';
+				$action($fileInfo->getRealPath());
+			}
+			$state = rmdir($this->serverDir);
+			if ($state === false) {
+				throw new \Exception('Could not rmdir ' . $this->serverDir);
+			}
+		}
 
-        $filename = 'nextcloud-' . $version . '.zip';
+		$filename = 'nextcloud-' . $version . '.zip';
 
-        if (!file_exists($this->tmpDownloadDir . $filename)) {
-            $fp = fopen($this->tmpDownloadDir . $filename, 'w+');
-            $url = $this->downloadURL . $filename;
-            if (strpos($version, 'RC') !== false || strpos($version, 'beta') !== false) {
-                $url = $this->prereleasesDownloadURL . 'nextcloud-' . $version . '.zip';
-            } else if(strpos($version, 'stable') !== false || strpos($version, 'master') !== false) {
-                $url = $this->dailyDownloadURL . $version . '.zip';
-            }
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_FILE, $fp);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'Nextcloud Updater');
-            if(curl_exec($ch) === false) {
-                throw new \Exception('Curl error: ' . curl_error($ch));
-            }
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            if($httpCode !== 200) {
-                throw new \Exception('Download failed - HTTP code: ' . $httpCode);
-            }
-            curl_close($ch);
-            fclose($fp);
-        }
+		if (!file_exists($this->tmpDownloadDir . $filename)) {
+			$fp = fopen($this->tmpDownloadDir . $filename, 'w+');
+			$url = $this->downloadURL . $filename;
+			if (strpos($version, 'RC') !== false || strpos($version, 'beta') !== false) {
+				$url = $this->prereleasesDownloadURL . 'nextcloud-' . $version . '.zip';
+			} elseif (strpos($version, 'stable') !== false || strpos($version, 'master') !== false) {
+				$url = $this->dailyDownloadURL . $version . '.zip';
+			}
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_FILE, $fp);
+			curl_setopt($ch, CURLOPT_USERAGENT, 'Nextcloud Updater');
+			if (curl_exec($ch) === false) {
+				throw new \Exception('Curl error: ' . curl_error($ch));
+			}
+			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			if ($httpCode !== 200) {
+				throw new \Exception('Download failed - HTTP code: ' . $httpCode);
+			}
+			curl_close($ch);
+			fclose($fp);
+		}
 
-        $zip = new ZipArchive;
-        $zipState = $zip->open($this->tmpDownloadDir . $filename);
-        if ($zipState === true) {
-            $zip->extractTo($this->serverDir);
-            $zip->close();
-        } else {
-            throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
-        }
+		$zip = new ZipArchive;
+		$zipState = $zip->open($this->tmpDownloadDir . $filename);
+		if ($zipState === true) {
+			$zip->extractTo($this->serverDir);
+			$zip->close();
+		} else {
+			throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
+		}
 
-        if($installed === '') {
+		if ($installed === '') {
 			// the instance should not be installed
 			return;
 		}
 
-        chdir($this->serverDir . 'nextcloud');
-        shell_exec('chmod +x occ');
-        exec('./occ maintenance:install --admin-user=admin --admin-pass=admin 2>&1', $output, $returnCode);
+		chdir($this->serverDir . 'nextcloud');
+		shell_exec('chmod +x occ');
+		exec('./occ maintenance:install --admin-user=admin --admin-pass=admin 2>&1', $output, $returnCode);
 
-        if ($returnCode !== 0) {
-            throw new Exception('Install failed' . PHP_EOL . join(PHP_EOL, $output));
-        }
-    }
+		if ($returnCode !== 0) {
+			throw new Exception('Install failed' . PHP_EOL . join(PHP_EOL, $output));
+		}
+	}
 
-    /**
-     * @Given there is no update available
-     */
-    public function thereIsNoUpdateAvailable()
-    {
+	/**
+	 * @Given there is no update available
+	 */
+	public function thereIsNoUpdateAvailable() {
 		if ($this->skipIt) {
 			return;
 		}
@@ -156,8 +151,7 @@ class FeatureContext implements SnippetAcceptingContext
 	/**
 	 * @When the CLI updater is run successfully
 	 */
-	public function theCliUpdaterIsRunSuccessfully()
-	{
+	public function theCliUpdaterIsRunSuccessfully() {
 		if ($this->skipIt) {
 			return;
 		}
@@ -168,34 +162,33 @@ class FeatureContext implements SnippetAcceptingContext
 		}
 	}
 
-    /**
-     * @When the CLI updater is run
-     */
-    public function theCliUpdaterIsRun()
-    {
+	/**
+	 * @When the CLI updater is run
+	 */
+	public function theCliUpdaterIsRun() {
 		if ($this->skipIt) {
 			return;
 		}
-        if(!file_exists($this->buildDir . 'updater.phar')) {
-            throw new Exception('updater.phar not available - please build it in advance via "box build -c box.json"');
-        }
-        copy($this->buildDir . 'updater.phar', $this->serverDir . 'nextcloud/updater/updater');
-        chdir($this->serverDir . 'nextcloud/updater');
-        chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
-        exec('./updater -n', $output, $returnCode);
+		if (!file_exists($this->buildDir . 'updater.phar')) {
+			throw new Exception('updater.phar not available - please build it in advance via "box build -c box.json"');
+		}
+		copy($this->buildDir . 'updater.phar', $this->serverDir . 'nextcloud/updater/updater');
+		chdir($this->serverDir . 'nextcloud/updater');
+		chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
+		exec('./updater -n', $output, $returnCode);
 
-        // sleep to let the opcache do it's work and invalidate the status.php
-        sleep(5);
+		// sleep to let the opcache do it's work and invalidate the status.php
+		sleep(5);
 		$this->CLIOutput = $output;
 		$this->CLIReturnCode = $returnCode;
-    }
+	}
 
 	/**
 	 * @param $version
 	 * @return string
 	 */
-    public function getSignatureForVersion($version) {
-    	$signatures = [
+	public function getSignatureForVersion($version) {
+		$signatures = [
 			'19.0.0beta4' => 'Cum4wIKpCRHNZuOQ/SfDYsIp39/4/Z3EIiMLTV7vFLf1pjsn+q1FRwk7HbT0ileU
 9eGbmpJHrmbNFk73g6k2YLOeosznMD89+AtRrRRn7C+sJmXx90+Eejs1aWWBRi8j
 wnC4PNYGZCqV10z+bMWNFWuZlkO2o2c+o8I/mIM93trRgnciFzA2YYAILnz4vZ5L
@@ -247,24 +240,23 @@ V367c1FDks7iKs/V96u21NuF14IQzI0mEzMzysPINrKbHC+OU1BKHKOHqRJjkHwQ
 fNJsXi16UkYMGUXyQWQXHg==',
 		];
 
-    	if(isset($signatures[$version])) {
+		if (isset($signatures[$version])) {
 			return $signatures[$version];
 		}
 
 		return '';
-    }
+	}
 
-    /**
-     * @Given /there is an update to version ([0-9.]+) available/
-     */
-    public function thereIsAnUpdateToVersionAvailable($version)
-    {
+	/**
+	 * @Given /there is an update to version ([0-9.]+) available/
+	 */
+	public function thereIsAnUpdateToVersionAvailable($version) {
 		if ($this->skipIt) {
 			return;
 		}
 		$this->runUpdateServer();
 
-        $content = '<?php
+		$content = '<?php
         header("Content-Type: application/xml");
         ?>
 <?xml version="1.0" encoding="UTF-8"?>
@@ -277,15 +269,13 @@ fNJsXi16UkYMGUXyQWQXHg==',
  <signature>'.$this->getSignatureForVersion($version).'</signature>
 </nextcloud>
 ';
-        file_put_contents($this->updateServerDir . 'index.php', $content);
-
-    }
+		file_put_contents($this->updateServerDir . 'index.php', $content);
+	}
 
 	/**
 	 * @Given there is an update to prerelease version :version available
 	 */
-	public function thereIsAnUpdateToPrereleaseVersionAvailable($version)
-	{
+	public function thereIsAnUpdateToPrereleaseVersionAvailable($version) {
 		if ($this->skipIt) {
 			return;
 		}
@@ -305,14 +295,12 @@ fNJsXi16UkYMGUXyQWQXHg==',
 </nextcloud>
 ';
 		file_put_contents($this->updateServerDir . 'index.php', $content);
-
 	}
 
 	/**
 	 * @Given /there is an update to daily version of (.*) available/
 	 */
-	public function thereIsAnUpdateToDailyVersionAvailable($version)
-	{
+	public function thereIsAnUpdateToDailyVersionAvailable($version) {
 		if ($this->skipIt) {
 			return;
 		}
@@ -331,18 +319,16 @@ fNJsXi16UkYMGUXyQWQXHg==',
 </nextcloud>
 ';
 		file_put_contents($this->updateServerDir . 'index.php', $content);
-
 	}
 
 	/**
 	 * runs the updater server
 	 * @throws Exception
 	 */
-    protected function runUpdateServer()
-	{
+	protected function runUpdateServer() {
 		$configFile = $this->serverDir . 'nextcloud/config/config.php';
 		$content = file_get_contents($configFile);
-		$content = preg_replace('!\$CONFIG\s*=\s*array\s*\(!', "\$CONFIG = array(\n 'updater.server.url' => 'http://localhost:8870/',", $content );
+		$content = preg_replace('!\$CONFIG\s*=\s*array\s*\(!', "\$CONFIG = array(\n 'updater.server.url' => 'http://localhost:8870/',", $content);
 		file_put_contents($configFile, $content);
 
 		if (!is_null($this->updaterServerProcess)) {
@@ -352,7 +338,7 @@ fNJsXi16UkYMGUXyQWQXHg==',
 		$cmd = "php -S localhost:8870 -t " . $this->updateServerDir . " 2>/dev/null 1>/dev/null";
 		$this->updaterServerProcess = proc_open($cmd, [], $pipes, $this->updateServerDir);
 
-		if(!is_resource($this->updaterServerProcess)) {
+		if (!is_resource($this->updaterServerProcess)) {
 			throw new Exception('Update server could not be started');
 		}
 
@@ -360,29 +346,27 @@ fNJsXi16UkYMGUXyQWQXHg==',
 		sleep(1);
 	}
 
-    /**
-     * @Then /the installed version should be ([0-9.]+)/
-     */
-	public function theInstalledVersionShouldBe2($version)
-    {
+	/**
+	 * @Then /the installed version should be ([0-9.]+)/
+	 */
+	public function theInstalledVersionShouldBe2($version) {
 		if ($this->skipIt) {
 			return;
 		}
-        /** @var $OC_Version */
-        require $this->serverDir . 'nextcloud/version.php';
+		/** @var $OC_Version */
+		require $this->serverDir . 'nextcloud/version.php';
 
-        $installedVersion = join('.', $OC_Version);
+		$installedVersion = join('.', $OC_Version);
 
-        if (strpos($installedVersion, $version) !== 0) {
-            throw new Exception('Version mismatch - Installed: ' . $installedVersion . ' Wanted: ' . $version);
-        }
-    }
+		if (strpos($installedVersion, $version) !== 0) {
+			throw new Exception('Version mismatch - Installed: ' . $installedVersion . ' Wanted: ' . $version);
+		}
+	}
 
 	/**
 	 * @Then /maintenance mode should be (on|off)/
 	 */
-	public function maintenanceModeShouldBe($state)
-	{
+	public function maintenanceModeShouldBe($state) {
 		if ($this->skipIt) {
 			return;
 		}
@@ -403,8 +387,7 @@ fNJsXi16UkYMGUXyQWQXHg==',
 	 * @Given the current channel is :channel
 	 * @param string $channel
 	 */
-	public function theCurrentChannelIs($channel)
-	{
+	public function theCurrentChannelIs($channel) {
 		if ($this->skipIt) {
 			return;
 		}
@@ -417,8 +400,7 @@ fNJsXi16UkYMGUXyQWQXHg==',
 	/**
 	 * @Then /upgrade is (not required|required)/
 	 */
-	public function upgradeIs($state)
-	{
+	public function upgradeIs($state) {
 		if ($this->skipIt) {
 			return;
 		}
@@ -448,8 +430,7 @@ fNJsXi16UkYMGUXyQWQXHg==',
 	/**
 	 * @Then /the return code should not be (\S*)/
 	 */
-	public function theReturnCodeShouldNotBe($expectedReturnCode)
-	{
+	public function theReturnCodeShouldNotBe($expectedReturnCode) {
 		if ($this->skipIt) {
 			return;
 		}
@@ -461,8 +442,7 @@ fNJsXi16UkYMGUXyQWQXHg==',
 	/**
 	 * @Then /the output should contain "(.*)"/
 	 */
-	public function theOutputShouldBe($expectedOutput)
-	{
+	public function theOutputShouldBe($expectedOutput) {
 		if ($this->skipIt) {
 			return;
 		}
@@ -474,8 +454,7 @@ fNJsXi16UkYMGUXyQWQXHg==',
 	/**
 	 * @Given /the version number is decreased in the config.php to enforce upgrade/
 	 */
-	public function theVersionNumberIsDecreasedInTheConfigPHPToEnforceUpgrade()
-	{
+	public function theVersionNumberIsDecreasedInTheConfigPHPToEnforceUpgrade() {
 		if ($this->skipIt) {
 			return;
 		}
@@ -488,8 +467,7 @@ fNJsXi16UkYMGUXyQWQXHg==',
 	/**
 	 * @Given there is a folder called :name
 	 */
-	public function thereIsAFolderCalled($name)
-	{
+	public function thereIsAFolderCalled($name) {
 		if ($this->skipIt) {
 			return;
 		}
@@ -499,8 +477,7 @@ fNJsXi16UkYMGUXyQWQXHg==',
 	/**
 	 * @Given there is a config for a secondary apps directory called :name
 	 */
-	public function thereIsAConfigForASecondaryAppsDirectoryCalled($name)
-	{
+	public function thereIsAConfigForASecondaryAppsDirectoryCalled($name) {
 		if ($this->skipIt) {
 			return;
 		}
@@ -528,8 +505,7 @@ EOF;
 	/**
 	 * @Given /PHP is at least in version ([0-9.]+)/
 	 */
-	public function phpIsAtLeastInVersion($version)
-	{
+	public function phpIsAtLeastInVersion($version) {
 		$this->skipIt = !version_compare($version, PHP_VERSION, '<');
 	}
 }
