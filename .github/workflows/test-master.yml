@@ -1,0 +1,34 @@
+name: Test master
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+      - stable*
+
+permissions:
+  contents: read
+
+jobs:
+  php-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ["7.4", "8.0", "8.1"]
+
+    name: test-master
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up php ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: none
+
+      - name: test-master
+        run: make test-master
