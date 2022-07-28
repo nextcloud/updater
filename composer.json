@@ -5,18 +5,27 @@
         }
     },
     "config": {
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
+        },
+        "classmap-authoritative": true,
         "optimize-autoloader": true,
-        "classmap-authoritative": true
+        "platform": {
+            "php": "7.4"
+        },
+        "sort-packages": true
     },
     "require": {
         "symfony/console": "^4.4"
     },
     "scripts": {
-        "cs:fix": "php-cs-fixer fix",
         "cs:check": "php-cs-fixer fix --dry-run --diff",
-        "lint": "find . -name \\*.php -not -path './vendor/*' -not -path './build/*' -not -path './node_modules/*' -print0 | xargs -0 -n1 php -l"
+        "cs:fix": "php-cs-fixer fix",
+        "lint": "find . -name \\*.php -not -path './vendor*' -not -path './build/*' -not -path './node_modules/*' -print0 | xargs -0 -n1 php -l",
+        "post-install-cmd": ["@composer bin all install --ansi"],
+        "post-update-cmd": ["@composer bin all update --ansi"]
     },
     "require-dev": {
-        "nextcloud/coding-standard": "^1.0"
+        "bamarni/composer-bin-plugin": "^1.5"
     }
 }
