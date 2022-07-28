@@ -17,24 +17,6 @@ trigger:
 
 ---
 kind: pipeline
-name: php73-cli
-
-steps:
-  - name: php73-cli
-    image: ghcr.io/nextcloud/continuous-integration-php7.3:latest
-    commands:
-      - make test-cli
-
-trigger:
-  branch:
-    - master
-    - stable*
-  event:
-    - pull_request
-    - push
-
----
-kind: pipeline
 name: php74-cli
 
 steps:
@@ -50,24 +32,6 @@ trigger:
   event:
     - pull_request
     - push
----
-kind: pipeline
-name: php73-stable19
-
-steps:
-  - name: php73-stable19
-    image: ghcr.io/nextcloud/continuous-integration-php7.3:latest
-    commands:
-      - make test-stable19
-
-trigger:
-  branch:
-    - master
-    - stable*
-  event:
-    - pull_request
-    - push
-
 ---
 kind: pipeline
 name: php74-stable19
@@ -88,24 +52,6 @@ trigger:
 
 ---
 kind: pipeline
-name: php73-stable20
-
-steps:
-  - name: php73-stable20
-    image: ghcr.io/nextcloud/continuous-integration-php7.3:latest
-    commands:
-      - make test-stable20
-
-trigger:
-  branch:
-    - master
-    - stable*
-  event:
-    - pull_request
-    - push
-
----
-kind: pipeline
 name: php74-stable20
 
 steps:
@@ -113,24 +59,6 @@ steps:
     image: ghcr.io/nextcloud/continuous-integration-php7.4:latest
     commands:
       - make test-stable20
-
-trigger:
-  branch:
-    - master
-    - stable*
-  event:
-    - pull_request
-    - push
-
----
-kind: pipeline
-name: php73-stable21
-
-steps:
-  - name: php73-stable21
-    image: ghcr.io/nextcloud/continuous-integration-php7.3:latest
-    commands:
-      - make test-stable21
 
 trigger:
   branch:
