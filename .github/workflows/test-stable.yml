@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  php-lint:
+  test-stable:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -38,3 +38,15 @@ jobs:
 
       - name: test-stable${{ matrix.nextcloud-versions }}
         run: make test-stable${{ matrix.nextcloud-versions }}
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: test-stable
+
+    if: always()
+
+    name: test-stable-summary
+
+    steps:
+      - name: Summary status
+        run: if ${{ needs.test-stable.result != 'success' }}; then exit 1; fi
