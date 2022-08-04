@@ -1,0 +1,52 @@
+name: Test stable
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+      - stable*
+
+permissions:
+  contents: read
+
+jobs:
+  test-stable:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ["7.4", "8.0"]
+        nextcloud-versions: ["19", "20", "21"]
+        exclude:
+          - php-versions: "8.0"
+            nextcloud-versions: "19"
+          - php-versions: "8.0"
+            nextcloud-versions: "20"
+
+    name: test-stable
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up php ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: none
+
+      - name: test-stable${{ matrix.nextcloud-versions }}
+        run: make test-stable${{ matrix.nextcloud-versions }}
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: test-stable
+
+    if: always()
+
+    name: test-stable-summary
+
+    steps:
+      - name: Summary status
+        run: if ${{ needs.test-stable.result != 'success' }}; then exit 1; fi
