@@ -23,7 +23,7 @@
 namespace NC\Updater;
 
 class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
-	public function accept() {
+	public function accept(): bool {
 		/** @var \DirectoryIterator $this */
 		$excludes = [
 			'.rnd',
