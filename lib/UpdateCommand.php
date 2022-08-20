@@ -23,7 +23,6 @@
 namespace NC\Updater;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -96,7 +95,7 @@ class UpdateCommand extends Command {
 			return -1;
 		}
 
-		if($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
+		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
 			$configFileName = rtrim($dir, '/') . '/config.php';
 		} else {
 			$configFileName = $path . '/../config/config.php';
@@ -123,12 +122,12 @@ class UpdateCommand extends Command {
 		// Check if already a step is in process
 		$currentStep = $this->updater->currentStep();
 		$stepNumber = 0;
-		if($currentStep !== []) {
+		if ($currentStep !== []) {
 			$stepState = $currentStep['state'];
 			$stepNumber = $currentStep['step'];
 			$this->updater->log('[info] Step ' . $stepNumber . ' is in state "' . $stepState . '".');
 
-			if($stepState === 'start') {
+			if ($stepState === 'start') {
 				$output->writeln(
 					sprintf(
 						'Step %s is currently in process. Please call this command later.',
@@ -157,7 +156,7 @@ class UpdateCommand extends Command {
 
 		$output->writeln('');
 
-		if(!$this->updater->updateAvailable() && $stepNumber === 0) {
+		if (!$this->updater->updateAvailable() && $stepNumber === 0) {
 			$output->writeln('Nothing to do.');
 			return 0;
 		}
@@ -168,7 +167,6 @@ class UpdateCommand extends Command {
 		}
 
 		if ($input->isInteractive()) {
-
 			$this->showCurrentStatus($output, $stepNumber);
 
 			$output->writeln('');
@@ -191,7 +189,7 @@ class UpdateCommand extends Command {
 
 		$output->writeln('');
 
-		if(function_exists('pcntl_signal')) {
+		if (function_exists('pcntl_signal')) {
 			// being able to handle stop/terminate command (Ctrl - C)
 			pcntl_signal(SIGTERM, [$this, 'stopCommand']);
 			pcntl_signal(SIGINT, [$this, 'stopCommand']);
@@ -204,7 +202,7 @@ class UpdateCommand extends Command {
 		}
 
 		// print already executed steps
-		for($i = 1; $i <= $stepNumber; $i++) {
+		for ($i = 1; $i <= $stepNumber; $i++) {
 			if ($i === 11) {
 				// no need to ask for maintenance mode on CLI - skip it
 				continue;
@@ -223,7 +221,7 @@ class UpdateCommand extends Command {
 
 			if (function_exists('pcntl_signal_dispatch')) {
 				pcntl_signal_dispatch();
-				if ( $this->shouldStop ) {
+				if ($this->shouldStop) {
 					break;
 				}
 			}
@@ -244,7 +242,7 @@ class UpdateCommand extends Command {
 				$output->writeln('<error>[✘] ' . $this->checkTexts[$i] . ' failed</error>');
 
 				if ($i === 1) {
-					if(is_string($result['response'])) {
+					if (is_string($result['response'])) {
 						$output->writeln('<error>' . $result['response'] . '</error>');
 					} else {
 						$output->writeln('<error>The following extra files have been found:</error>');
@@ -253,7 +251,7 @@ class UpdateCommand extends Command {
 						}
 					}
 				} elseif ($i === 2) {
-					if(is_string($result['response'])) {
+					if (is_string($result['response'])) {
 						$output->writeln('<error>' . $result['response'] . '</error>');
 					} else {
 						$output->writeln('<error>The following places can not be written to:</error>');
@@ -278,7 +276,6 @@ class UpdateCommand extends Command {
 			$output->writeln('Update of code successful.');
 
 			if ($input->isInteractive()) {
-
 				$output->writeln('');
 
 				$helper = $this->getHelper('question');
@@ -301,7 +298,6 @@ class UpdateCommand extends Command {
 
 			$output->writeln('');
 			if ($input->isInteractive()) {
-
 				$helper = $this->getHelper('question');
 				$question = new ConfirmationQuestion($this->checkTexts[11] . ' [y/N] ', false);
 
@@ -336,16 +332,16 @@ class UpdateCommand extends Command {
 			}
 			return -1;
 		}
-    }
+	}
 
 	/**
 	 * @param $step integer
 	 * @return array with options 'proceed' which is a boolean and defines if the step succeeded and an optional 'response' string
 	 */
-    protected function executeStep($step) {
+	protected function executeStep($step) {
 		$this->updater->log('[info] executeStep request for step "' . $step . '"');
 		try {
-			if($step > 12 || $step < 1) {
+			if ($step > 12 || $step < 1) {
 				throw new \Exception('Invalid step');
 			}
 
@@ -447,6 +443,4 @@ class UpdateCommand extends Command {
 	public function stopCommand() {
 		$this->shouldStop = true;
 	}
-
-
 }

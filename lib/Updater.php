@@ -518,6 +518,7 @@ class Updater {
 		$this->silentLog('[info] downloadUpdate()');
 
 		$response = $this->getUpdateServerResponse();
+
 		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		if (file_exists($storageLocation)) {
 			$this->silentLog('[info] storage location exists');
@@ -590,7 +591,7 @@ class Updater {
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
 		$filesInStorageLocation = scandir($storageLocation);
-		$files = array_values(array_filter($filesInStorageLocation, function($path){
+		$files = array_values(array_filter($filesInStorageLocation, function ($path) {
 			return $path !== '.' && $path !== '..';
 		}));
 		// only the downloaded archive
@@ -733,7 +734,7 @@ EOF;
 		];
 
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
-		foreach($filesToReplace as $file) {
+		foreach ($filesToReplace as $file) {
 			$this->silentLog('[info] replace ' . $file);
 			$parentDir = dirname($this->baseDir . '/../' . $file);
 			if (!file_exists($parentDir)) {
@@ -816,7 +817,7 @@ EOF;
 			json_decode(file_get_contents($shippedAppsFile), true)['shippedApps'],
 			json_decode(file_get_contents($newShippedAppsFile), true)['shippedApps']
 		);
-		foreach($shippedApps as $app) {
+		foreach ($shippedApps as $app) {
 			$this->recursiveDelete($this->baseDir . '/../apps/' . $app);
 		}
 
@@ -987,6 +988,7 @@ EOF;
 		if ($state === false) {
 			throw new \Exception('Could not rmdir $storagelocation');
 		}
+
 		$state = unlink($this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/.step');
 		if ($state === false) {
 			throw new \Exception('Could not rmdir .step');
