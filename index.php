@@ -21,6 +21,7 @@
  *
  */
 
+
 class UpdateException extends \Exception {
 	protected $data;
 
@@ -33,8 +34,10 @@ class UpdateException extends \Exception {
 	}
 }
 
+
 class LogException extends \Exception {
 }
+
 
 class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 	public function accept(): bool {
@@ -49,96 +52,6 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 	}
 }
 
-class Auth {
-	/** @var Updater */
-	private $updater;
-	/** @var string */
-	private $password;
-
-	/**
-	 * @param Updater $updater
-	 * @param string $password
-	 */
-	public function __construct(Updater $updater,
-		$password) {
-		$this->updater = $updater;
-		$this->password = $password;
-	}
-	/**
-	 * Compares two strings.
-	 *
-	 * This method implements a constant-time algorithm to compare strings.
-	 * Regardless of the used implementation, it will leak length information.
-	 *
-	 * @param string $knownString The string of known length to compare against
-	 * @param string $userInput   The string that the user can control
-	 *
-	 * @return bool true if the two strings are the same, false otherwise
-	 * @license MIT
-	 * @source https://github.com/symfony/security-core/blob/56721d5f5f63da7e08d05aa7668a5a9ef2367e1e/Util/StringUtils.php
-	 */
-	private static function equals($knownString, $userInput) {
-		// Avoid making unnecessary duplications of secret data
-		if (!is_string($knownString)) {
-			$knownString = (string) $knownString;
-		}
-		if (!is_string($userInput)) {
-			$userInput = (string) $userInput;
-		}
-		if (function_exists('hash_equals')) {
-			return hash_equals($knownString, $userInput);
-		}
-		$knownLen = self::safeStrlen($knownString);
-		$userLen = self::safeStrlen($userInput);
-		if ($userLen !== $knownLen) {
-			return false;
-		}
-		$result = 0;
-		for ($i = 0; $i < $knownLen; ++$i) {
-			$result |= (ord($knownString[$i]) ^ ord($userInput[$i]));
-		}
-		// They are only identical strings if $result is exactly 0...
-		return 0 === $result;
-	}
-	/**
-	 * Returns the number of bytes in a string.
-	 *
-	 * @param string $string The string whose length we wish to obtain
-	 *
-	 * @return int
-	 * @license MIT
-	 * @source https://github.com/symfony/security-core/blob/56721d5f5f63da7e08d05aa7668a5a9ef2367e1e/Util/StringUtils.php
-	 */
-	private static function safeStrlen($string) {
-		// Premature optimization
-		// Since this cannot be changed at runtime, we can cache it
-		static $funcExists = null;
-		if (null === $funcExists) {
-			$funcExists = function_exists('mb_strlen');
-		}
-		if ($funcExists) {
-			return mb_strlen($string, '8bit');
-		}
-		return strlen($string);
-	}
-
-	/**
-	 * Whether the current user is authenticated
-	 *
-	 * @return bool
-	 */
-	public function isAuthenticated() {
-		$storedHash = $this->updater->getConfigOption('updater.secret');
-
-		// As a sanity check the stored hash or the sent password can never be empty
-		if ($storedHash === '' || $storedHash === null || $this->password === null) {
-			return false;
-		}
-
-		// As we still support PHP 5.4 we have to use some magic involving "crypt"
-		return $this->equals($storedHash, crypt($this->password, $storedHash));
-	}
-}
 
 class Updater {
 	/** @var string */
@@ -1288,6 +1201,97 @@ EOF;
 	 */
 	public function logVersion() {
 		$this->silentLog('[info] current version: ' . $this->currentVersion . ' build time: ' . $this->buildTime);
+	}
+}
+
+class Auth {
+	/** @var Updater */
+	private $updater;
+	/** @var string */
+	private $password;
+
+	/**
+	 * @param Updater $updater
+	 * @param string $password
+	 */
+	public function __construct(Updater $updater,
+		$password) {
+		$this->updater = $updater;
+		$this->password = $password;
+	}
+	/**
+	 * Compares two strings.
+	 *
+	 * This method implements a constant-time algorithm to compare strings.
+	 * Regardless of the used implementation, it will leak length information.
+	 *
+	 * @param string $knownString The string of known length to compare against
+	 * @param string $userInput   The string that the user can control
+	 *
+	 * @return bool true if the two strings are the same, false otherwise
+	 * @license MIT
+	 * @source https://github.com/symfony/security-core/blob/56721d5f5f63da7e08d05aa7668a5a9ef2367e1e/Util/StringUtils.php
+	 */
+	private static function equals($knownString, $userInput) {
+		// Avoid making unnecessary duplications of secret data
+		if (!is_string($knownString)) {
+			$knownString = (string) $knownString;
+		}
+		if (!is_string($userInput)) {
+			$userInput = (string) $userInput;
+		}
+		if (function_exists('hash_equals')) {
+			return hash_equals($knownString, $userInput);
+		}
+		$knownLen = self::safeStrlen($knownString);
+		$userLen = self::safeStrlen($userInput);
+		if ($userLen !== $knownLen) {
+			return false;
+		}
+		$result = 0;
+		for ($i = 0; $i < $knownLen; ++$i) {
+			$result |= (ord($knownString[$i]) ^ ord($userInput[$i]));
+		}
+		// They are only identical strings if $result is exactly 0...
+		return 0 === $result;
+	}
+	/**
+	 * Returns the number of bytes in a string.
+	 *
+	 * @param string $string The string whose length we wish to obtain
+	 *
+	 * @return int
+	 * @license MIT
+	 * @source https://github.com/symfony/security-core/blob/56721d5f5f63da7e08d05aa7668a5a9ef2367e1e/Util/StringUtils.php
+	 */
+	private static function safeStrlen($string) {
+		// Premature optimization
+		// Since this cannot be changed at runtime, we can cache it
+		static $funcExists = null;
+		if (null === $funcExists) {
+			$funcExists = function_exists('mb_strlen');
+		}
+		if ($funcExists) {
+			return mb_strlen($string, '8bit');
+		}
+		return strlen($string);
+	}
+
+	/**
+	 * Whether the current user is authenticated
+	 *
+	 * @return bool
+	 */
+	public function isAuthenticated() {
+		$storedHash = $this->updater->getConfigOption('updater.secret');
+
+		// As a sanity check the stored hash or the sent password can never be empty
+		if ($storedHash === '' || $storedHash === null || $this->password === null) {
+			return false;
+		}
+
+		// As we still support PHP 5.4 we have to use some magic involving "crypt"
+		return $this->equals($storedHash, crypt($this->password, $storedHash));
 	}
 }
 
