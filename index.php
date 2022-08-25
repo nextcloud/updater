@@ -1745,7 +1745,7 @@ if (strpos($updaterUrl, 'index.php') === false) {
 							<button id="startUpdateButton"><?php echo $buttonText ?></button>
 							<?php
 						}
-					?>
+				?>
 						<button id="retryUpdateButton" class="hidden">Retry update</button>
 						</div>
 				</li>
