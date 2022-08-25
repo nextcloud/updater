@@ -1745,7 +1745,7 @@ if (strpos($updaterUrl, 'index.php') === false) {
 							<button id="startUpdateButton"><?php echo $buttonText ?></button>
 							<?php
 						}
-						?>
+					?>
 						<button id="retryUpdateButton" class="hidden">Retry update</button>
 						</div>
 				</li>
@@ -1792,7 +1792,7 @@ if (strpos($updaterUrl, 'index.php') === false) {
 					<div class="output hidden"></div>
 				</li>
 				<li id="step-entrypoints" class="step <?php if ($stepNumber >= 8) {
-					echo 'passed-step'; 
+					echo 'passed-step';
 				}?>">
 					<h2>Replace entry points</h2>
 					<div class="output hidden"></div>
