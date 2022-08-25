@@ -1745,70 +1745,94 @@ if (strpos($updaterUrl, 'index.php') === false) {
 							<button id="startUpdateButton"><?php echo $buttonText ?></button>
 							<?php
 						}
-			?>
+						?>
 						<button id="retryUpdateButton" class="hidden">Retry update</button>
 						</div>
 				</li>
-				<li id="step-check-files" class="step <?php if ($stepNumber >= 1) { echo 'passed-step'; }?>">
+				<li id="step-check-files" class="step <?php if ($stepNumber >= 1) {
+					echo 'passed-step';
+				}?>">
 					<h2>Check for expected files</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-check-permissions" class="step <?php if ($stepNumber >= 2) { echo 'passed-step'; }?>">
+				<li id="step-check-permissions" class="step <?php if ($stepNumber >= 2) {
+					echo 'passed-step';
+				}?>">
 					<h2>Check for write permissions</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-backup" class="step <?php if ($stepNumber >= 3) { echo 'passed-step'; }?>">
+				<li id="step-backup" class="step <?php if ($stepNumber >= 3) {
+					echo 'passed-step';
+				}?>">
 					<h2>Create backup</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-download" class="step <?php if ($stepNumber >= 4) { echo 'passed-step'; }?>">
+				<li id="step-download" class="step <?php if ($stepNumber >= 4) {
+					echo 'passed-step';
+				}?>">
 					<h2>Downloading</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-verify-integrity" class="step <?php if ($stepNumber >= 5) { echo 'passed-step'; }?>">
+				<li id="step-verify-integrity" class="step <?php if ($stepNumber >= 5) {
+					echo 'passed-step';
+				}?>">
 					<h2>Verifying integrity</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-extract" class="step <?php if ($stepNumber >= 6) { echo 'passed-step'; }?>">
+				<li id="step-extract" class="step <?php if ($stepNumber >= 6) {
+					echo 'passed-step';
+				}?>">
 					<h2>Extracting</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-enable-maintenance" class="step <?php if ($stepNumber >= 7) { echo 'passed-step'; }?>">
+				<li id="step-enable-maintenance" class="step <?php if ($stepNumber >= 7) {
+					echo 'passed-step';
+				}?>">
 					<h2>Enable maintenance mode</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-entrypoints" class="step <?php if ($stepNumber >= 8) { echo 'passed-step'; }?>">
+				<li id="step-entrypoints" class="step <?php if ($stepNumber >= 8) {
+					echo 'passed-step'; 
+				}?>">
 					<h2>Replace entry points</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-delete" class="step <?php if ($stepNumber >= 9) { echo 'passed-step'; }?>">
+				<li id="step-delete" class="step <?php if ($stepNumber >= 9) {
+					echo 'passed-step';
+				}?>">
 					<h2>Delete old files</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-move" class="step <?php if ($stepNumber >= 10) { echo 'passed-step'; }?>">
+				<li id="step-move" class="step <?php if ($stepNumber >= 10) {
+					echo 'passed-step';
+				}?>">
 					<h2>Move new files in place</h2>
 					<div class="output hidden"></div>
 				</li>
-				<li id="step-maintenance-mode" class="step <?php if ($stepNumber >= 11) { echo 'passed-step'; }?>">
+				<li id="step-maintenance-mode" class="step <?php if ($stepNumber >= 11) {
+					echo 'passed-step';
+				}?>">
 					<h2>Continue with web based updater</h2>
 					<div class="output hidden">
 						<button id="maintenance-disable">Disable maintenance mode and continue in the web based updater</button>
 					</div>
 				</li>
-				<li id="step-done" class="step <?php if ($stepNumber >= 12) { echo 'passed-step'; }?>">
+				<li id="step-done" class="step <?php if ($stepNumber >= 12) {
+					echo 'passed-step';
+				}?>">
 					<h2>Done</h2>
 					<div class="output hidden">
 						<a class="button" href="<?php echo htmlspecialchars(str_replace('/index.php', '/../', $updaterUrl), ENT_QUOTES); ?>">Go back to your Nextcloud instance to finish the update</a>
 					</div>
 				</li>
 			</ul>
-		<?php else: ?>
+		<?php else : ?>
 			<div id="login" class="section">
 				<h2>Authentication</h2>
 				<p>To login you need to provide the unhashed value of "updater.secret" in your config file.</p>
 				<p>If you don't know that value, you can access this updater directly via the Nextcloud admin screen or generate
 				your own secret:</p>
-				<code>php -r '$password = trim(shell_exec("openssl rand -base64 48"));if (strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";}else{echo "Could not execute OpenSSL.\n";};'</code>
+				<code>php -r '$password = trim(shell_exec("openssl rand -base64 48")); if (strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";} else {echo "Could not execute OpenSSL.\n";};'</code>
 				<form method="post" name="login">
 					<fieldset>
 						<input type="password" name="updater-secret-input" value=""
