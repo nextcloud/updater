@@ -483,6 +483,7 @@ class Updater {
 			]);
 		}
 
+		/** @var false|string $response */
 		$response = curl_exec($curl);
 		if ($response === false) {
 			throw new \Exception('Could not do request to updater server: '.curl_error($curl));
