@@ -110,6 +110,7 @@ class Updater {
 			/** @var string $OC_VersionString */
 			/** @var string $OC_Build */
 			require_once $versionFileName;
+			/** @psalm-suppress UndefinedVariable */
 			$version = $OC_VersionString;
 			$buildTime = $OC_Build;
 		}
@@ -512,6 +513,7 @@ class Updater {
 			]);
 		}
 
+		/** @var false|string $response */
 		$response = curl_exec($curl);
 		if ($response === false) {
 			throw new \Exception('Could not do request to updater server: '.curl_error($curl));
@@ -702,6 +704,7 @@ EOF;
 	private function getVersionByVersionFile($versionFile) {
 		require $versionFile;
 
+		/** @psalm-suppress UndefinedVariable */
 		if (isset($OC_Version)) {
 			/** @var array $OC_Version */
 			return implode('.', $OC_Version);
