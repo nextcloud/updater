@@ -85,6 +85,7 @@ class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
         'NC\\Updater\\UpdateCommand' => __DIR__ . '/../..' . '/lib/UpdateCommand.php',
         'NC\\Updater\\UpdateException' => __DIR__ . '/../..' . '/lib/UpdateException.php',
         'NC\\Updater\\Updater' => __DIR__ . '/../..' . '/lib/Updater.php',
+        'NC\\Updater\\Version' => __DIR__ . '/../..' . '/lib/Version.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
         'Psr\\Container\\ContainerInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerInterface.php',
