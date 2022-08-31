@@ -11,9 +11,10 @@ $config
 	->getFinder()
 	->notPath('build')
 	->notPath('l10n')
+	->notPath('node_modules')
 	->notPath('src')
+	->notPath('tests/data')
 	->notPath('vendor')
 	->notPath('vendor-bin')
-	->notPath('node_modules')
 	->in(__DIR__);
 return $config;

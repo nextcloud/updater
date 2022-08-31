@@ -80,6 +80,7 @@ class Updater {
 			/** @var string $OC_VersionString */
 			/** @var string $OC_Build */
 			require_once $versionFileName;
+			/** @psalm-suppress UndefinedVariable */
 			$version = $OC_VersionString;
 			$buildTime = $OC_Build;
 		}
@@ -121,11 +122,9 @@ class Updater {
 
 	/**
 	 * Returns currently used release channel
-	 *
-	 * @return string
 	 */
-	private function getCurrentReleaseChannel() {
-		return !is_null($this->getConfigOption('updater.release.channel')) ? $this->getConfigOption('updater.release.channel') : 'stable';
+	private function getCurrentReleaseChannel(): string {
+		return (string)($this->getConfigOption('updater.release.channel') ?? 'stable');
 	}
 
 	/**
@@ -176,10 +175,9 @@ class Updater {
 	/**
 	 * Returns the specified config options
 	 *
-	 * @param string $key
 	 * @return mixed|null Null if the entry is not found
 	 */
-	public function getConfigOption($key) {
+	public function getConfigOption(string $key) {
 		return isset($this->configValues[$key]) ? $this->configValues[$key] : null;
 	}
 
@@ -485,6 +483,7 @@ class Updater {
 			]);
 		}
 
+		/** @var false|string $response */
 		$response = curl_exec($curl);
 		if ($response === false) {
 			throw new \Exception('Could not do request to updater server: '.curl_error($curl));
@@ -675,6 +674,7 @@ EOF;
 	private function getVersionByVersionFile($versionFile) {
 		require $versionFile;
 
+		/** @psalm-suppress UndefinedVariable */
 		if (isset($OC_Version)) {
 			/** @var array $OC_Version */
 			return implode('.', $OC_Version);
@@ -1048,7 +1048,7 @@ EOF;
 	}
 
 	/**
-	 * @return string
+	 * @return array
 	 * @throws \Exception
 	 */
 	public function currentStep() {

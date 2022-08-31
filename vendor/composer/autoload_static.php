@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit2723bf3c902a907c44396c9253500aff
+class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -77,6 +77,7 @@ class ComposerStaticInit2723bf3c902a907c44396c9253500aff
         'Bamarni\\Composer\\Bin\\CommandProvider' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/CommandProvider.php',
         'Bamarni\\Composer\\Bin\\Config' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Config.php',
         'Bamarni\\Composer\\Bin\\Plugin' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Plugin.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'NC\\Updater\\CommandApplication' => __DIR__ . '/../..' . '/lib/CommandApplication.php',
         'NC\\Updater\\LogException' => __DIR__ . '/../..' . '/lib/LogException.php',
@@ -84,6 +85,7 @@ class ComposerStaticInit2723bf3c902a907c44396c9253500aff
         'NC\\Updater\\UpdateCommand' => __DIR__ . '/../..' . '/lib/UpdateCommand.php',
         'NC\\Updater\\UpdateException' => __DIR__ . '/../..' . '/lib/UpdateException.php',
         'NC\\Updater\\Updater' => __DIR__ . '/../..' . '/lib/Updater.php',
+        'NC\\Updater\\Version' => __DIR__ . '/../..' . '/lib/Version.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
         'Psr\\Container\\ContainerInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerInterface.php',
@@ -192,9 +194,9 @@ class ComposerStaticInit2723bf3c902a907c44396c9253500aff
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit2723bf3c902a907c44396c9253500aff::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit2723bf3c902a907c44396c9253500aff::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit2723bf3c902a907c44396c9253500aff::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitd7f5ddc48e4715174279359c16c76340::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitd7f5ddc48e4715174279359c16c76340::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitd7f5ddc48e4715174279359c16c76340::$classMap;
 
         }, null, ClassLoader::class);
     }
