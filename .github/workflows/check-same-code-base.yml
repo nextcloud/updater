@@ -32,3 +32,9 @@ jobs:
 
       - name: check-same-code-base
         run: make check-same-code-base
+
+      - name: check-updater-phar
+        run: |
+          mv updater.phar updater.old.phar
+          make updater.phar
+          diff updater.phar updater.old.phar
