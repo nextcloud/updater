@@ -35,6 +35,8 @@ jobs:
 
       - name: check-updater-phar
         run: |
-          mv updater.phar updater.old.phar
+          make box
+          ./box info -l updater.phar | grep -v "^Signature Hash" | grep -v "^  Version.php " | grep -v "^Contents: " >updater.old.txt
           make updater.phar
-          diff updater.phar updater.old.phar
+          ./box info -l updater.phar | grep -v "^Signature Hash" | grep -v "^  Version.php " | grep -v "^Contents: " >updater.txt
+          diff updater.txt updater.old.txt
