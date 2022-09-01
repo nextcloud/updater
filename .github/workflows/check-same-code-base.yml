@@ -32,3 +32,11 @@ jobs:
 
       - name: check-same-code-base
         run: make check-same-code-base
+
+      - name: check-updater-phar
+        run: |
+          make box
+          ./box info -l updater.phar | grep -v "^Signature Hash" | grep -v "^  Version.php " | grep -v "^Contents: " >updater.old.txt
+          make updater.phar
+          ./box info -l updater.phar | grep -v "^Signature Hash" | grep -v "^  Version.php " | grep -v "^Contents: " >updater.txt
+          diff updater.txt updater.old.txt
