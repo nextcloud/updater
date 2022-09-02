@@ -63,15 +63,19 @@ class UpdateCommand extends Command {
 			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version');
 	}
 
+	public static function getUpdaterVersion(): string {
+		if (class_exists('NC\Updater\Version')) {
+			$versionClass = new Version();
+			return $versionClass->get();
+		} else {
+			return 'git';
+		}
+	}
+
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->skipBackup = $input->getOption('no-backup');
 
-		if (class_exists('NC\Updater\Version')) {
-			$versionClass = new Version();
-			$version = $versionClass->get();
-		} else {
-			$version = 'directly run from git checkout';
-		}
+		$version = static::getUpdaterVersion();
 		$output->writeln('Nextcloud Updater - version: ' . $version);
 		$output->writeln('');
 

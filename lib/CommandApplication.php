@@ -32,6 +32,10 @@ use Symfony\Component\Console\Input\InputInterface;
  * @package NC\Updater
  */
 class CommandApplication extends Application {
+	public function __construct(string $name = 'update') {
+		parent::__construct($name, UpdateCommand::getUpdaterVersion());
+	}
+
 	/**
 	 * Gets the name of the command based on input.
 	 *

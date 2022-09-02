@@ -5,3 +5,4 @@ tests/vendor
 vendor/symfony/console/Tests
 vendor/symfony/debug/Tests
 /vendor-bin/**/vendor
+.php-cs-fixer.cache
