@@ -38,6 +38,7 @@ class Updater {
 	private $requestID = null;
 	/** @var bool */
 	private $disabled = false;
+	private $isFinalized = false;
 
 	/**
 	 * Updater constructor
@@ -991,7 +992,7 @@ EOF;
 
 		$state = unlink($this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/.step');
 		if ($state === false) {
-			throw new \Exception('Could not rmdir .step');
+			throw new \Exception('Could not delete .step');
 		}
 
 		if (function_exists('opcache_reset')) {
@@ -999,6 +1000,7 @@ EOF;
 			opcache_reset();
 		}
 
+		$this->isFinalized = true;
 		$this->silentLog('[info] end of finalize()');
 	}
 
@@ -1008,6 +1010,10 @@ EOF;
 	 * @throws \Exception
 	 */
 	private function writeStep($state, $step) {
+		if ($this->isFinalized) {
+			// rewriting the .step file at this stage would block future updates
+			return;
+		}
 		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
 		if (!file_exists($updaterDir . '/.step')) {
 			if (!file_exists($updaterDir)) {
