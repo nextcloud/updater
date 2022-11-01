@@ -21,6 +21,7 @@
  *
  */
 
+use Composer\Semver\Semver;
 
 class UpdateException extends \Exception {
 	protected $data;
@@ -167,6 +168,11 @@ class Updater {
 		$versionString = isset($response['versionstring']) ? $response['versionstring'] : '';
 
 		if ($version !== '' && $version !== $this->currentVersion) {
+			if (PHP_INT_SIZE < 8 && Semver::satisfies($version, '> 25')) {
+				$this->updateAvailable = false;
+
+				$updateText .= '<br />You are running a 32-bit PHP version. Cannot upgrade to Nextcloud 26 and higher. Please switch to 64-bit PHP.';
+			}
 			$this->updateAvailable = true;
 			$releaseChannel = $this->getCurrentReleaseChannel();
 			$updateText = 'Update to ' . htmlentities($versionString) . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $response['url'] . '</code>';
