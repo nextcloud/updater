@@ -141,8 +141,8 @@ class Updater {
 		if ($version !== '' && $version !== $this->currentVersion) {
 			if (PHP_INT_SIZE < 8 && Semver::satisfies($version, '> 25')) {
 				$this->updateAvailable = false;
-
-				$updateText .= '<br />You are running a 32-bit PHP version. Cannot upgrade to Nextcloud 26 and higher. Please switch to 64-bit PHP.';
+				$updateText = '<br />You are running a 32-bit PHP version. Cannot upgrade to Nextcloud 26 and higher. Please switch to 64-bit PHP.';
+				return $updateText;
 			}
 			$this->updateAvailable = true;
 			$releaseChannel = $this->getCurrentReleaseChannel();
