@@ -16,7 +16,7 @@
         "sort-packages": true
     },
     "require": {
-        "symfony/console": "^4.4"
+        "symfony/console": "^5.4"
     },
     "scripts": {
         "cs:check": "php-cs-fixer fix --dry-run --diff",
