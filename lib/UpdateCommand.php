@@ -3,6 +3,8 @@
  * @copyright Copyright (c) 2016 Morris Jobke <hey@morrisjobke.de>
  * @copyright Copyright (c) 2017 Lukas Reschke <lukas@statuscode.ch>
  *
+ * @author Thomas Citharel <nextcloud@tcit.fr>
+ *
  * @license GNU AGPL version 3 or any later version
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,6 +40,8 @@ class UpdateCommand extends Command {
 	/** @var bool */
 	protected $skipBackup = false;
 
+	protected bool $skipUpgrade = false;
+
 	/** @var array strings of text for stages of updater */
 	protected $checkTexts = [
 		0 => '',
@@ -60,7 +64,8 @@ class UpdateCommand extends Command {
 			->setName('update')
 			->setDescription('Updates the code of an Nextcloud instance')
 			->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.")
-			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version');
+			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version')
+			->addOption('no-upgrade', null, InputOption::VALUE_NONE, "Don't automatically run occ upgrade");
 	}
 
 	public static function getUpdaterVersion(): string {
@@ -74,6 +79,7 @@ class UpdateCommand extends Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->skipBackup = $input->getOption('no-backup');
+		$this->skipUpgrade = $input->getOption('no-upgrade');
 
 		$version = static::getUpdaterVersion();
 		$output->writeln('Nextcloud Updater - version: ' . $version);
@@ -277,6 +283,12 @@ class UpdateCommand extends Command {
 		if ($i === 12) {
 			$this->updater->log('[info] update of code successful.');
 			$output->writeln('Update of code successful.');
+
+			if ($this->skipUpgrade) {
+				$output->writeln('Please now execute "./occ upgrade" to finish the upgrade.');
+				$this->updater->log('[info] updater finished');
+				return 0;
+			}
 
 			if ($input->isInteractive()) {
 				$output->writeln('');
