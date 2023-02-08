@@ -21,7 +21,6 @@
  *
  */
 
-
 class UpdateException extends \Exception {
 	protected $data;
 
