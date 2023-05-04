@@ -139,8 +139,9 @@ class UpdateCommand extends Command {
 			if ($stepState === 'start') {
 				$output->writeln(
 					sprintf(
-						'Step %s is currently in process. Please call this command later.',
-						$stepNumber
+						'Step %s is currently in process. Please call this command later or remove the following file to start from scratch: %s',
+						$stepNumber,
+                        $this->updater->getUpdateStepFileLocation()
 					)
 				);
 				return -1;

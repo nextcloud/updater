@@ -1069,6 +1069,11 @@ EOF;
 		return $jsonData;
 	}
 
+    public function getUpdateStepFileLocation() {
+        $updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
+        return $updaterDir . '/.step';
+    }
+
 	/**
 	 * Rollback the changes if $step has failed
 	 *
