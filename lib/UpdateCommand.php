@@ -141,7 +141,7 @@ class UpdateCommand extends Command {
 					sprintf(
 						'Step %s is currently in process. Please call this command later or remove the following file to start from scratch: %s',
 						$stepNumber,
-                        $this->updater->getUpdateStepFileLocation()
+						$this->updater->getUpdateStepFileLocation()
 					)
 				);
 				return -1;
