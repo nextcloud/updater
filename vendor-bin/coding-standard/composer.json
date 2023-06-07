@@ -1,12 +1,5 @@
 {
-    "config": {
-        "platform": {
-            "php": "7.4"
-        },
-        "sort-packages": true
-    },
     "require-dev": {
-        "nextcloud/coding-standard": "^1.0",
-        "vimeo/psalm": "^4.26"
+        "friendsofphp/php-cs-fixer": "^3.17"
     }
 }
