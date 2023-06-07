@@ -31,6 +31,12 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 			'data',
 			'..',
 		];
-		return !(in_array($this->current()->getFilename(), $excludes, true) || $this->current()->isDir());
+
+		$current = $this->current();
+		if (!$current) {
+			return false;
+		}
+
+		return !(in_array($current->getFilename(), $excludes, true) || $current->isDir());
 	}
 }
