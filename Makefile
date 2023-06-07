@@ -1,13 +1,9 @@
 .PHONY: updater.phar
 
-box:
-	curl -L https://github.com/box-project/box/releases/download/3.11.1/box.phar -o box
-	chmod +x box
-
-updater.phar: box updater.php lib/*.php buildVersionFile.php
+updater.phar: updater.php lib/*.php buildVersionFile.php
 	php buildVersionFile.php
 	composer dump-autoload
-	./box compile -c box.json
+	composer run box
 	chmod +x updater.phar
 	rm lib/Version.php
 

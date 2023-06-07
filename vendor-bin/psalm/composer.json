@@ -1,0 +1,13 @@
+{
+    "require": {
+        "vimeo/psalm": "^4.6"
+    },
+    "config": {
+        "platform": {
+            "php": "8.0"
+        },
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
+    }
+}

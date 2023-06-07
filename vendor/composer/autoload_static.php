@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
+class ComposerStaticInitba7c5c8f0885d00c3b669d0399f96c80
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -28,6 +28,7 @@ class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
         ),
         'N' => 
         array (
+            'Nextcloud\\CodingStandard\\' => 25,
             'NC\\Updater\\' => 11,
         ),
         'B' => 
@@ -61,6 +62,10 @@ class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
+        'Nextcloud\\CodingStandard\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nextcloud/coding-standard/src',
+        ),
         'NC\\Updater\\' => 
         array (
             0 => __DIR__ . '/../..' . '/lib',
@@ -73,10 +78,19 @@ class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
 
     public static $classMap = array (
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
-        'Bamarni\\Composer\\Bin\\BinCommand' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/BinCommand.php',
+        'Bamarni\\Composer\\Bin\\ApplicationFactory\\FreshInstanceApplicationFactory' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/ApplicationFactory/FreshInstanceApplicationFactory.php',
+        'Bamarni\\Composer\\Bin\\ApplicationFactory\\NamespaceApplicationFactory' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/ApplicationFactory/NamespaceApplicationFactory.php',
+        'Bamarni\\Composer\\Bin\\BamarniBinPlugin' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/BamarniBinPlugin.php',
         'Bamarni\\Composer\\Bin\\CommandProvider' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/CommandProvider.php',
-        'Bamarni\\Composer\\Bin\\Config' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Config.php',
-        'Bamarni\\Composer\\Bin\\Plugin' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Plugin.php',
+        'Bamarni\\Composer\\Bin\\Command\\BinCommand' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Command/BinCommand.php',
+        'Bamarni\\Composer\\Bin\\Command\\CouldNotCreateNamespaceDir' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Command/CouldNotCreateNamespaceDir.php',
+        'Bamarni\\Composer\\Bin\\Config\\Config' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Config/Config.php',
+        'Bamarni\\Composer\\Bin\\Config\\ConfigFactory' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Config/ConfigFactory.php',
+        'Bamarni\\Composer\\Bin\\Config\\InvalidBamarniComposerExtraConfig' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Config/InvalidBamarniComposerExtraConfig.php',
+        'Bamarni\\Composer\\Bin\\Input\\BinInputFactory' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Input/BinInputFactory.php',
+        'Bamarni\\Composer\\Bin\\Input\\InvalidBinInput' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Input/InvalidBinInput.php',
+        'Bamarni\\Composer\\Bin\\Logger' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Logger.php',
+        'Bamarni\\Composer\\Bin\\PublicIO' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/PublicIO.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'NC\\Updater\\CommandApplication' => __DIR__ . '/../..' . '/lib/CommandApplication.php',
@@ -85,7 +99,7 @@ class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
         'NC\\Updater\\UpdateCommand' => __DIR__ . '/../..' . '/lib/UpdateCommand.php',
         'NC\\Updater\\UpdateException' => __DIR__ . '/../..' . '/lib/UpdateException.php',
         'NC\\Updater\\Updater' => __DIR__ . '/../..' . '/lib/Updater.php',
-        'NC\\Updater\\Version' => __DIR__ . '/../..' . '/lib/Version.php',
+        'Nextcloud\\CodingStandard\\Config' => __DIR__ . '/..' . '/nextcloud/coding-standard/src/Config.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
         'Psr\\Container\\ContainerInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerInterface.php',
@@ -194,9 +208,9 @@ class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd7f5ddc48e4715174279359c16c76340::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd7f5ddc48e4715174279359c16c76340::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitd7f5ddc48e4715174279359c16c76340::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitba7c5c8f0885d00c3b669d0399f96c80::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitba7c5c8f0885d00c3b669d0399f96c80::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitba7c5c8f0885d00c3b669d0399f96c80::$classMap;
 
         }, null, ClassLoader::class);
     }
