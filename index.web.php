@@ -255,10 +255,6 @@ if (isset($_POST['step'])) {
 
 $updater->log('[info] show HTML page');
 $updater->logVersion();
-$updaterUrl = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
-if (strpos($updaterUrl, 'index.php') === false) {
-	$updaterUrl = rtrim($updaterUrl, '/') . '/index.php';
-}
 ?>
 
 <html>
@@ -545,7 +541,6 @@ if (strpos($updaterUrl, 'index.php') === false) {
 	<h1 class="header-appname">Updater</h1>
 </div>
 <input type="hidden" id="updater-access-key" value="<?php echo htmlentities($password) ?>"/>
-<input type="hidden" id="updater-endpoint" value="<?php echo htmlentities($updaterUrl) ?>"/>
 <input type="hidden" id="updater-step-start" value="<?php echo $stepNumber ?>" />
 <div id="content-wrapper">
 	<div id="content">
@@ -644,7 +639,7 @@ if (strpos($updaterUrl, 'index.php') === false) {
 				}?>">
 					<h2>Done</h2>
 					<div class="output hidden">
-						<a class="button" href="<?php echo htmlspecialchars(str_replace('/index.php', '/../', $updaterUrl), ENT_QUOTES); ?>">Go back to your Nextcloud instance to finish the update</a>
+						<a id="back-to-nextcloud" class="button">Go back to your Nextcloud instance to finish the update</a>
 					</div>
 				</li>
 			</ul>
@@ -675,6 +670,13 @@ if (strpos($updaterUrl, 'index.php') === false) {
 </body>
 <?php if ($auth->isAuthenticated()): ?>
 	<script>
+        var nextcloudUrl = window.location.href.replace('updater/', '').replace('index.php', '');
+
+        var backToButton = document.getElementById('back-to-nextcloud');
+        if (backToButton) {
+            backToButton.href = nextcloudUrl;
+        }
+
 		function escapeHTML(s) {
 			return s.toString().split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split('\'').join('&#039;');
 		}
@@ -742,7 +744,7 @@ if (strpos($updaterUrl, 'index.php') === false) {
 		function performStep(number, callback) {
 			started = true;
 			var httpRequest = new XMLHttpRequest();
-			httpRequest.open('POST', document.getElementById('updater-endpoint').value);
+			httpRequest.open('POST', window.location.href);
 			httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			httpRequest.setRequestHeader('X-Updater-Auth', document.getElementById('updater-access-key').value);
 			httpRequest.onreadystatechange = function () {
@@ -983,7 +985,7 @@ if (strpos($updaterUrl, 'index.php') === false) {
 					el.classList.remove('hidden');
 
 					// above is the fallback if the Javascript redirect doesn't work
-					window.location.href = "<?php echo htmlspecialchars(str_replace('/index.php', '/../', $updaterUrl), ENT_QUOTES); ?>";
+					window.location.href = nextcloudUrl;
 				} else {
 					errorStep('step-done', 12);
 					var text = escapeHTML(response.response);
