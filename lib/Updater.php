@@ -618,7 +618,7 @@ class Updater {
 		}
 
 		$response = $this->getUpdateServerResponse();
-		if (!isset($response['signature'])) {
+		if (empty($response['signature'])) {
 			throw new \Exception('No signature specified for defined update');
 		}
 

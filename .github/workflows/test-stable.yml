@@ -17,10 +17,13 @@ jobs:
     strategy:
       matrix:
         php-versions: ["8.0", "8.1", "8.2"]
-        nextcloud-versions: ["25", "26", "27"]
+        nextcloud-versions: ["24", "25", "26"]
         exclude:
           - php-versions: "8.2"
             nextcloud-versions: "25"
+          - php-versions: "8.2"
+            nextcloud-versions: "24"
+
 
     name: test-stable
 
@@ -32,6 +35,7 @@ jobs:
         uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # v2
         with:
           php-version: ${{ matrix.php-versions }}
+          extensions: apcu,ctype,curl,dom,fileinfo,ftp,gd,intl,json,ldap,mbstring,openssl,pdo_sqlite,posix,sqlite,xml,zip
           coverage: none
           ini-file: development
 
