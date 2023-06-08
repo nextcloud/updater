@@ -31,6 +31,9 @@ jobs:
           coverage: none
           ini-file: development
 
+      - name: Install dependencies
+        run: composer i
+
       - name: test-master
         run: make test-master
 

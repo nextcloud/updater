@@ -39,6 +39,9 @@ jobs:
           coverage: none
           ini-file: development
 
+      - name: Install dependencies
+        run: composer i
+
       - name: test-stable${{ matrix.nextcloud-versions }}
         run: make test-stable${{ matrix.nextcloud-versions }}
 
