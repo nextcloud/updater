@@ -30,6 +30,9 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           coverage: none
 
+      - name: Install dependencies
+        run: composer i
+
       - name: test-master
         run: make test-master
 
