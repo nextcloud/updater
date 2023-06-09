@@ -1,4 +1,5 @@
 {
+  "chmod": "0755",
   "directories": ["lib"],
   "files": ["version.php"],
   "finder": [
@@ -8,5 +9,7 @@
       "in": "vendor"
     }
   ],
-  "main": "updater.php"
+  "main": "updater.php",
+  "output": "updater.phar",
+  "stub": true
 }
