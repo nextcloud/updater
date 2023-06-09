@@ -47,7 +47,13 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 			'data',
 			'..',
 		];
-		return !(in_array($this->current()->getFilename(), $excludes, true) || $this->current()->isDir());
+
+		$current = $this->current();
+		if (!$current) {
+			return false;
+		}
+
+		return !(in_array($current->getFilename(), $excludes, true) || $current->isDir());
 	}
 }
 
@@ -465,7 +471,7 @@ class Updater {
 		$this->silentLog('[info] end of createBackup()');
 	}
 
-	private function getChangelogURL($versionString) {
+	private function getChangelogURL(string $versionString) {
 		$this->silentLog('[info] getChangelogURL()');
 		$changelogWebsite = 'https://nextcloud.com/changelog/';
 		$changelogURL = $changelogWebsite . '#' . str_replace('.', '-', $versionString);
