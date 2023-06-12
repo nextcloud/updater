@@ -99,7 +99,6 @@ class ComposerStaticInitba7c5c8f0885d00c3b669d0399f96c80
         'NC\\Updater\\UpdateCommand' => __DIR__ . '/../..' . '/lib/UpdateCommand.php',
         'NC\\Updater\\UpdateException' => __DIR__ . '/../..' . '/lib/UpdateException.php',
         'NC\\Updater\\Updater' => __DIR__ . '/../..' . '/lib/Updater.php',
-        'NC\\Updater\\Version' => __DIR__ . '/../..' . '/lib/Version.php',
         'Nextcloud\\CodingStandard\\Config' => __DIR__ . '/..' . '/nextcloud/coding-standard/src/Config.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
