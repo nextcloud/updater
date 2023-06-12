@@ -24,27 +24,20 @@
 namespace NC\Updater;
 
 class Updater {
-	/** @var string */
-	private $baseDir;
-	/** @var array */
-	private $configValues = [];
-	/** @var string */
-	private $currentVersion = 'unknown';
-	/** @var string */
-	private $buildTime;
-	/** @var bool */
-	private $updateAvailable = false;
-	/** @var string */
-	private $requestID = null;
-	/** @var bool */
-	private $disabled = false;
+	private string $baseDir;
+	private array $configValues = [];
+	private string $currentVersion = 'unknown';
+	private string $buildTime;
+	private bool $updateAvailable = false;
+	private ?string $requestID = null;
+	private bool $disabled = false;
 
 	/**
 	 * Updater constructor
-	 * @param $baseDir string the absolute path to the /updater/ directory in the Nextcloud root
+	 * @param string $baseDir the absolute path to the /updater/ directory in the Nextcloud root
 	 * @throws \Exception
 	 */
-	public function __construct($baseDir) {
+	public function __construct(string $baseDir) {
 		$this->baseDir = $baseDir;
 
 		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
@@ -67,7 +60,7 @@ class Updater {
 		}
 
 		$dataDir = $this->getUpdateDirectoryLocation();
-		if (empty($dataDir) || !is_string($dataDir)) {
+		if (empty($dataDir)) {
 			throw new \Exception('Could not read data directory from config.php.');
 		}
 
@@ -78,14 +71,14 @@ class Updater {
 			$buildTime = '';
 		} else {
 			/** @var string $OC_VersionString */
-			/** @var string $OC_Build */
+			/** @var ?string $OC_Build */
 			require_once $versionFileName;
 			/** @psalm-suppress UndefinedVariable */
 			$version = $OC_VersionString;
 			$buildTime = $OC_Build;
 		}
 
-		if ($version === null || $buildTime === null) {
+		if (!is_string($version) || !is_string($buildTime)) {
 			return;
 		}
 
@@ -143,7 +136,7 @@ class Updater {
 
 			// only show changelog link for stable releases (non-RC & non-beta)
 			if (!preg_match('!(rc|beta)!i', $versionString)) {
-				$changelogURL = $this->getChangelogURL(substr($version, 0, strrpos($version, '.')));
+				$changelogURL = $this->getChangelogURL(substr($version, 0, strrpos($version, '.') ?: 0));
 				$updateText .= '<br /><a class="external_link" href="' . $changelogURL . '" target="_blank" rel="noreferrer noopener">Open changelog ↗</a>';
 			}
 		} else {
@@ -162,10 +155,8 @@ class Updater {
 
 	/**
 	 * Returns bool whether update is available or not
-	 *
-	 * @return bool
 	 */
-	public function updateAvailable() {
+	public function updateAvailable(): bool {
 		return $this->updateAvailable;
 	}
 
@@ -180,19 +171,15 @@ class Updater {
 
 	/**
 	 * Gets the data directory location on the local filesystem
-	 *
-	 * @return string
 	 */
-	private function getUpdateDirectoryLocation() {
-		return $this->configValues['updatedirectory'] ?? $this->configValues['datadirectory'];
+	private function getUpdateDirectoryLocation(): string {
+		return $this->configValues['updatedirectory'] ?? $this->configValues['datadirectory'] ?? '';
 	}
 
 	/**
 	 * Returns the expected files and folders as array
-	 *
-	 * @return array
 	 */
-	private function getExpectedElementsList() {
+	private function getExpectedElementsList(): array {
 		$expected = [
 			// Generic
 			'.',
@@ -240,10 +227,8 @@ class Updater {
 
 	/**
 	 * Returns app directories specified in config.php
-	 *
-	 * @return array
 	 */
-	private function getAppDirectories() {
+	private function getAppDirectories(): array {
 		$expected = [];
 		if ($appsPaths = $this->getConfigOption('apps_paths')) {
 			foreach ($appsPaths as $appsPath) {
@@ -259,11 +244,8 @@ class Updater {
 
 	/**
 	 * Gets the recursive directory iterator over the Nextcloud folder
-	 *
-	 * @param string $folder
-	 * @return \RecursiveIteratorIterator
 	 */
-	private function getRecursiveDirectoryIterator($folder = null) {
+	private function getRecursiveDirectoryIterator(?string $folder = null): \RecursiveIteratorIterator {
 		if ($folder === null) {
 			$folder = $this->baseDir . '/../';
 		}
@@ -276,7 +258,7 @@ class Updater {
 	/**
 	 * Checks for files that are unexpected.
 	 */
-	public function checkForExpectedFilesAndFolders() {
+	public function checkForExpectedFilesAndFolders(): void {
 		$this->silentLog('[info] checkForExpectedFilesAndFolders()');
 
 		$expectedElements = $this->getExpectedElementsList();
@@ -296,7 +278,7 @@ class Updater {
 	/**
 	 * Checks for files that are not writable
 	 */
-	public function checkWritePermissions() {
+	public function checkWritePermissions(): void {
 		$this->silentLog('[info] checkWritePermissions()');
 
 		$notWritablePaths = array();
@@ -319,10 +301,9 @@ class Updater {
 	/**
 	 * Sets the maintenance mode to the defined value
 	 *
-	 * @param bool $state
 	 * @throws \Exception when config.php can't be written
 	 */
-	public function setMaintenanceMode($state) {
+	public function setMaintenanceMode(bool $state): void {
 		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') .  '")');
 
 		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
@@ -355,7 +336,7 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function createBackup() {
+	public function createBackup(): void {
 		$this->silentLog('[info] createBackup()');
 
 		$excludedElements = [
@@ -436,7 +417,7 @@ class Updater {
 		$this->silentLog('[info] end of createBackup()');
 	}
 
-	private function getChangelogURL(string $versionString) {
+	private function getChangelogURL(string $versionString): string {
 		$this->silentLog('[info] getChangelogURL()');
 		$changelogWebsite = 'https://nextcloud.com/changelog/';
 		$changelogURL = $changelogWebsite . '#' . str_replace('.', '-', $versionString);
@@ -444,10 +425,9 @@ class Updater {
 	}
 
 	/**
-	 * @return array
 	 * @throws \Exception
 	 */
-	private function getUpdateServerResponse() {
+	private function getUpdateServerResponse(): array {
 		$this->silentLog('[info] getUpdateServerResponse()');
 
 		$updaterServer = $this->getConfigOption('updater.server.url');
@@ -461,7 +441,7 @@ class Updater {
 		$this->silentLog('[info] releaseChannel: ' . $releaseChannel);
 		$this->silentLog('[info] internal version: ' . $this->getConfigOption('version'));
 
-		$updateURL = $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOption('version')) .'xxx'.$releaseChannel.'xx'.urlencode($this->buildTime).'x'.PHP_MAJOR_VERSION.'x'.PHP_MINOR_VERSION.'x'.PHP_RELEASE_VERSION;
+		$updateURL = $updaterServer . '?version='. str_replace('.', 'x', (string)$this->getConfigOption('version')) .'xxx'.$releaseChannel.'xx'.urlencode($this->buildTime).'x'.PHP_MAJOR_VERSION.'x'.PHP_MINOR_VERSION.'x'.PHP_RELEASE_VERSION;
 		$this->silentLog('[info] updateURL: ' . $updateURL);
 
 		// Download update response
@@ -513,7 +493,7 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function downloadUpdate() {
+	public function downloadUpdate(): void {
 		$this->silentLog('[info] downloadUpdate()');
 
 		$response = $this->getUpdateServerResponse();
@@ -582,15 +562,14 @@ class Updater {
 	}
 
 	/**
-	 * @return string
 	 * @throws \Exception
 	 */
-	private function getDownloadedFilePath() {
+	private function getDownloadedFilePath(): string {
 		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
 		$filesInStorageLocation = scandir($storageLocation);
-		$files = array_values(array_filter($filesInStorageLocation, function ($path) {
+		$files = array_values(array_filter($filesInStorageLocation, function (string $path) {
 			return $path !== '.' && $path !== '..';
 		}));
 		// only the downloaded archive
@@ -605,7 +584,7 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function verifyIntegrity() {
+	public function verifyIntegrity(): void {
 		$this->silentLog('[info] verifyIntegrity()');
 
 		if ($this->getCurrentReleaseChannel() === 'daily') {
@@ -665,11 +644,10 @@ EOF;
 	/**
 	 * Gets the version as declared in $versionFile
 	 *
-	 * @param string $versionFile
-	 * @return string
 	 * @throws \Exception If $OC_Version is not defined in $versionFile
 	 */
-	private function getVersionByVersionFile($versionFile) {
+	private function getVersionByVersionFile(string $versionFile): string {
+		/** @psalm-suppress UnresolvableInclude */
 		require $versionFile;
 
 		/** @psalm-suppress UndefinedVariable */
@@ -686,7 +664,7 @@ EOF;
 	 *
 	 * @throws \Exception
 	 */
-	public function extractDownload() {
+	public function extractDownload(): void {
 		$this->silentLog('[info] extractDownload()');
 		$downloadedFilePath = $this->getDownloadedFilePath();
 
@@ -703,7 +681,7 @@ EOF;
 				throw new \Exception("Can't unlink ". $downloadedFilePath);
 			}
 		} else {
-			throw new \Exception("Can't handle ZIP file. Error code is: ".$zipState);
+			throw new \Exception("Can't handle ZIP file. Error code is: ".print_r($zipState, true));
 		}
 
 		// Ensure that the downloaded version is not lower
@@ -721,7 +699,7 @@ EOF;
 	 *
 	 * @throws \Exception
 	 */
-	public function replaceEntryPoints() {
+	public function replaceEntryPoints(): void {
 		$this->silentLog('[info] replaceEntryPoints()');
 
 		$filesToReplace = [
@@ -755,10 +733,9 @@ EOF;
 	/**
 	 * Recursively deletes the specified folder from the system
 	 *
-	 * @param string $folder
 	 * @throws \Exception
 	 */
-	private function recursiveDelete($folder) {
+	private function recursiveDelete(string $folder): void {
 		if (!file_exists($folder)) {
 			return;
 		}
@@ -799,7 +776,7 @@ EOF;
 	 *
 	 * @throws \Exception
 	 */
-	public function deleteOldFiles() {
+	public function deleteOldFiles(): void {
 		$this->silentLog('[info] deleteOldFiles()');
 
 		$shippedAppsFile = $this->baseDir . '/../core/shipped.json';
@@ -897,11 +874,9 @@ EOF;
 	/**
 	 * Moves the specified filed except the excluded elements to the correct position
 	 *
-	 * @param string $dataLocation
-	 * @param array $excludedElements
 	 * @throws \Exception
 	 */
-	private function moveWithExclusions($dataLocation, array $excludedElements) {
+	private function moveWithExclusions(string $dataLocation, array $excludedElements): void {
 		/**
 		 * @var \SplFileInfo $fileInfo
 		 */
@@ -952,7 +927,7 @@ EOF;
 	 *
 	 * @throws \Exception
 	 */
-	public function moveNewVersionInPlace() {
+	public function moveNewVersionInPlace(): void {
 		$this->silentLog('[info] moveNewVersionInPlace()');
 
 		// Rename everything else except the entry and updater files
@@ -978,7 +953,7 @@ EOF;
 	/**
 	 * Finalize and cleanup the updater by finally replacing the updater script
 	 */
-	public function finalize() {
+	public function finalize(): void {
 		$this->silentLog('[info] finalize()');
 
 		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/nextcloud/';
@@ -1003,11 +978,9 @@ EOF;
 	}
 
 	/**
-	 * @param string $state
-	 * @param int $step
 	 * @throws \Exception
 	 */
-	private function writeStep($state, $step) {
+	private function writeStep(string $state, int $step): void {
 		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
 		if (!file_exists($updaterDir . '/.step')) {
 			if (!file_exists($updaterDir)) {
@@ -1029,28 +1002,25 @@ EOF;
 	}
 
 	/**
-	 * @param int $step
 	 * @throws \Exception
 	 */
-	public function startStep($step) {
+	public function startStep(int $step): void {
 		$this->silentLog('[info] startStep("' . $step . '")');
 		$this->writeStep('start', $step);
 	}
 
 	/**
-	 * @param int $step
 	 * @throws \Exception
 	 */
-	public function endStep($step) {
+	public function endStep(int $step): void {
 		$this->silentLog('[info] endStep("' . $step . '")');
 		$this->writeStep('end', $step);
 	}
 
 	/**
-	 * @return array
 	 * @throws \Exception
 	 */
-	public function currentStep() {
+	public function currentStep(): array {
 		$this->silentLog('[info] currentStep()');
 
 		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
@@ -1077,10 +1047,9 @@ EOF;
 	/**
 	 * Rollback the changes if $step has failed
 	 *
-	 * @param int $step
 	 * @throws \Exception
 	 */
-	public function rollbackChanges($step) {
+	public function rollbackChanges(int $step): void {
 		$this->silentLog('[info] rollbackChanges("' . $step . '")');
 
 		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
@@ -1102,10 +1071,9 @@ EOF;
 	/**
 	 * Logs an exception with current datetime prepended to updater.log
 	 *
-	 * @param \Exception $e
 	 * @throws LogException
 	 */
-	public function logException(\Exception $e) {
+	public function logException(\Exception $e): void {
 		$message = '[error] ';
 
 		$message .= 'Exception: ' . get_class($e) . PHP_EOL;
@@ -1123,10 +1091,9 @@ EOF;
 	/**
 	 * Logs a message with current datetime prepended to updater.log
 	 *
-	 * @param string $message
 	 * @throws LogException
 	 */
-	public function log($message) {
+	public function log(string $message): void {
 		$updaterLogPath = $this->getUpdateDirectoryLocation() . '/updater.log';
 
 		$fh = fopen($updaterLogPath, 'a');
@@ -1157,10 +1124,8 @@ EOF;
 
 	/**
 	 * Logs a message with current datetime prepended to updater.log but drops possible LogException
-	 *
-	 * @param string $message
 	 */
-	public function silentLog($message) {
+	public function silentLog(string $message): void {
 		try {
 			$this->log($message);
 		} catch (LogException $logE) {
@@ -1171,9 +1136,8 @@ EOF;
 
 	/**
 	 * Logs current version
-	 *
 	 */
-	public function logVersion() {
+	public function logVersion(): void {
 		$this->silentLog('[info] current version: ' . $this->currentVersion . ' build time: ' . $this->buildTime);
 	}
 }
