@@ -189,12 +189,6 @@ class FeatureContext implements SnippetAcceptingContext {
 	 */
 	public function getSignatureForVersion($version) {
 		$signatures = [
-			'24.0.0beta3' => 'ux7sDV+nxX+wfiXaDHzKsRGrTWStP+rlt3iNx96ZRFuU7cnAhoZ6TeM3l2Y7sbf/
-￼zqMo5C3ZVf3kOyPAkx6rGj5grKl2YpkgnT9a9bRnRwwezINAVkRJnXuDA0EJF2+O
-￼XlzRBQY2QGX20XxNws25YfWTzqARYqjvg+Tc4xbUew6gYeoAbBzTKyOtfCRmPAyt
-￼3RlnJnWLW9gFnZhZ6GGTB25Rav8MT+AFxszB6ACTwVSNAi//Nev2Pzuxg7TB5h1Q
-￼+mFveQ+p+Mspqwgpg70HzZPa2ok7jlSfEzCalybipoxs05a2fA6p67RW0Qic+paK
-￼+VN7mtgqKuXrmIjOFjYOoA==',
 			'24.0.1' => 'AGjMXl1X1hRSZv++TOhoS5GzQ5LovzG6uCESqEVgSR+Xd+l82lCUNvJ6saGYp8xk
 ￼wL3OnDOnNVcT11xV9Xybt9JLU9tmXf3hf4/HNeyufWKr6AgUENrG7p4dx+tzLk5v
 ￼fYtOdoqnhyNNLkrshWcEd7COiaK73O4IlivdOyEZkp/L16RlK5wcs4wAy+M/ot6G
@@ -232,6 +226,12 @@ hOlAeuPilB9K3Q+b4dVjrcv6op/dSEQBhaXI46QvCuvfB1EKLfUAWbLsxCMbr4Cd
 Hsav3i+wHleTOL8F7Qc33gDCVtpgqWlyXJG1omEiD9D/Kj+SMTo+s9iwOwW2b0vw
 81qbX21xwzPS1vA18qI0JZnd0sdMRGTYvPZJr/Wn2MuMajcMD+94A9W3ij/BygoE
 3uimJONAqLSFY6KEnNuoIQ==',
+			'26.0.0beta4' => 'lJVljfemugXaSV2Xt8MF9OGaj7VVa24S4GUFM0BABUzWAf0yRRGWcQAyk0Mg6ZBU
+￼GvoprwbVhV3+UUGxdj9pQAFYcMqpfcQPdcPWLxk3lx3xuGj79ItyJXRwdahh+4wa
+￼JnUAl/70n6Gp6c7F86aJxacUl7KeRbCgg4h5KGGw3aRZJb2R/Mm3TbFwsE1OIDMg
+￼R0xZcevYS2lSJzjqY1M1QjfCZO4qq2XMDSEN1G58HMd2+QDWqa63QG7/wCF1ufLw
+￼V9tAyTb/fjsj/oUM0wa2bePC3wk/ai8RjWXbZNX2g5YQAxgkCQjfdvb5RNVvmuCL
+￼AJBwc9EthsEKMVkKj9R41g==',
 			'26.0.0' => 'C7bAPCDo+ZrmIKkxXeJmInOINo2RI0zqxBmNk5bcMjXviPjPeE8SrHbhDcPLHMsp
 wUM//AMxbYUKtKBHPYqvw28O5kQhDe9gyCGo5zyTeFDjpgNgQvxa6TxSyl5O03aD
 CehZjUf8mnOyaSkJcmkCqJokl2uCXoB9r7pTZwGEURvjv7UOHe6rmKgJAWBeCb1D
