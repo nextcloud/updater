@@ -16,25 +16,31 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ["7.4", "8.0"]
-        nextcloud-versions: ["19", "20", "21"]
+        php-versions: ["8.0", "8.1", "8.2"]
+        nextcloud-versions: ["24", "25", "26"]
         exclude:
-          - php-versions: "8.0"
-            nextcloud-versions: "19"
-          - php-versions: "8.0"
-            nextcloud-versions: "20"
+          - php-versions: "8.2"
+            nextcloud-versions: "25"
+          - php-versions: "8.2"
+            nextcloud-versions: "24"
+
 
     name: test-stable
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 
       - name: Set up php ${{ matrix.php-versions }}
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # v2
         with:
           php-version: ${{ matrix.php-versions }}
+          extensions: apcu,ctype,curl,dom,fileinfo,ftp,gd,intl,json,ldap,mbstring,openssl,pdo_sqlite,posix,sqlite,xml,zip
           coverage: none
+          ini-file: development
+
+      - name: Install dependencies
+        run: composer i
 
       - name: test-stable${{ matrix.nextcloud-versions }}
         run: make test-stable${{ matrix.nextcloud-versions }}

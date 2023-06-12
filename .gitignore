@@ -1,8 +1,10 @@
-box
-lib/Version.php
-tests/data
-tests/vendor
-vendor/symfony/console/Tests
-vendor/symfony/debug/Tests
+/box
+/lib/Version.php
+/tests/data
+/tests/vendor
+/vendor/bamarni/composer-bin-plugin/e2e
+/vendor/bin
+/vendor/symfony/console/Tests
+/vendor/symfony/debug/Tests
 /vendor-bin/**/vendor
 .php-cs-fixer.cache
