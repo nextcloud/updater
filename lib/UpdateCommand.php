@@ -25,6 +25,7 @@
 namespace NC\Updater;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,7 +37,7 @@ class UpdateCommand extends Command {
 	protected bool $skipBackup = false;
 	protected bool $skipUpgrade = false;
 
-	/** @var array strings of text for stages of updater */
+	/** @var list<string> strings of text for stages of updater */
 	protected array $checkTexts = [
 		0 => '',
 		1 => 'Check for expected files',
@@ -72,8 +73,8 @@ class UpdateCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$this->skipBackup = $input->getOption('no-backup');
-		$this->skipUpgrade = $input->getOption('no-upgrade');
+		$this->skipBackup = (bool)$input->getOption('no-backup');
+		$this->skipUpgrade = (bool)$input->getOption('no-upgrade');
 
 		$version = static::getUpdaterVersion();
 		$output->writeln('Nextcloud Updater - version: ' . $version);
@@ -126,14 +127,14 @@ class UpdateCommand extends Command {
 		$currentStep = $this->updater->currentStep();
 		$stepNumber = 0;
 		if ($currentStep !== []) {
-			$stepState = $currentStep['state'];
-			$stepNumber = $currentStep['step'];
+			$stepState = (string)$currentStep['state'];
+			$stepNumber = (int)$currentStep['step'];
 			$this->updater->log('[info] Step ' . $stepNumber . ' is in state "' . $stepState . '".');
 
 			if ($stepState === 'start') {
 				$output->writeln(
 					sprintf(
-						'Step %s is currently in process. Please call this command later or remove the following file to start from scratch: %s',
+						'Step %d is currently in process. Please call this command later or remove the following file to start from scratch: %s',
 						$stepNumber,
 						$this->updater->getUpdateStepFileLocation()
 					)
@@ -175,6 +176,7 @@ class UpdateCommand extends Command {
 
 			$output->writeln('');
 
+			/** @var QuestionHelper */
 			$helper = $this->getHelper('question');
 			$question = new ConfirmationQuestion($questionText . '? [y/N] ', false);
 
@@ -288,6 +290,7 @@ class UpdateCommand extends Command {
 			if ($input->isInteractive()) {
 				$output->writeln('');
 
+				/** @var QuestionHelper */
 				$helper = $this->getHelper('question');
 				$question = new ConfirmationQuestion('Should the "occ upgrade" command be executed? [Y/n] ', true);
 
@@ -308,6 +311,7 @@ class UpdateCommand extends Command {
 
 			$output->writeln('');
 			if ($input->isInteractive()) {
+				/** @var QuestionHelper */
 				$helper = $this->getHelper('question');
 				$question = new ConfirmationQuestion($this->checkTexts[11] . ' [y/N] ', false);
 
@@ -345,7 +349,7 @@ class UpdateCommand extends Command {
 	}
 
 	/**
-	 * @return array{proceed:bool,response:string|array} with options 'proceed' which is a boolean and defines if the step succeeded and an optional 'response' string or array
+	 * @return array{proceed:bool,response:string|list<string>} with options 'proceed' which is a boolean and defines if the step succeeded and an optional 'response' string or array
 	 */
 	protected function executeStep(int $step): array {
 		if ($this->updater === null) {

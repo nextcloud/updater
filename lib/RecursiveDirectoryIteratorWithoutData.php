@@ -31,6 +31,7 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 			'..',
 		];
 
+		/** @var \SplFileInfo|false */
 		$current = $this->current();
 		if (!$current) {
 			return false;

@@ -163,11 +163,9 @@ class Updater {
 
 	/**
 	 * Returns the specified config option
-	 *
-	 * @return mixed|null Null if the entry is not found
 	 */
-	public function getConfigOption(string $key) {
-		return isset($this->configValues[$key]) ? $this->configValues[$key] : null;
+	public function getConfigOption(string $key): mixed {
+		return $this->configValues[$key] ?? null;
 	}
 
 	/**
@@ -265,15 +263,14 @@ class Updater {
 			if (!is_array($appsPaths)) {
 				throw new \Exception('Configuration key apps_paths should be an array');
 			}
+
 			foreach ($appsPaths as $appsPath) {
-				if (isset($appsPath['path']) && is_string($appsPath['path'])) {
-					$appPath = $appsPath['path'];
-				} else {
+				if (!is_array($appsPath) || !isset($appsPath['path']) || !is_string($appsPath['path'])) {
 					throw new \Exception('Invalid configuration in apps_paths configuration key');
 				}
 				$parentDir = realpath($this->baseDir . '/../');
-				$appDir = basename($appPath);
-				if (strpos($appPath, $parentDir) === 0 && $appDir !== 'apps') {
+				$appDir = basename($appsPath['path']);
+				if (strpos($appsPath['path'], $parentDir) === 0 && $appDir !== 'apps') {
 					$expected[] = $appDir;
 				}
 			}
@@ -1078,18 +1075,20 @@ EOF;
 		$this->silentLog('[info] currentStep()');
 
 		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid');
-		$jsonData = [];
-		if (file_exists($updaterDir. '/.step')) {
-			$state = file_get_contents($updaterDir . '/.step');
-			if ($state === false) {
-				throw new \Exception('Could not read from .step');
-			}
-
-			$jsonData = json_decode($state, true);
-			if (!is_array($jsonData)) {
-				throw new \Exception('Can\'t decode .step JSON data');
-			}
+		if (!file_exists($updaterDir. '/.step')) {
+			return [];
 		}
+
+		$state = file_get_contents($updaterDir . '/.step');
+		if ($state === false) {
+			throw new \Exception('Could not read from .step');
+		}
+
+		$jsonData = json_decode($state, true);
+		if (!is_array($jsonData)) {
+			throw new \Exception('Can\'t decode .step JSON data');
+		}
+
 		return $jsonData;
 	}
 
