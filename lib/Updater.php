@@ -1127,7 +1127,7 @@ EOF;
 	 * @throws LogException
 	 */
 	public function log($message) {
-		$updaterLogPath = $this->getUpdateDirectoryLocation() . '/updater.log';
+		$updaterLogPath = $this->getConfigOption('logfile_updater') ?? ($this->getUpdateDirectoryLocation() . '/updater.log');
 
 		$fh = fopen($updaterLogPath, 'a');
 		if ($fh === false) {
