@@ -1105,6 +1105,11 @@ EOF;
 		return $jsonData;
 	}
 
+	public function getUpdateStepFileLocation() {
+		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
+		return $updaterDir . '/.step';
+	}
+
 	/**
 	 * Rollback the changes if $step has failed
 	 *
@@ -1345,8 +1350,9 @@ if ($currentStep !== []) {
 	if ($stepState === 'start') {
 		die(
 			sprintf(
-				'Step %s is currently in process. Please reload this page later.',
-				$stepNumber
+				'Step %s is currently in process. Please reload this page later or remove the following file to start from scratch: %s',
+				$stepNumber,
+				$this->updater->getUpdateStepFileLocation()
 			)
 		);
 	}
