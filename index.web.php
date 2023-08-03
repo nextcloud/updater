@@ -95,7 +95,7 @@ if ($currentStep !== []) {
 			sprintf(
 				'Step %d is currently in process. Please reload this page later or remove the following file to start from scratch: %s',
 				$stepNumber,
-				$this->updater->getUpdateStepFileLocation()
+				$updater->getUpdateStepFileLocation()
 			)
 		);
 	}
