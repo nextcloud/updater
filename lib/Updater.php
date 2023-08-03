@@ -1092,7 +1092,7 @@ EOF;
 		return $jsonData;
 	}
 
-	public function getUpdateStepFileLocation() {
+	public function getUpdateStepFileLocation(): string {
 		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
 		return $updaterDir . '/.step';
 	}
