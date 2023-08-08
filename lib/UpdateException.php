@@ -23,13 +23,15 @@
 namespace NC\Updater;
 
 class UpdateException extends \Exception {
-	protected $data;
 
-	public function __construct($data) {
-		$this->data = $data;
+	/** @param list<string> $data */
+	public function __construct(
+		protected array $data,
+	) {
 	}
 
-	public function getData() {
+	/** @return list<string> */
+	public function getData(): array {
 		return $this->data;
 	}
 }
