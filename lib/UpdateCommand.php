@@ -25,25 +25,20 @@
 namespace NC\Updater;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class UpdateCommand extends Command {
-	/** @var Updater */
-	protected $updater;
-
-	/** @var bool */
-	protected $shouldStop = false;
-
-	/** @var bool */
-	protected $skipBackup = false;
-
+	protected ?Updater $updater = null;
+	protected bool $shouldStop = false;
+	protected bool $skipBackup = false;
 	protected bool $skipUpgrade = false;
 
-	/** @var array strings of text for stages of updater */
-	protected $checkTexts = [
+	/** @var list<string> strings of text for stages of updater */
+	protected array $checkTexts = [
 		0 => '',
 		1 => 'Check for expected files',
 		2 => 'Check for write permissions',
@@ -59,7 +54,7 @@ class UpdateCommand extends Command {
 		12 => 'Done',
 	];
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('update')
 			->setDescription('Updates the code of an Nextcloud instance')
@@ -78,8 +73,8 @@ class UpdateCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$this->skipBackup = $input->getOption('no-backup');
-		$this->skipUpgrade = $input->getOption('no-upgrade');
+		$this->skipBackup = (bool)$input->getOption('no-backup');
+		$this->skipUpgrade = (bool)$input->getOption('no-upgrade');
 
 		$version = static::getUpdaterVersion();
 		$output->writeln('Nextcloud Updater - version: ' . $version);
@@ -132,15 +127,16 @@ class UpdateCommand extends Command {
 		$currentStep = $this->updater->currentStep();
 		$stepNumber = 0;
 		if ($currentStep !== []) {
-			$stepState = $currentStep['state'];
-			$stepNumber = $currentStep['step'];
+			$stepState = (string)$currentStep['state'];
+			$stepNumber = (int)$currentStep['step'];
 			$this->updater->log('[info] Step ' . $stepNumber . ' is in state "' . $stepState . '".');
 
 			if ($stepState === 'start') {
 				$output->writeln(
 					sprintf(
-						'Step %s is currently in process. Please call this command later.',
-						$stepNumber
+						'Step %d is currently in process. Please call this command later or remove the following file to start from scratch: %s',
+						$stepNumber,
+						$this->updater->getUpdateStepFileLocation()
 					)
 				);
 				return -1;
@@ -180,6 +176,7 @@ class UpdateCommand extends Command {
 
 			$output->writeln('');
 
+			/** @var QuestionHelper */
 			$helper = $this->getHelper('question');
 			$question = new ConfirmationQuestion($questionText . '? [y/N] ', false);
 
@@ -293,6 +290,7 @@ class UpdateCommand extends Command {
 			if ($input->isInteractive()) {
 				$output->writeln('');
 
+				/** @var QuestionHelper */
 				$helper = $this->getHelper('question');
 				$question = new ConfirmationQuestion('Should the "occ upgrade" command be executed? [Y/n] ', true);
 
@@ -313,6 +311,7 @@ class UpdateCommand extends Command {
 
 			$output->writeln('');
 			if ($input->isInteractive()) {
+				/** @var QuestionHelper */
 				$helper = $this->getHelper('question');
 				$question = new ConfirmationQuestion($this->checkTexts[11] . ' [y/N] ', false);
 
@@ -350,10 +349,12 @@ class UpdateCommand extends Command {
 	}
 
 	/**
-	 * @param $step integer
-	 * @return array with options 'proceed' which is a boolean and defines if the step succeeded and an optional 'response' string
+	 * @return array{proceed:bool,response:string|list<string>} with options 'proceed' which is a boolean and defines if the step succeeded and an optional 'response' string or array
 	 */
-	protected function executeStep($step) {
+	protected function executeStep(int $step): array {
+		if ($this->updater === null) {
+			return ['proceed' => false, 'response' => 'Initialization problem'];
+		}
 		$this->updater->log('[info] executeStep request for step "' . $step . '"');
 		try {
 			if ($step > 12 || $step < 1) {
@@ -403,19 +404,19 @@ class UpdateCommand extends Command {
 					break;
 			}
 			$this->updater->endStep($step);
-			return ['proceed' => true];
+			return ['proceed' => true, 'response' => ''];
 		} catch (UpdateException $e) {
-			$message = $e->getData();
+			$data = $e->getData();
 
 			try {
 				$this->updater->log('[error] executeStep request failed with UpdateException');
 				$this->updater->logException($e);
 			} catch (LogException $logE) {
-				$message .= ' (and writing to log failed also with: ' . $logE->getMessage() . ')';
+				$data[] = ' (and writing to log failed also with: ' . $logE->getMessage() . ')';
 			}
 
 			$this->updater->rollbackChanges($step);
-			return ['proceed' => false, 'response' => $message];
+			return ['proceed' => false, 'response' => $data];
 		} catch (\Exception $e) {
 			$message = $e->getMessage();
 
@@ -431,11 +432,7 @@ class UpdateCommand extends Command {
 		}
 	}
 
-	/**
-	 * @param OutputInterface $output
-	 * @param integer $stepNumber
-	 */
-	protected function showCurrentStatus(OutputInterface $output, $stepNumber) {
+	protected function showCurrentStatus(OutputInterface $output, int $stepNumber): void {
 		$output->writeln('Steps that will be executed:');
 		for ($i = 1; $i < sizeof($this->checkTexts); $i++) {
 			if ($i === 11) {
@@ -455,7 +452,7 @@ class UpdateCommand extends Command {
 	/**
 	 * gets called by the PCNTL listener once the stop/terminate signal
 	 */
-	public function stopCommand() {
+	public function stopCommand(): void {
 		$this->shouldStop = true;
 	}
 }
