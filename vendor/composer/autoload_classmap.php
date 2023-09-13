@@ -7,10 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
-    'Bamarni\\Composer\\Bin\\BinCommand' => $vendorDir . '/bamarni/composer-bin-plugin/src/BinCommand.php',
-    'Bamarni\\Composer\\Bin\\CommandProvider' => $vendorDir . '/bamarni/composer-bin-plugin/src/CommandProvider.php',
-    'Bamarni\\Composer\\Bin\\Config' => $vendorDir . '/bamarni/composer-bin-plugin/src/Config.php',
-    'Bamarni\\Composer\\Bin\\Plugin' => $vendorDir . '/bamarni/composer-bin-plugin/src/Plugin.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'JsonException' => $vendorDir . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
     'NC\\Updater\\CommandApplication' => $baseDir . '/lib/CommandApplication.php',

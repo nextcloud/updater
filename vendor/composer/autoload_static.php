@@ -30,10 +30,6 @@ class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
         array (
             'NC\\Updater\\' => 11,
         ),
-        'B' => 
-        array (
-            'Bamarni\\Composer\\Bin\\' => 21,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -65,18 +61,10 @@ class ComposerStaticInitd7f5ddc48e4715174279359c16c76340
         array (
             0 => __DIR__ . '/../..' . '/lib',
         ),
-        'Bamarni\\Composer\\Bin\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src',
-        ),
     );
 
     public static $classMap = array (
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
-        'Bamarni\\Composer\\Bin\\BinCommand' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/BinCommand.php',
-        'Bamarni\\Composer\\Bin\\CommandProvider' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/CommandProvider.php',
-        'Bamarni\\Composer\\Bin\\Config' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Config.php',
-        'Bamarni\\Composer\\Bin\\Plugin' => __DIR__ . '/..' . '/bamarni/composer-bin-plugin/src/Plugin.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'NC\\Updater\\CommandApplication' => __DIR__ . '/../..' . '/lib/CommandApplication.php',
