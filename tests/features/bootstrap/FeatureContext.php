@@ -55,7 +55,7 @@ class FeatureContext implements SnippetAcceptingContext {
 	}
 
 	/**
-	 * @Given /the current (installed )?version is ([0-9.]+((beta|RC)[0-9]?)?|stable[0-9]+|master)/
+	 * @Given /the current (installed )?version is ([0-9.]+((beta|rc)[0-9]?)?|stable[0-9]+|master)/
 	 */
 	public function theCurrentInstalledVersionIs($installed, $version) {
 		if ($this->skipIt) {
@@ -83,7 +83,7 @@ class FeatureContext implements SnippetAcceptingContext {
 		if (!file_exists($this->tmpDownloadDir . $filename)) {
 			$fp = fopen($this->tmpDownloadDir . $filename, 'w+');
 			$url = $this->downloadURL . $filename;
-			if (strpos($version, 'RC') !== false || strpos($version, 'beta') !== false) {
+			if (strpos($version, 'rc') !== false || strpos($version, 'beta') !== false) {
 				$url = $this->prereleasesDownloadURL . 'nextcloud-' . $version . '.zip';
 			} elseif (strpos($version, 'stable') !== false || strpos($version, 'master') !== false) {
 				$url = $this->dailyDownloadURL . $version . '.zip';
@@ -189,55 +189,25 @@ class FeatureContext implements SnippetAcceptingContext {
 	 */
 	public function getSignatureForVersion($version) {
 		$signatures = [
-			'19.0.0beta4' => 'Cum4wIKpCRHNZuOQ/SfDYsIp39/4/Z3EIiMLTV7vFLf1pjsn+q1FRwk7HbT0ileU
-9eGbmpJHrmbNFk73g6k2YLOeosznMD89+AtRrRRn7C+sJmXx90+Eejs1aWWBRi8j
-wnC4PNYGZCqV10z+bMWNFWuZlkO2o2c+o8I/mIM93trRgnciFzA2YYAILnz4vZ5L
-ZPLKMJmGqSbhxocFUKayXoyeUY1jv/rStYijfdLgcqY4EudstDJjFaLPsKLuTRQW
-Ha/+m01i2qnkHvWuai0qaD7qYKMn21SeWfguSl07uH9LiL5wskOUvFzFy1KRL9lb
-zjM6gntkGWUI0mO2YFzbbA==',
-			'19.0.1' => 'uTYzr6YDYDK68A8fZ42IOzQEmilMNmsX4L1bypJkkAN/UOBP5ZK8tc/hgSrmXd4t
-g0f7/c39nYo9CfMs8swPYCqTt7mbgx+z/LxlVJXNJeQkYEtLIA+kczQKNprY/c4E
-wNk/dR5uVMqmlkAhQVXwJ8M4D30t1wJ8235XRLYtOfxowE+OQLLkYaDNEyU0pJK5
-jCKI42xQJyO1bn0FAvGR5zqyWeHSXJKr5fleDw/L8ozPCZIgppGbigvwhOWE+Exs
-bsf53THWtncb19OL626j8RbgQ3EuN4uSU7cp1pGqkg/kzQdBxR7TXcOqNMw8tiPC
-CsKuFqRI37eQhbI/i2nrjg==',
-			'19.0.2' => 'MfRJPu59KkLbJSICRyTyvtH4jLV6rwD5cTR3VTF7T5TqSwHLcOKDi7yEZK9qZKTm
-qelJt17cUknifzJ+LKXwE26xua5SYA6KKGL1WIcaDKIJm8UMJhE3w7cMcxi79FVn
-4Gs1jOc+TxTaM7hD32QzqIqLfYXmfXBjkV6zdNmqEXP8yHErdazU6+FSYbA5Z+JH
-+LA46bRlAqZgf0NsfblCCpE5kAFlgMbZ4lpU6SfuNBWvIoX5k4iTtDvflQlpg58S
-zY8iDQ+AZ2ttFoQ4MjfyTzM1VM0WDL5f70phVg4F+jG/JPxo9Qpyhq1Hy30ANPa0
-dNqXHF6Re45NNc0vwNHjEA==',
-			'19.0.3' => 'THIS IS AN INVALID SIGNATURE',
-			'20.0.0' => 't9y2V2n1FSBQmXd1UawMRWvOJU98fEhTkYCBkoILHnJtkXWeobw5rNcsQ5R5oop4
-+5Wlxqw520/M+SQF5+MUwpMfB3QJabFJbXm3kFKDbXeNjIcTmrfmcqiVpCGa3qtY
-kqAtCh15IPYKR3dSHDH3pOSWlJpnL6rlOYZZSEWYwBIF1BQ9fTjW1i2mat0Fl2OE
-CN6Aim4OoaZz4U7coPSi6pyRKcsV2KAaxlHIHzj71EjqV7gaoZRhzSnN/NomPu6D
-hfOAOW47o1GsZXt4euDJMpye1h8PE1csaaeCvc0gla7C6KE4LfTO0nLTu/yTNcB9
-HNkEiZqVg/EjiuZHcSXd/g==',
-			'20.0.0RC1' => 'fLz3hBBrPXlJIbDkzAme++HDLayz/ES0bjb42ZtSur+9+UrwyVQdfNsVKQXYtZTr
-akGbqmefYpQfVITDRz4Z5weMp/ti7mC9pQR7gjtCN9QmrG/34iURuJlJB8Ty6Mrk
-Y6d4C8HjQ4CW2lvEc1/PvxZRI8SfMx+KQFuquJUKNmGInG6DOjtiCQ/mqcSaFt/9
-JNJS7NBPkNM7QFJHeedEBdL2Q8Ssu9DdM464tNa0jBo6xrkvinwZLUkULFKeNNIP
-SIEb7x+TVLDhCgNSLU1J9qPmscaAGZaYZK6UH3wM51T7pBaL69gIP8AP3HgTzgLK
-RO/f0KLHqrWDl86w/ybMpg==',
-			'20.0.1' => 'EDf7pKNahd9y/R6Gz69/i6DL/JcWddlqAvpibgvkKbBCX0cr5Oa7PZQzA26U2Ad8
-fdLgOjnBIKhSo10gn1D8/5pHjuIltFqUepdKFyvx3G/+1znA+S8VfKbDgItwHf1D
-gaTtuEcHuONoX7yyCib5kr6YQX4Cx0ICJmrS+KBB0CHzGwAo8Cj98havcDo8vYr0
-wR+I/lo/45qAgfUrcNge2ZJdtlZj6VHn/I9zRhz2Q+MDNMRrKxZ/XN/8KhdDerTS
-54QfoEoYbVRlLfjc45meKENdxM6/HK8XZckXkJI1Zc6XyubWsSYwnNWY1/GV5Zhd
-mxDr4jUlvGQX1jFuzd4nLQ==',
-			'20.0.8' => 'i49DH/MdR7skQ3wq4+iU/YJOhAqRwEygGQqiku66FXrJ5PDLdb8mWcKeYPkntPTb
-jzi9gzOLWWQaqGYVXm4uqgYedU7gaUawP73aCZqUTSw+so/ktP4VNomWxDbOP+T1
-qERrTdOOvC1N5wdqchvRIriMgtYIQU3ezwHGECw/+Ps7r4UJLMfBFn56NVqluUkh
-yxgneDwLXdjHXIQ4DVsO4pKHkJmRyEzSvqDn0IxHvtELnV6qNAGjFghH5FC3Tnqu
-Gm/nFuznVsq84U0YQKVVAA+ci0yXLB6cQCRwz5H3Qfn45v6ZivL7xjrk9aX423yK
-CN45I0sFnm6aWxGPN1GegA==',
-			'21.0.0' => 'Jd0TVUqo3cVPKWaN7/5dEbIcJKcS9Z0V334sBaJAfXe+YgV6lRmPHrGuTK34+tUc
-l9/OHJrazOO7tEDRdtM4zpFE7y9kHsqTTR2MTEVLwIZ5JsgTPHE2/im0wlWLk3UI
-4Oo5TPt1EOgNbYHfEBY8FPKCL6JyT2ySBaQKYdfJMgkxUZw00BMjplhNUgXEhvd2
-f8tPNZ3cs7hyr0SQFx96gyFcCQ4+5KohnLGqZnNSyV7ovHbYEzXUCmmULlm02zSu
-V367c1FDks7iKs/V96u21NuF14IQzI0mEzMzysPINrKbHC+OU1BKHKOHqRJjkHwQ
-fNJsXi16UkYMGUXyQWQXHg==',
+			'27.0.0rc1' => 'bJM4u0k3T18MWCIixZQntVhM2GlbEnnrsyARpslw0mKa4CoQbbowD4u2HjZgTG/u
+U8wF1SYRqVM1kDD0gb5uRI1cGt5RvMcPjEdZz1GPZI/OTDiQsibhjCjnINVxzOS4
+l7agazyXxJ3CQQqgTkY58tgHsW/M6AGZDe/3HatK7yd9q+Wss5C04G2yLV9uYGSC
+KQXZEyAhvEbnP46lXjV+1MNQlPXCQlL/b0b+aeKpvXp4iMc2osXoBcRg7TP7HJtK
+G754iZVlXFxrChMd8svj2tCsue3laMJnJoVs/jmvTHOcOtHFOX5qsNBu+1h5viPj
+bTiaGQ+m9kPSdIkFpyCnxQ==',
+			'27.0.0' => 'wUz0K6QLON0SXaz5wBzJ2XW7GeYTdqGP0iJmGaGvIGT3D2+ftmHY17nCTYKcr3I5
+hh/4FKfsUaoP2Ak37GR1KMLyli5hARZRApR5powznf504atImcY51LuMvXE9CgIN
+yM1oJPehacjYsrJzjMizK4aTHepz+zVeWo8SlBiKXwB9Ntqhrt63mHnzMJb7B6vY
+6N7YkvKlPMCSk3ttIgIH04J+CMYZWzW0UVRn2NV2ID8e22+tiskWNVK6uvTszIX5
+AU45erykEtmF8RqZR5wTPBOc4kjrryTnKhuNsEPKtEjQlxpI5/PdV5fE+eegTGeh
+EGDLJyXxKje9pcfLoid0xQ==',
+			'27.0.1' => 'KDoUgdBXf6Uwpz+xAQHTrNcIF/ETv1oAsb+sXk9IvCIVIFY47QV/bd9H6W8h0Ud4
+69Ichy/tVZ7gB4nE35h2Pp+p6DV1B4I4JKIczpIWSKi26epsYR3Bg3wFo/mSo0qJ
+fSRjWSgtzes79E7Tg2KqkcMlc9ImhiILacUiOoyhNDXSLQxll+KJgvoYmYCZlCkM
+2R3PfKfxJvh1mgdiLYphov87U8jbKAnYkiFgw1HSZV8XpsonZg762dCZGJ3Z3q7s
+qJStmileJUPLIzba0nsbRHnkNfCUxeBVqD8/rKHq+9p5Q7JN0Zvm01IDLINe2IMf
+Qvk8dRt/W9lFCDjnIi/skw==',
+			'27.0.2' => 'THIS IS AN INVALID SIGNATURE',
 		];
 
 		if (isset($signatures[$version])) {

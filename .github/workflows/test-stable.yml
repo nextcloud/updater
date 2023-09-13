@@ -16,13 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ["7.4", "8.0"]
-        nextcloud-versions: ["19", "20", "21"]
-        exclude:
-          - php-versions: "8.0"
-            nextcloud-versions: "19"
-          - php-versions: "8.0"
-            nextcloud-versions: "20"
+        php-versions: ["8.0", "8.1", "8.2"]
+        nextcloud-versions: ["27"]
 
     name: test-stable
 
@@ -31,10 +26,15 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up php ${{ matrix.php-versions }}
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # v2
         with:
           php-version: ${{ matrix.php-versions }}
+          # https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#prerequisites-for-manual-installation
+          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, sqlite, pdo_sqlite
           coverage: none
+          ini-file: development
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: test-stable${{ matrix.nextcloud-versions }}
         run: make test-stable${{ matrix.nextcloud-versions }}
