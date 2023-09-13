@@ -123,6 +123,8 @@ class FeatureContext implements SnippetAcceptingContext {
 		if ($returnCode !== 0) {
 			throw new Exception('Install failed' . PHP_EOL . join(PHP_EOL, $output));
 		}
+
+        exec('./occ app:update --all', $output, $returnCode);
 	}
 
 	/**
