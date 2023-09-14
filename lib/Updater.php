@@ -3,6 +3,7 @@
  * @copyright Copyright (c) 2016-2017 Lukas Reschke <lukas@statuscode.ch>
  * @copyright Copyright (c) 2016 Morris Jobke <hey@morrisjobke.de>
  * @copyright Copyright (c) 2018 Jonas Sulzer <jonas@violoncello.ch>
+ * @copyright Copyright (c) 2023 Invalid <invalid@example.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
