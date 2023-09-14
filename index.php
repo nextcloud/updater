@@ -21,6 +21,7 @@
  *
  */
 
+
 class UpdateException extends \Exception {
 	protected $data;
 
@@ -47,7 +48,13 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 			'data',
 			'..',
 		];
-		return !(in_array($this->current()->getFilename(), $excludes, true) || $this->current()->isDir());
+
+		$current = $this->current();
+		if (!$current) {
+			return false;
+		}
+
+		return !(in_array($current->getFilename(), $excludes, true) || $current->isDir());
 	}
 }
 
@@ -469,7 +476,7 @@ class Updater {
 		$this->silentLog('[info] end of createBackup()');
 	}
 
-	private function getChangelogURL($versionString) {
+	private function getChangelogURL(string $versionString) {
 		$this->silentLog('[info] getChangelogURL()');
 		$changelogWebsite = 'https://nextcloud.com/changelog/';
 		$changelogURL = $changelogWebsite . '#' . str_replace('.', '-', $versionString);
@@ -647,7 +654,7 @@ class Updater {
 		}
 
 		$response = $this->getUpdateServerResponse();
-		if (!isset($response['signature'])) {
+		if (empty($response['signature'])) {
 			throw new \Exception('No signature specified for defined update');
 		}
 
@@ -1833,13 +1840,13 @@ if (strpos($updaterUrl, 'index.php') === false) {
 					</div>
 				</li>
 			</ul>
-		<?php else : ?>
+		<?php else: ?>
 			<div id="login" class="section">
 				<h2>Authentication</h2>
 				<p>To login you need to provide the unhashed value of "updater.secret" in your config file.</p>
 				<p>If you don't know that value, you can access this updater directly via the Nextcloud admin screen or generate
 				your own secret:</p>
-				<code>php -r '$password = trim(shell_exec("openssl rand -base64 48")); if (strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";} else {echo "Could not execute OpenSSL.\n";};'</code>
+				<code>php -r '$password = trim(shell_exec("openssl rand -base64 48"));if(strlen($password) === 64) {$hash = password_hash($password, PASSWORD_DEFAULT) . "\n"; echo "Insert as \"updater.secret\": ".$hash; echo "The plaintext value is: ".$password."\n";}else{echo "Could not execute OpenSSL.\n";};'</code>
 				<form method="post" name="login">
 					<fieldset>
 						<input type="password" name="updater-secret-input" value=""
@@ -1858,8 +1865,7 @@ if (strpos($updaterUrl, 'index.php') === false) {
 </div>
 
 </body>
-
-<?php if ($auth->isAuthenticated()) : ?>
+<?php if ($auth->isAuthenticated()): ?>
 	<script>
 		function escapeHTML(s) {
 			return s.toString().split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split('\'').join('&#039;');
@@ -2247,3 +2253,4 @@ if (strpos($updaterUrl, 'index.php') === false) {
 <?php endif; ?>
 
 </html>
+

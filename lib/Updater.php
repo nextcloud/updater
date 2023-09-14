@@ -440,7 +440,7 @@ class Updater {
 		$this->silentLog('[info] end of createBackup()');
 	}
 
-	private function getChangelogURL($versionString) {
+	private function getChangelogURL(string $versionString) {
 		$this->silentLog('[info] getChangelogURL()');
 		$changelogWebsite = 'https://nextcloud.com/changelog/';
 		$changelogURL = $changelogWebsite . '#' . str_replace('.', '-', $versionString);
@@ -618,7 +618,7 @@ class Updater {
 		}
 
 		$response = $this->getUpdateServerResponse();
-		if (!isset($response['signature'])) {
+		if (empty($response['signature'])) {
 			throw new \Exception('No signature specified for defined update');
 		}
 
