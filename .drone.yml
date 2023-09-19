@@ -178,24 +178,6 @@ trigger:
 
 ---
 kind: pipeline
-name: php74-master
-
-steps:
-  - name: php74-master
-    image: ghcr.io/nextcloud/continuous-integration-php7.4:latest
-    commands:
-      - make test-master
-
-trigger:
-  branch:
-    - master
-    - stable*
-  event:
-    - pull_request
-    - push
-
----
-kind: pipeline
 name: php80-master
 
 steps:
