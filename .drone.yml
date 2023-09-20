@@ -3,7 +3,7 @@ name: check-same-code-base
 
 steps:
   - name: check-same-code-base
-    image: nextcloudci/php8.0:php8.0-1
+    image: ghcr.io/nextcloud/continuous-integration-php8.0:latest
     commands:
       - make check-same-code-base
 
@@ -21,7 +21,8 @@ name: php73-cli
 
 steps:
   - name: php73-cli
-    image: nextcloudci/php7.3:php7.3-5
+    image: ghcr.io/nextcloud/continuous-integration-php7.3:latest
+
     commands:
       - make test-cli
 
@@ -39,7 +40,7 @@ name: php74-cli
 
 steps:
   - name: php74-cli
-    image: nextcloudci/php7.4:php7.4-3
+    image: ghcr.io/nextcloud/continuous-integration-php7.4:latest
     commands:
       - make test-cli
 
@@ -56,7 +57,7 @@ name: php73-stable19
 
 steps:
   - name: php73-stable19
-    image: nextcloudci/php7.3:php7.3-5
+    image: ghcr.io/nextcloud/continuous-integration-php7.3:latest
     commands:
       - make test-stable19
 
@@ -74,7 +75,7 @@ name: php74-stable19
 
 steps:
   - name: php74-stable19
-    image: nextcloudci/php7.4:php7.4-3
+    image: ghcr.io/nextcloud/continuous-integration-php7.4:latest
     commands:
       - make test-stable19
 
@@ -92,7 +93,7 @@ name: php73-stable20
 
 steps:
   - name: php73-stable20
-    image: nextcloudci/php7.3:php7.3-5
+    image: ghcr.io/nextcloud/continuous-integration-php7.3:latest
     commands:
       - make test-stable20
 
@@ -110,7 +111,7 @@ name: php74-stable20
 
 steps:
   - name: php74-stable20
-    image: nextcloudci/php7.4:php7.4-3
+    image: ghcr.io/nextcloud/continuous-integration-php7.4:latest
     commands:
       - make test-stable20
 
@@ -128,7 +129,7 @@ name: php73-stable21
 
 steps:
   - name: php73-stable21
-    image: nextcloudci/php7.3:php7.3-5
+    image: ghcr.io/nextcloud/continuous-integration-php7.3:latest
     commands:
       - make test-stable21
 
@@ -146,7 +147,7 @@ name: php74-stable21
 
 steps:
   - name: php74-stable21
-    image: nextcloudci/php7.4:php7.4-3
+    image: ghcr.io/nextcloud/continuous-integration-php7.4:latest
     commands:
       - make test-stable21
 
@@ -164,44 +165,9 @@ name: php80-stable21
 
 steps:
   - name: php80-stable21
-    image: nextcloudci/php8.0:php8.0-1
+    image: ghcr.io/nextcloud/continuous-integration-php8.0:latest
     commands:
       - make test-stable21
-
-trigger:
-  branch:
-    - master
-    - stable*
-  event:
-    - pull_request
-    - push
-
----
-kind: pipeline
-name: php73-master
-
-steps:
-  - name: php73-master
-    image: nextcloudci/php7.3:php7.3-2
-    commands:
-      - make test-master
-
-trigger:
-  branch:
-    - master
-    - stable*
-  event:
-    - pull_request
-    - push
----
-kind: pipeline
-name: php74-master
-
-steps:
-  - name: php74-master
-    image: nextcloudci/php7.4:php7.4-2
-    commands:
-      - make test-master
 
 trigger:
   branch:
@@ -217,7 +183,7 @@ name: php80-master
 
 steps:
   - name: php80-master
-    image: nextcloudci/php8.0:php8.0-1
+    image: ghcr.io/nextcloud/continuous-integration-php8.0:latest
     commands:
       - make test-master
 
