@@ -61,6 +61,24 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 }
 
 
+function rrmdir($src) {
+    $dir = opendir($src);
+    while(false !== ( $file = readdir($dir)) ) {
+        if (( $file != '.' ) && ( $file != '..' )) {
+            $full = $src . '/' . $file;
+            if ( is_dir($full) ) {
+                rrmdir($full);
+            }
+            else {
+                unlink($full);
+            }
+        }
+    }
+    closedir($dir);
+    rmdir($src);
+}
+
+
 class Updater {
 	private string $baseDir;
 	private array $configValues = [];
