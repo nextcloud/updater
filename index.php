@@ -61,6 +61,24 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 }
 
 
+function rrmdir($src) {
+    $dir = opendir($src);
+    while(false !== ( $file = readdir($dir)) ) {
+        if (( $file != '.' ) && ( $file != '..' )) {
+            $full = $src . '/' . $file;
+            if ( is_dir($full) ) {
+                rrmdir($full);
+            }
+            else {
+                unlink($full);
+            }
+        }
+    }
+    closedir($dir);
+    rmdir($src);
+}
+
+
 class Updater {
 	private string $baseDir;
 	private array $configValues = [];
@@ -844,10 +862,10 @@ EOF;
 			unlink($file);
 		}
 		foreach ($directories as $dir) {
-			rmdir($dir);
+			rrmdir($dir);
 		}
 
-		$state = rmdir($folder);
+		$state = rrmdir($folder);
 		if ($state === false) {
 			throw new \Exception('Could not rmdir ' . $folder);
 		}
@@ -953,7 +971,7 @@ EOF;
 					throw new \Exception('Could not unlink: '.$path);
 				}
 			} elseif ($fileInfo->isDir()) {
-				$state = rmdir($path);
+				$state = rrmdir($path);
 				if ($state === false) {
 					throw new \Exception('Could not rmdir: '.$path);
 				}
@@ -1007,7 +1025,7 @@ EOF;
 				}
 			}
 			if ($fileInfo->isDir()) {
-				$state = rmdir($path);
+				$state = rrmdir($path);
 				if ($state === false) {
 					throw new \Exception('Could not rmdir ' . $path);
 				}
@@ -1052,7 +1070,7 @@ EOF;
 		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 		$this->moveWithExclusions($storageLocation, []);
-		$state = rmdir($storageLocation);
+		$state = rrmdir($storageLocation);
 		if ($state === false) {
 			throw new \Exception('Could not rmdir $storagelocation');
 		}
