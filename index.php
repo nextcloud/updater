@@ -1010,20 +1010,16 @@ EOF;
 
 		// Cleanup (delete $path)
 		foreach ($this->getRecursiveDirectoryIterator($dataLocation) as $path => $fileInfo) {
-			$this->silentLog('[info]   ' . explode($dataLocation, $path)[1]);
-
 			$fileName = explode($dataLocation, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
 
 			// Exclude the exclusions
 			if (isset($folderStructure[0])) {
 				if (array_search($folderStructure[0], $excludedElements) !== false) {
-					$this->silentLog('[info]  skipped fileName: ' . $fileName);
 					continue;
 				}
 			} else {
 				if (array_search($fileName, $excludedElements) !== false) {
-					$this->silentLog('[info]  skipped fileName: ' . $fileName);
 					continue;
 				}
 			}
