@@ -957,21 +957,32 @@ EOF;
 						throw new \Exception('Could not mkdir ' . $this->baseDir  . '/../' . dirname($fileName));
 					}
 				}
-				$state = rename($path, $this->baseDir  . '/../' . $fileName);
+				$state = copy($path, $this->baseDir  . '/../' . $fileName);
 				if ($state === false) {
 					throw new \Exception(
 						sprintf(
-							'Could not rename %s to %s',
+							'Could not copy %s to %s',
 							$path,
 							$this->baseDir . '/../' . $fileName
 						)
 					);
 				}
 			}
-			if ($fileInfo->isDir()) {
-				$state = rmdir($path);
-				if ($state === false) {
-					throw new \Exception('Could not rmdir ' . $path);
+		}
+
+		// Cleanup (delete $path)
+		foreach ($this->getRecursiveDirectoryIterator($dataLocation) as $path => $fileInfo) {
+			$fileName = explode($dataLocation, $path)[1];
+			$folderStructure = explode('/', $fileName, -1);
+
+			// Exclude the exclusions
+			if (isset($folderStructure[0])) {
+				if (array_search($folderStructure[0], $excludedElements) !== false) {
+					continue;
+				}
+			} else {
+				if (array_search($fileName, $excludedElements) !== false) {
+					continue;
 				}
 			}
 		}
