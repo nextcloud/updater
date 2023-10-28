@@ -1023,6 +1023,9 @@ EOF;
 					continue;
 				}
 			}
+
+			$this->recursiveDelete($path);
+		}
 	}
 
 	/**
