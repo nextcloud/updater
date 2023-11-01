@@ -298,27 +298,6 @@ class Updater {
 	}
 
 	/**
-	 * Deletes a directory recursively
-	 */
-	private function rrmdir(string $src): void {
-		$dir = opendir($src);
-		while(false !== ( $file = readdir($dir)) ) {
-			if (( $file != '.' ) && ( $file != '..' )) {
-				$full = $src . '/' . $file;
-				if ( is_dir($full) ) {
-					rrmdir($full);
-				}
-				else {
-					unlink($full);
-				}
-			}
-		}
-		closedir($dir);
-		rmdir($src);
-	}
-	
-
-	/**
 	 * Checks for files that are unexpected.
 	 */
 	public function checkForExpectedFilesAndFolders(): void {
@@ -444,7 +423,7 @@ class Updater {
 			if (!file_exists($backupFolderLocation . '/' . dirname($fileName))) {
 				$state = mkdir($backupFolderLocation . '/' . dirname($fileName), 0750, true);
 				if ($state === false) {
-					throw new \Exception('Could not create folder: '.$backupFolderLocation.'/'.dirname($fileName));
+					throw new \Exception('Could not create folder: ' . $backupFolderLocation . '/' . dirname($fileName));
 				}
 			}
 
@@ -527,7 +506,7 @@ class Updater {
 		/** @var false|string $response */
 		$response = curl_exec($curl);
 		if ($response === false) {
-			throw new \Exception('Could not do request to updater server: '.curl_error($curl));
+			throw new \Exception('Could not do request to updater server: ' . curl_error($curl));
 		}
 		curl_close($curl);
 
@@ -720,7 +699,7 @@ EOF;
 			return implode('.', $OC_Version);
 		}
 
-		throw new \Exception("OC_Version not found in $versionFile");
+		throw new \Exception('OC_Version not found in ' . $versionFile);
 	}
 
 	/**
@@ -737,15 +716,15 @@ EOF;
 		if ($zipState === true) {
 			$extraction = $zip->extractTo(dirname($downloadedFilePath));
 			if ($extraction === false) {
-				throw new \Exception('Error during unpacking zipfile: '.($zip->getStatusString()));
+				throw new \Exception('Error during unpacking zipfile: ' . ($zip->getStatusString()));
 			}
 			$zip->close();
 			$state = unlink($downloadedFilePath);
 			if ($state === false) {
-				throw new \Exception("Can't unlink ". $downloadedFilePath);
+				throw new \Exception("Could not unlink " . $downloadedFilePath);
 			}
 		} else {
-			throw new \Exception("Can't handle ZIP file. Error code is: ".print_r($zipState, true));
+			throw new \Exception("Can't handle ZIP file. Error code is: " . print_r($zipState, true));
 		}
 
 		// Ensure that the downloaded version is not lower
@@ -787,7 +766,7 @@ EOF;
 			}
 			$state = file_put_contents($this->baseDir  . '/../' . $file, $content);
 			if ($state === false) {
-				throw new \Exception('Can\'t replace entry point: '.$file);
+				throw new \Exception('Can\'t replace entry point: ' . $file);
 			}
 		}
 
@@ -824,13 +803,17 @@ EOF;
 		}
 
 		foreach ($files as $file) {
-			unlink($file);
+			if (unlink($file) === false) {
+				throw new \Exception('Could not unlink ' . $file);
+			}
 		}
 		foreach ($directories as $dir) {
-			rrmdir($dir);
+			if (rmdir($dir) === false) {
+				throw new \Exception('Could not rmdir ' . $dir);
+			}
 		}
 
-		$state = rrmdir($folder);
+		$state = rmdir($folder);
 		if ($state === false) {
 			throw new \Exception('Could not rmdir ' . $folder);
 		}
@@ -916,7 +899,10 @@ EOF;
 		 * @var string $path
 		 * @var \SplFileInfo $fileInfo
 		 */
-		foreach ($this->getRecursiveDirectoryIterator() as $path => $fileInfo) {
+		// Build file list first, so the removals won't mess with it
+		/** @var array<string, \SplFileInfo> */
+		$fileList = iterator_to_array($this->getRecursiveDirectoryIterator(), true);
+		foreach ($fileList as $path => $fileInfo) {
 			$currentDir = $this->baseDir . '/../';
 			$fileName = explode($currentDir, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
@@ -933,10 +919,10 @@ EOF;
 			if ($fileInfo->isFile() || $fileInfo->isLink()) {
 				$state = unlink($path);
 				if ($state === false) {
-					throw new \Exception('Could not unlink: '.$path);
+					throw new \Exception('Could not unlink: ' . $path);
 				}
 			} elseif ($fileInfo->isDir()) {
-				$state = rrmdir($path);
+				$state = rmdir($path);
 				if ($state === false) {
 					throw new \Exception('Could not rmdir: '.$path);
 				}
@@ -956,7 +942,10 @@ EOF;
 		 * @var string $path
 		 * @var \SplFileInfo $fileInfo
 		 */
-		foreach ($this->getRecursiveDirectoryIterator($dataLocation) as $path => $fileInfo) {
+		// Build file list first, so the renames won't mess with it
+		/** @var array<string, \SplFileInfo> */
+		$fileList = iterator_to_array($this->getRecursiveDirectoryIterator($dataLocation), true);
+		foreach ($fileList as $path => $fileInfo) {
 			$fileName = explode($dataLocation, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
 
@@ -990,7 +979,7 @@ EOF;
 				}
 			}
 			if ($fileInfo->isDir()) {
-				$state = rrmdir($path);
+				$state = rmdir($path);
 				if ($state === false) {
 					throw new \Exception('Could not rmdir ' . $path);
 				}
@@ -1035,14 +1024,14 @@ EOF;
 		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 		$this->moveWithExclusions($storageLocation, []);
-		$state = rrmdir($storageLocation);
+		$state = rmdir($storageLocation);
 		if ($state === false) {
-			throw new \Exception('Could not rmdir $storagelocation');
+			throw new \Exception('Could not rmdir ' . $storageLocation);
 		}
 
 		$state = unlink($this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/.step');
 		if ($state === false) {
-			throw new \Exception('Could not rmdir .step');
+			throw new \Exception('Could not unlink .step');
 		}
 
 		if (function_exists('opcache_reset')) {
@@ -1062,7 +1051,7 @@ EOF;
 			if (!file_exists($updaterDir)) {
 				$result = mkdir($updaterDir);
 				if ($result === false) {
-					throw new \Exception('Could not create $updaterDir');
+					throw new \Exception('Could not create ' . $updaterDir);
 				}
 			}
 			$result = touch($updaterDir . '/.step');
