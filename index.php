@@ -1059,7 +1059,7 @@ EOF;
 
 		$state = unlink($this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/.step');
 		if ($state === false) {
-			throw new \Exception('Could not rmdir .step');
+			throw new \Exception('Could not unlink .step');
 		}
 
 		if (function_exists('opcache_reset')) {
