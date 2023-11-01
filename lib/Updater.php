@@ -803,10 +803,14 @@ EOF;
 		}
 
 		foreach ($files as $file) {
-			unlink($file);
+			if (unlink($file) === false) {
+				throw new \Exception('Could not unlink ' . $file);
+			}
 		}
 		foreach ($directories as $dir) {
-			rmdir($dir);
+			if (rmdir($dir) === false) {
+				throw new \Exception('Could not rmdir ' . $dir);
+			}
 		}
 
 		$state = rmdir($folder);
