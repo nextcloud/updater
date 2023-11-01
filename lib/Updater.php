@@ -899,7 +899,10 @@ EOF;
 		 * @var string $path
 		 * @var \SplFileInfo $fileInfo
 		 */
-		foreach ($this->getRecursiveDirectoryIterator() as $path => $fileInfo) {
+		// Build file list first, so the removals won't mess with it
+		/** @var array<string, \SplFileInfo> */
+		$fileList = iterator_to_array($this->getRecursiveDirectoryIterator(), true);
+		foreach ($fileList as $path => $fileInfo) {
 			$currentDir = $this->baseDir . '/../';
 			$fileName = explode($currentDir, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
@@ -939,7 +942,10 @@ EOF;
 		 * @var string $path
 		 * @var \SplFileInfo $fileInfo
 		 */
-		foreach ($this->getRecursiveDirectoryIterator($dataLocation) as $path => $fileInfo) {
+		// Build file list first, so the renames won't mess with it
+		/** @var array<string, \SplFileInfo> */
+		$fileList = iterator_to_array($this->getRecursiveDirectoryIterator($dataLocation), true);
+		foreach ($fileList as $path => $fileInfo) {
 			$fileName = explode($dataLocation, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
 
