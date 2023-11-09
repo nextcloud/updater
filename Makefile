@@ -10,11 +10,11 @@ updater.phar: updater.php lib/*.php buildVersionFile.php
 clean:
 	rm updater.phar index.php
 
-index.php: lib/UpdateException.php lib/LogException.php lib/RecursiveDirectoryIteratorWithoutData.php lib/Updater.php index.web.php
+index.php: lib/UpdateException.php lib/LogException.php lib/RecursiveDirectoryIteratorFilter.php lib/Updater.php index.web.php
 	# First put openining php tag and license
 	awk '/^<\?php$$/,/\*\//' index.web.php > index.php
 	# Then concat all files while filtering php tag and license
-	cat lib/UpdateException.php lib/LogException.php lib/RecursiveDirectoryIteratorWithoutData.php lib/Updater.php index.web.php| grep -v "^namespace" | awk '/^<\?php$$/,/\*\//{next} 1' >> index.php
+	cat lib/UpdateException.php lib/LogException.php lib/RecursiveDirectoryIteratorFilter.php lib/Updater.php index.web.php| grep -v "^namespace" | awk '/^<\?php$$/,/\*\//{next} 1' >> index.php
 
 test/vendor:
 	cd tests && composer install

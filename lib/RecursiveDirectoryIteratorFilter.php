@@ -22,21 +22,18 @@
 
 namespace NC\Updater;
 
-class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
+class RecursiveDirectoryIteratorFilter extends \RecursiveFilterIterator {
+	private array $excludedPaths;
+
+	public function __construct(
+		\RecursiveDirectoryIterator $iterator,
+		array $excludedPaths = ['data'],
+	) {
+		parent::__construct($iterator);
+		$this->excludedPaths = array_flip($excludedPaths);
+	}
+
 	public function accept(): bool {
-		$excludes = [
-			'.rnd',
-			'.well-known',
-			'data',
-			'..',
-		];
-
-		/** @var \SplFileInfo|false */
-		$current = $this->current();
-		if (!$current) {
-			return false;
-		}
-
-		return !(in_array($current->getFilename(), $excludes, true) || $current->isDir());
+		return !isset($this->excludedPaths[$this->current()->getFilename()]);
 	}
 }

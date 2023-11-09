@@ -24,7 +24,7 @@ return array(
     'JsonException' => $vendorDir . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
     'NC\\Updater\\CommandApplication' => $baseDir . '/lib/CommandApplication.php',
     'NC\\Updater\\LogException' => $baseDir . '/lib/LogException.php',
-    'NC\\Updater\\RecursiveDirectoryIteratorWithoutData' => $baseDir . '/lib/RecursiveDirectoryIteratorWithoutData.php',
+    'NC\\Updater\\RecursiveDirectoryIteratorFilter' => $baseDir . '/lib/RecursiveDirectoryIteratorFilter.php',
     'NC\\Updater\\UpdateCommand' => $baseDir . '/lib/UpdateCommand.php',
     'NC\\Updater\\UpdateException' => $baseDir . '/lib/UpdateException.php',
     'NC\\Updater\\Updater' => $baseDir . '/lib/Updater.php',

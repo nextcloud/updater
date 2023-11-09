@@ -41,28 +41,25 @@ class LogException extends \Exception {
 }
 
 
-class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
+class RecursiveDirectoryIteratorFilter extends \RecursiveFilterIterator {
+	private array $excludedPaths;
+
+	public function __construct(
+		\RecursiveDirectoryIterator $iterator,
+		array $excludedPaths = ['data'],
+	) {
+		parent::__construct($iterator);
+		$this->excludedPaths = array_flip($excludedPaths);
+	}
+
 	public function accept(): bool {
-		$excludes = [
-			'.rnd',
-			'.well-known',
-			'data',
-			'..',
-		];
-
-		/** @var \SplFileInfo|false */
-		$current = $this->current();
-		if (!$current) {
-			return false;
-		}
-
-		return !(in_array($current->getFilename(), $excludes, true) || $current->isDir());
+		return !isset($this->excludedPaths[$this->current()->getFilename()]);
 	}
 }
 
 
 class Updater {
-	private string $baseDir;
+	private string $nextcloudDir;
 	private array $configValues = [];
 	private string $currentVersion = 'unknown';
 	private string $buildTime;
@@ -75,13 +72,15 @@ class Updater {
 	 * @param string $baseDir the absolute path to the /updater/ directory in the Nextcloud root
 	 * @throws \Exception
 	 */
-	public function __construct(string $baseDir) {
-		$this->baseDir = $baseDir;
+	public function __construct(
+		private string $baseDir
+	) {
+		$this->nextcloudDir = realpath(dirname($baseDir));
 
 		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
-			$configFileName = rtrim($dir, '/') . '/config.php';
+			$configFileName = realpath($dir . '/config.php');
 		} else {
-			$configFileName = $this->baseDir . '/../config/config.php';
+			$configFileName = $this->nextcloudDir . '/config/config.php';
 		}
 		if (!file_exists($configFileName)) {
 			throw new \Exception('Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?');
@@ -102,7 +101,7 @@ class Updater {
 			throw new \Exception('Could not read data directory from config.php.');
 		}
 
-		$versionFileName = $this->baseDir . '/../version.php';
+		$versionFileName = $this->nextcloudDir . '/version.php';
 		if (!file_exists($versionFileName)) {
 			// fallback to version in config.php
 			$version = $this->getConfigOptionString('version');
@@ -133,19 +132,15 @@ class Updater {
 
 	/**
 	 * Returns whether the web updater is disabled
-	 *
-	 * @return bool
 	 */
-	public function isDisabled() {
+	public function isDisabled(): bool {
 		return $this->disabled;
 	}
 
 	/**
 	 * Returns current version or "unknown" if this could not be determined.
-	 *
-	 * @return string
 	 */
-	public function getCurrentVersion() {
+	public function getCurrentVersion(): string {
 		return $this->currentVersion;
 	}
 
@@ -153,7 +148,7 @@ class Updater {
 	 * Returns currently used release channel
 	 */
 	private function getCurrentReleaseChannel(): string {
-		return ($this->getConfigOptionString('updater.release.channel') ?? 'stable');
+		return $this->getConfigOptionString('updater.release.channel') ?? 'stable';
 	}
 
 	/**
@@ -323,16 +318,19 @@ class Updater {
 	/**
 	 * Gets the recursive directory iterator over the Nextcloud folder
 	 *
-	 * @return \RecursiveIteratorIterator<\RecursiveDirectoryIterator>
+	 * @return \RecursiveIteratorIterator<\RecursiveDirectoryIterator|RecursiveDirectoryIteratorFilter>
 	 */
-	private function getRecursiveDirectoryIterator(?string $folder = null): \RecursiveIteratorIterator {
+	private function getRecursiveDirectoryIterator(?string $folder = null, array $excludedPaths = []): \RecursiveIteratorIterator {
 		if ($folder === null) {
 			$folder = $this->baseDir . '/../';
 		}
-		return new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS),
-			\RecursiveIteratorIterator::CHILD_FIRST
-		);
+
+		$iterator = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
+		if (!empty($excludedPaths)) {
+			$iterator = new RecursiveDirectoryIteratorFilter($iterator, $excludedPaths);
+		}
+
+		return new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 	}
 
 	/**
@@ -343,7 +341,7 @@ class Updater {
 
 		$expectedElements = $this->getExpectedElementsList();
 		$unexpectedElements = [];
-		foreach (new \DirectoryIterator($this->baseDir . '/../') as $fileInfo) {
+		foreach (new \DirectoryIterator($this->nextcloudDir) as $fileInfo) {
 			if (array_search($fileInfo->getFilename(), $expectedElements) === false) {
 				$unexpectedElements[] = $fileInfo->getFilename();
 			}
@@ -361,15 +359,21 @@ class Updater {
 	public function checkWritePermissions(): void {
 		$this->silentLog('[info] checkWritePermissions()');
 
-		$notWritablePaths = array();
-		$dir = new \RecursiveDirectoryIterator($this->baseDir . '/../');
-		$filter = new RecursiveDirectoryIteratorWithoutData($dir);
-		/** @var iterable<string, \SplFileInfo> */
-		$it = new \RecursiveIteratorIterator($filter);
+		$excludedPaths = [
+			'.rnd' => true,
+			'.well-known' => true,
+			'data' => true,
+		];
 
-		foreach ($it as $path => $dir) {
-			if (!is_writable($path)) {
-				$notWritablePaths[] = $path;
+		$it = new \DirectoryIterator($this->nextcloudDir);
+
+		$notWritablePaths = [];
+		foreach ($it as $path => $fileInfo) {
+			if ($fileInfo->isDot() || isset($excludedPaths[$fileInfo->getFilename()])) {
+				continue;
+			}
+			if (!$fileInfo->isWritable()) {
+				$notWritablePaths[] = $fileInfo->getFilename();
 			}
 		}
 		if (count($notWritablePaths) > 0) {
@@ -442,7 +446,7 @@ class Updater {
 		 * @var string $path
 		 * @var \SplFileInfo $fileInfo
 		 */
-		foreach ($this->getRecursiveDirectoryIterator($currentDir) as $path => $fileInfo) {
+		foreach ($this->getRecursiveDirectoryIterator($currentDir, $excludedElements) as $path => $fileInfo) {
 			$fileName = explode($currentDir, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
 
@@ -971,8 +975,9 @@ EOF;
 	}
 
 	/**
-	 * Moves the specified filed except the excluded elements to the correct position
+	 * Moves the specified files except the excluded elements to the correct position
 	 *
+	 * @param string[] $excludedElements
 	 * @throws \Exception
 	 */
 	private function moveWithExclusions(string $dataLocation, array $excludedElements): void {

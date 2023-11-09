@@ -68,6 +68,7 @@ try {
 	if (isset($_POST['step'])) {
 		// mark step as failed
 		http_response_code(500);
+		header('Content-Type: application/json');
 		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
 		die();
 	}
@@ -154,6 +155,7 @@ if (isset($_POST['step']) && !is_array($_POST['step'])) {
 				break;
 		}
 		$updater->endStep($step);
+		header('Content-Type: application/json');
 		echo(json_encode(['proceed' => true]));
 	} catch (UpdateException $e) {
 		$data = $e->getData();
@@ -169,6 +171,7 @@ if (isset($_POST['step']) && !is_array($_POST['step'])) {
 			$updater->rollbackChanges($step);
 		}
 		http_response_code(500);
+		header('Content-Type: application/json');
 		echo(json_encode(['proceed' => false, 'response' => $data]));
 	} catch (\Exception $e) {
 		$message = $e->getMessage();
@@ -184,6 +187,7 @@ if (isset($_POST['step']) && !is_array($_POST['step'])) {
 			$updater->rollbackChanges($step);
 		}
 		http_response_code(500);
+		header('Content-Type: application/json');
 		echo(json_encode(['proceed' => false, 'response' => $message]));
 	}
 
