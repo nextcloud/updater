@@ -1,7 +1,6 @@
 {
   "chmod": "0755",
   "directories": ["lib"],
-  "files": ["version.php"],
   "finder": [
     {
       "name": "*.php",
