@@ -41,17 +41,33 @@ class Updater {
 		$this->baseDir = $baseDir;
 
 		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
-			$configFileName = rtrim($dir, '/') . '/config.php';
+			$configDir = rtrim($dir, '/');
 		} else {
-			$configFileName = $this->baseDir . '/../config/config.php';
+			$configDir = $this->baseDir . '/../config';
 		}
-		if (!file_exists($configFileName)) {
+
+		$configFiles = [$configDir . '/config.php'];
+
+		if (!file_exists($configFiles[0])) {
 			throw new \Exception('Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?');
 		}
 
-		/** @var array $CONFIG */
-		require_once $configFileName;
-		$this->configValues = $CONFIG;
+		$extraConfigFiles = glob($configDir . '/*.config.php');
+		if (is_array($extraConfigFiles)) {
+			natsort($extraConfigFiles);
+			$configFiles = array_merge($configFiles, $extraConfigFiles);
+		}
+
+		foreach ($configFiles as $configFile) {
+			unset($CONFIG);
+
+			/** @var array $CONFIG */
+			require_once $configFile;
+
+			if (isset($CONFIG) && is_array($CONFIG)) {
+				$this->configValues = array_merge($this->configValues, $CONFIG);
+			}
+		}
 
 		if (php_sapi_name() !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false)) {
 			// updater disabled
