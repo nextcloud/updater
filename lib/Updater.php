@@ -59,14 +59,17 @@ class Updater {
 		}
 
 		foreach ($configFiles as $configFile) {
-			unset($CONFIG);
-
-			/** @var array $CONFIG */
+			/**
+ 			 * @psalm-suppress UnresolvableInclude
+			 * @var mixed $CONFIG
+ 			 */
 			require_once $configFile;
 
 			if (isset($CONFIG) && is_array($CONFIG)) {
 				$this->configValues = array_merge($this->configValues, $CONFIG);
 			}
+
+			unset($CONFIG);
 		}
 
 		if (php_sapi_name() !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false)) {
