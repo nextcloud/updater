@@ -60,9 +60,9 @@ class Updater {
 
 		foreach ($configFiles as $configFile) {
 			/**
- 			 * @psalm-suppress UnresolvableInclude
+			 * @psalm-suppress UnresolvableInclude
 			 * @var mixed $CONFIG
- 			 */
+			 */
 			require_once $configFile;
 
 			if (isset($CONFIG) && is_array($CONFIG)) {
