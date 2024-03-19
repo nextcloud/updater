@@ -158,7 +158,7 @@ This approach
 
 Consists of:
 
-* Manually replacing installation folder code contents except for config, data, and locally installed apps
+* Manually replacing installation folder code contents except for config, data, and locally installed apps (i.e. does **not** use the Updater app at all)
 * Running `occ upgrade` from the command line
 
 The ([full procedure for keeping Nextcloud Server up-to-date manually](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/manual_upgrade.html#upgrade-manually)) is documented in the Nextcloud Admin Manual.
