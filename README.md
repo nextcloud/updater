@@ -136,42 +136,40 @@ Since there are multiple ways of triggering and using the Updater as well as the
 
 #### Semi-Manual
 
-This approach 
-
 Consists of:
 
 * Manually replacing installation folder code contents except for config, data, and locally installed apps (i.e. does **not** use the Updater app at all)
 * Running `occ upgrade` from the command line
 
-The ([full procedure for keeping Nextcloud Server up-to-date manually](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/manual_upgrade.html#upgrade-manually)) is documented in the Nextcloud Admin Manual.
+The [full procedure for keeping Nextcloud Server up-to-date manually](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/manual_upgrade.html#upgrade-manually) is documented in the Nextcloud Admin Manual.
 
-### Pure CLI Update/Upgrade:
+#### Pure CLI Update/Upgrade:
 
 Consists of:
 
 * Running `/updater/updater.phar` from the command line
 * Running `occ upgrade` from the command line
 
-### Hybrid CLI/Web Update/Upgrade
+#### Hybrid CLI/Web Update/Upgrade
 
 Consists of:
 
 * Running `/updater/updater.phar` from the command line
-* Triggering and monitoring `occ upgrade` from the Web UI (this is the default behavior after a successfully Updater run if you opt to let the Updater trigger the database upgrades and app updates or if maintenance mode is disactivated without letting the Web UI trigger `occ upgrade` internally)
+* Triggering and monitoring `occ upgrade` from the Web UI (this is the default behavior after a successful Updater run if you do not opt to let `updater.phar` trigger the database upgrades and app updates at the end of its run)
 
-### Hybrid Web/CLI Update/Upgrade
+#### Hybrid Web/CLI Update/Upgrade
 
 Consists of:
 
 * Accessing `/updater/index.php` via *Administration settings->Overview* *Update* section.
 * Running `occ upgrade` from the command line
 
-### Full Web Update/Upgrade
+#### Full Web Update/Upgrade
 
 Consists of:
 
 * Accessing `/updater/index.php` via *Administration settings->Overview* *Update* section.
-* Triggering and monitoring `occ upgrade` from the Web UI (this is the default behavior after a successfully Updater run if you opt to let the Updater trigger the database upgrades and app updates or if maintenance mode is disactivated without letting the Web UI trigger `occ upgrade` internally)
+* Triggering and monitoring `occ upgrade` from the Web UI (this is the default behavior after a successful Updater run if you opt to let the Web Updater trigger the database upgrades and app updates at the end of its run)
 
 Implementation:
 
