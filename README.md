@@ -127,7 +127,7 @@ The Updater app needs to function while the Nextcloud Server is offline for code
 
 ### Theory of Operation
 
-* The Updater is wholly independent of the Server installation (save for being ran from `/updater/index.php` or `/updater/updater.phar`, which are
+* The Updater runs from either `/updater/index.php` (Web mode) or `/updater/updater.phar` (Command line mode), which are
   provided by the previous (last/current) Server installation.
 * The Updater maintains state in `.step` files/folders
 * Connecting clients are provided with temporary failure HTTP codes to minimize end user interruptions
