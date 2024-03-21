@@ -114,7 +114,7 @@ The Updater app needs to function while the Nextcloud Server is offline for code
 * The Updater maintains state in `.step` files/folders
 * Connecting clients are provided with temporary failure HTTP codes to minimize end user interruptions
 
-Some historical more in-depeth context can be found in nextcloud/updater#1 and nextcloud/updater#2.
+Some historical more in-depth context can be found in nextcloud/updater#1 and nextcloud/updater#2.
 
 ### Components
 
