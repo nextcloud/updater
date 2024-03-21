@@ -302,7 +302,7 @@ Used during the build process but not checked in:
 * The Updater operates independently from Server so it has it's own log file called `updater.log` which is located in the configured `datadirectory` for the instance.
 * The database upgrade migrations and app updates are not handled directly by the Updater so they're logged in the standard Nextcloud log (`nextcloud.log`)
 
-### Web-based Updater isn't completely successfully or reporting on what is going on
+### Web-based Updater isn't completely successful or reporting on what is going on
 
 * Check the `updater.log`
 * Try using the command line mode of Updater rather than the Web mode
