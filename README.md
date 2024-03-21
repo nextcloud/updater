@@ -13,24 +13,6 @@ The Updater can be accessed via the Web UI as well as the command line. It may b
 * Multiple `*.config.php` files are currently not supported / ignored (nextcloud/updater#384)
 * In some environments, the current iterator implementation may fail (nextcloud/updater#519)
 
-## Possible future work
-
-Note these are just ideas.
-
-* Improved notifications of possible breaking changes before letting operator install major version updates
-* Additional status reporting
-* Additional error checking / failure handling
-* Additional logging
-* Additoinal performance optimizations
-* Improved reliability of the Web mode of the Updater
-* Fewer or more stringently recommended "default" update/upgrade work flow
-* Locking to specific stable release trains/majors - e.g. latest stable (N), previous stable (N-1), last supported stable (N-2)
-* Improved documentation
-* Ease of restarting failing update runs - e.g. "Update appears to be in process - leave running or reset?"
-* Rollback of incomplete Updater runs
-* Rollback of incomplete database upgrades or app updates
-* (insert your idea here)
-
 ## Background
 
 * [*How to upgrade*](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/upgrade.html) in the [*Maintenance*](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/index.html) chapter of the [Nextcloud Administration Manual](https://docs.nextcloud.com/server/latest/admin_manual/index.html)
