@@ -123,7 +123,7 @@ Keeping Nextcloud Server up-to-date, at a high level, consists of three things:
 
 The Updater app handles step #1 (see [*What does the updater do?*](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/update.html#what-does-the-updater-do)) and prepares the environment for steps #2 and #3 (which are handled by `occ upgrade` *after* the Updater successfully completes).
 
-The Updater app is designed to be as independent from Server as possible for reliability purposes.
+The Updater app needs to function while the Nextcloud Server is offline for code updates. It is therefore designed to operate as independently as possible from the rest of Server. This permits Server to be updated safely and the Updater to proceed without interruption during code swaps. The trade-off is that none of the typical Nextcloud classes/APIs are available to serve the needs of the Updater. The Updater, fortunately, has a relatively narrowly defined mission and set of needs.
 
 ### Theory of Operation
 
