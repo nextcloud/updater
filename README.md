@@ -96,7 +96,7 @@ Using the Updater via the Web UI is more convenient, but using it from the comma
 
 ### Web UI mode
 
-Go to *Administration settings*. It's can be reached in the *Overview* under the *Update* heading.
+Go to *Administration settings*. It can be reached in the *Overview* under the *Update* heading.
 
 See [*Using the web based updater*](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/update.html#using-the-web-based-updater) in the Nextcloud Administration Manual.
 
