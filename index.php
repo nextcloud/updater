@@ -829,14 +829,12 @@ EOF;
 		$directories = [];
 		$files = [];
 		foreach ($iterator as $fileInfo) {
-			if ($fileInfo->isDir()) {
+			if ($fileInfo->isLink()) {
+				$files[] = $fileInfo->getPathname();
+			} elseif ($fileInfo->isFile()) {
+				$files[] = $fileInfo->getRealPath();
+			} elseif ($fileInfo->isDir()) {
 				$directories[] = $fileInfo->getRealPath();
-			} else {
-				if ($fileInfo->isLink()) {
-					$files[] = $fileInfo->getPathName();
-				} else {
-					$files[] = $fileInfo->getRealPath();
-				}
 			}
 		}
 
