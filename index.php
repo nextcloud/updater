@@ -250,6 +250,7 @@ class Updater {
 			'.',
 			'..',
 			// Folders
+			'.reuse',
 			'.well-known',
 			'3rdparty',
 			'apps',
@@ -259,6 +260,7 @@ class Updater {
 			'dist',
 			'l10n',
 			'lib',
+			'LICENSES',
 			'ocs',
 			'ocs-provider',
 			'ocm-provider',
