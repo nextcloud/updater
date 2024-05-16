@@ -708,12 +708,12 @@ NY/nARy4Oi4uOe88SuWITj9KhrFmEvrUlgM8FvoXA1ldrR7KiEg=
 -----END CERTIFICATE-----
 EOF;
 
-		$validSignature = (bool)openssl_verify(
+		$validSignature = openssl_verify(
 			file_get_contents($this->getDownloadedFilePath()),
 			base64_decode($response['signature']),
 			$certificate,
 			OPENSSL_ALGO_SHA512
-		);
+		) === 1;
 
 		if ($validSignature === false) {
 			throw new \Exception('Signature of update is not valid');
