@@ -234,7 +234,13 @@ Keep in mind that for the update/upgrade process there are some additional compo
 
 ### Dependences needed for building
 
-box, composer, etc. (to be filled in later)
+#### box
+
+Install box: https://github.com/box-project/box/blob/main/doc/installation.md#composer
+
+#### Tests
+
+If you want to run the tests, you'll need to run them in an environment that has Nextcloud's required PHP modules installed.
 
 ### Build artifacts / What to check in
 
