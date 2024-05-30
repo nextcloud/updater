@@ -730,7 +730,7 @@ $updater->logVersion();
 						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
 							escapeHTML(response['detailedResponseText']) + '</code></pre></details>';
 					} else {
-						text = 'The following extra files have been found:<ul>';
+						text = 'Unknown files detected within the installation folder. This can be fixed by manually removing (or moving) these files. The following extra files have been found:<ul>';
 						response['response'].forEach(function(file) {
 							text += '<li>' + escapeHTML(file) + '</li>';
 						});

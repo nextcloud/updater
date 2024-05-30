@@ -251,7 +251,7 @@ class UpdateCommand extends Command {
 					if (is_string($result['response'])) {
 						$output->writeln('<error>' . $result['response'] . '</error>');
 					} else {
-						$output->writeln('<error>The following extra files have been found:</error>');
+						$output->writeln('<error>Unknown files detected within the installation folder. This can be fixed by manually removing (or moving) these files. The following extra files have been found:</error>');
 						foreach ($result['response'] as $file) {
 							$output->writeln('<error>    ' . $file . '</error>');
 						}
