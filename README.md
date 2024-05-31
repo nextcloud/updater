@@ -269,7 +269,7 @@ Used during the build process but not checked in:
 
 ### Testing
 
-#### Check same code base test keeps failing\
+#### Check same code base test keeps failing
 
 If it keeps failing on your PR, confirm your local version of `composer` is the same version in-use in the workflow runner. You can check the details of the test run and find the version currently being used (and therefore required locally) under "Setup Tools". (Hint: distro versions are typically too outdated. Remove that version and see https://getcomposer.org/download/ to install your own version).
 
