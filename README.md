@@ -240,7 +240,7 @@ Install box: https://github.com/box-project/box/blob/main/doc/installation.md#co
 
 #### Tests
 
-If you want to run the tests, you'll need to run them in an environment that has Nextcloud's required PHP modules installed.
+If you want to run the tests locally, you'll need to run them in an environment that has Nextcloud's required PHP modules installed. The various test scenarios are all available via the `make test*` (see Makefile for specifics).
 
 ### Build artifacts / What to check in
 
@@ -268,6 +268,10 @@ Used during the build process but not checked in:
   - `/lib/Version.php`
 
 ### Testing
+
+#### Check same code base test keeps failing
+
+If it keeps failing on your PR, confirm your local version of `composer` is the same version in-use in the workflow runner. You can check the details of the test run and find the version currently being used (and therefore required locally) under "Setup Tools". (Hint: distro versions are typically too outdated. Remove that version and see https://getcomposer.org/download/ to install your own version).
 
 #### CI
 
