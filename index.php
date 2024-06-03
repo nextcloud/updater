@@ -751,6 +751,13 @@ EOF;
 		$this->silentLog('[info] extractDownload()');
 		$downloadedFilePath = $this->getDownloadedFilePath();
 
+		if (!extension_loaded('zip')) {
+			throw new \Exception('Required PHP extension missing: zip');
+		}
+
+		$libzip_version = defined("ZipArchive::LIBZIP_VERSION") ? \ZipArchive::LIBZIP_VERSION : "Unknown (but old)";
+		$this->silentLog('[info] Libzip version detected: ' . $libzip_version);
+
 		$zip = new \ZipArchive;
 		$zipState = $zip->open($downloadedFilePath);
 		if ($zipState === true) {
