@@ -529,30 +529,55 @@ class Updater {
 	/**
 	 * Downloads the nextcloud folder to $DATADIR/updater-$instanceid/downloads/$filename
 	 *
+	 * Logs download progress
+	 * Resumes incomplete downloads if possible
+	 * Supports outbound proxy usage
+	 * Logs download statistics upon completion
+	 *
+	 * TODO: Provide download progress in real-time (in both CLI and Web modes)
+	 *
 	 * @throws \Exception
 	 */
 	public function downloadUpdate(): void {
 		$this->silentLog('[info] downloadUpdate()');
 
 		$response = $this->getUpdateServerResponse();
-
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
-		if (file_exists($storageLocation)) {
-			$this->silentLog('[info] storage location exists');
-			$this->recursiveDelete($storageLocation);
-		}
-		$state = mkdir($storageLocation, 0750, true);
-		if ($state === false) {
-			throw new \Exception('Could not mkdir storage location');
-		}
-
 		if (!isset($response['url']) || !is_string($response['url'])) {
 			throw new \Exception('Response from update server is missing url');
 		}
 
-		$fp = fopen($storageLocation . basename($response['url']), 'w+');
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
+		$saveLocation = $storageLocation . basename($response['url']);
+
 		$ch = curl_init($response['url']);
+
+		if (!file_exists($storageLocation)) {
+			$state = mkdir($storageLocation, 0750, true);
+			if ($state === false) {
+				throw new \Exception('Could not mkdir storage location');
+			}
+			$this->silentLog('[info] storage location created');
+		} else {
+			$this->silentLog('[info] storage location already exists');
+			// clean-up leftover extracted content from any prior runs, but leave any downloaded Archives alone
+			if (file_exists($storageLocation . 'nextcloud/')) {
+				$this->silentLog('[info] extracted Archive location exists');
+				$this->recursiveDelete($storageLocation . 'nextcloud/');
+			}
+			// see if there's an existing incomplete download to resume
+			if (is_file($saveLocation)) {
+				$size = filesize($saveLocation);
+				$range = $size . '-';
+				curl_setopt($ch, CURLOPT_RANGE, $range);
+				$this->silentLog('[info] previous download found; resuming from ' . $this->formatBytes($size));
+			}
+		}
+
+		$fp = fopen($saveLocation, 'a');
 		curl_setopt_array($ch, [
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_NOPROGRESS => false,
+			CURLOPT_PROGRESSFUNCTION => array($this, 'downloadProgressCallback'),
 			CURLOPT_FILE => $fp,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
 		]);
@@ -569,7 +594,7 @@ class Updater {
 			throw new \Exception('Curl error: ' . curl_error($ch));
 		}
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($httpCode !== 200) {
+		if ($httpCode !== 200 && $httpCode !== 206) {
 			$statusCodes = [
 				400 => 'Bad request',
 				401 => 'Unauthorized',
@@ -596,11 +621,45 @@ class Updater {
 			$message .= ' - URL: ' . htmlentities($response['url']);
 
 			throw new \Exception($message);
+		} else {
+			// download succeeded
+			$info = curl_getinfo($ch);
+			$this->silentLog("[info] download stats: size=" . $this->formatBytes($info['size_download']) . " bytes; total_time=" . round($info['total_time'], 2) . " secs; avg speed=" . $this->formatBytes($info['speed_download']) . "/sec");
 		}
+
 		curl_close($ch);
 		fclose($fp);
 
 		$this->silentLog('[info] end of downloadUpdate()');
+	}
+
+	private function downloadProgressCallback(\CurlHandle $resource, int $download_size, int $downloaded, int $upload_size, int $uploaded): void {
+		static $previousProgress = 0;
+
+		if ($download_size !== 0) {
+			$progress = round($downloaded * 100 / $download_size);
+			if ($progress > $previousProgress) {
+				$previousProgress = $progress;
+				// log every 2% increment for the first 10% then only log every 10% increment after that
+				if ($progress % 10 === 0 || ($progress < 10 && $progress % 2 === 0)) {
+					$this->silentLog("[info] download progress: $progress% (" . $this->formatBytes($downloaded) . " of " . $this->formatBytes($download_size) . ")");
+				}
+			}
+		}
+	}
+
+	private function formatBytes(int $bytes, int $precision = 2): string {
+		$units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+		$bytes = max($bytes, 0);
+		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+		$pow = min($pow, count($units) - 1);
+
+		// Uncomment one of the following alternatives
+		$bytes /= pow(1024, $pow);
+		// $bytes /= (1 << (10 * $pow));
+
+		return round($bytes, $precision) . $units[(int)$pow];
 	}
 
 	/**
