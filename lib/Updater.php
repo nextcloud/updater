@@ -633,7 +633,7 @@ class Updater {
 
 	private function downloadProgressCallback(\CurlHandle $resource, int $download_size, int $downloaded, int $upload_size, int $uploaded): void {
 		if ($download_size !== 0) {
-			$progress = round($downloaded * 100 / $download_size);
+			$progress = (int)round($downloaded * 100 / $download_size);
 			if ($progress > $this->previousProgress) {
 				$this->previousProgress = $progress;
 				// log every 2% increment for the first 10% then only log every 10% increment after that
