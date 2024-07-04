@@ -17,6 +17,7 @@ class Updater {
 	private bool $updateAvailable = false;
 	private ?string $requestID = null;
 	private bool $disabled = false;
+	private int $previousProgress = 0;
 
 	/**
 	 * Updater constructor
@@ -631,12 +632,10 @@ class Updater {
 	}
 
 	private function downloadProgressCallback(\CurlHandle $resource, int $download_size, int $downloaded, int $upload_size, int $uploaded): void {
-		static $previousProgress = 0;
-
 		if ($download_size !== 0) {
 			$progress = round($downloaded * 100 / $download_size);
-			if ($progress > $previousProgress) {
-				$previousProgress = $progress;
+			if ($progress > $this->previousProgress) {
+				$this->previousProgress = $progress;
 				// log every 2% increment for the first 10% then only log every 10% increment after that
 				if ($progress % 10 === 0 || ($progress < 10 && $progress % 2 === 0)) {
 					$this->silentLog("[info] download progress: $progress% (" . $this->formatBytes($downloaded) . " of " . $this->formatBytes($download_size) . ")");
