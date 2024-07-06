@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright Copyright (c) 2016 Morris Jobke <hey@morrisjobke.de>
  * @copyright Copyright (c) 2017 Lukas Reschke <lukas@statuscode.ch>

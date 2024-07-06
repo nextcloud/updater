@@ -1,7 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
-$currentTag = trim(shell_exec('git describe --tags'));
+$currentTag = trim(shell_exec('git describe --tags') ?? '');
 exec('git diff-files --quiet', $output, $returnValue);
 
 $dirty = $returnValue === 0 ? '' : ' dirty';
