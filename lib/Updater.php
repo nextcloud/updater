@@ -546,6 +546,7 @@ class Updater {
 
 		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
 		$saveLocation = $storageLocation . basename($response['url']);
+		$this->previousProgress = 0;
 
 		$ch = curl_init($response['url']);
 
