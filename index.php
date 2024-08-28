@@ -89,9 +89,23 @@ class Updater {
 		if (!file_exists($configFileName)) {
 			throw new \Exception('Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?');
 		}
+		$filePointer = @fopen($configFileName, 'r');
+		if ($filePointer === false) {
+			throw new \Exception('Could not open config.php.');
+		}
+		if (!flock($filePointer, LOCK_SH)) {
+			throw new \Exception(sprintf('Could not acquire a shared lock on the config file'));
+		}
+
+		try {
+			require_once $configFileName;
+		} finally {
+			// Close the file pointer and release the lock
+			flock($filePointer, LOCK_UN);
+			fclose($filePointer);
+		}
 
 		/** @var array $CONFIG */
-		require_once $configFileName;
 		$this->configValues = $CONFIG;
 
 		if (php_sapi_name() !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false)) {
@@ -403,15 +417,31 @@ class Updater {
 		if (!file_exists($configFileName)) {
 			throw new \Exception('Could not find config.php.');
 		}
+
+		$filePointer = @fopen($configFileName, 'r');
+		if ($filePointer === false) {
+			throw new \Exception('Could not open config.php.');
+		}
+		if (!flock($filePointer, LOCK_SH)) {
+			throw new \Exception(sprintf('Could not acquire a shared lock on the config file'));
+		}
+
+		try {
+			require $configFileName;
+		} finally {
+			// Close the file pointer and release the lock
+			flock($filePointer, LOCK_UN);
+			fclose($filePointer);
+		}
+
 		/** @var array $CONFIG */
-		require $configFileName;
 		$CONFIG['maintenance'] = $state;
 		$content = "<?php\n";
 		$content .= '$CONFIG = ';
 		$content .= var_export($CONFIG, true);
 		$content .= ";\n";
-		$state = file_put_contents($configFileName, $content);
-		if ($state === false) {
+		$writeSuccess = file_put_contents($configFileName, $content, LOCK_EX);
+		if ($writeSuccess === false) {
 			throw new \Exception('Could not write to config.php');
 		}
 		$this->silentLog('[info] end of setMaintenanceMode()');
