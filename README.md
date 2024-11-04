@@ -5,6 +5,8 @@
 -->
 # 🔄 Nextcloud Updater
 
+[![REUSE status](https://api.reuse.software/badge/github.com/nextcloud/updater)](https://api.reuse.software/info/github.com/nextcloud/updater)
+
 🔄 The built-in Updater makes it easier to keep your Nextcloud Server installation up-to-date. In many cases it can be used in place of the manual update process.
 
 ![image](https://github.com/nextcloud/updater/assets/1731941/42cb00b1-806d-4b7d-953e-f3d4abf0c9e7)
