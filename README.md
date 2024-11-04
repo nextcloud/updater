@@ -1,3 +1,8 @@
+<!--
+  - SPDX-FileCopyrightText: 2016 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-FileCopyrightText: 2014 ownCloud, Inc.
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 # 🔄 Nextcloud Updater
 
 🔄 The built-in Updater makes it easier to keep your Nextcloud Server installation up-to-date. In many cases it can be used in place of the manual update process.
