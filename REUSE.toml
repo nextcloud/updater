@@ -1,0 +1,84 @@
+# SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+version = 1
+SPDX-PackageName = "updater"
+SPDX-PackageSupplier = "Nextcloud <info@nextcloud.com>"
+SPDX-PackageDownloadLocation = "https://github.com/nextcloud/updater"
+
+[[annotations]]
+path = ["composer.json", "composer.lock"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2015 ownCloud, Inc., 2016 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = ["updater.phar", "box.json", "tests/composer.json", "tests/composer.lock"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = ["vendor/nextcloud/coding-standard/**", "vendor-bin/coding-standard/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2020 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["vendor-bin/box/**", "vendor-bin/psalm/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = ["vendor/autoload.php", "vendor/composer/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Nils Adermann, Jordi Boggiano"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "vendor/bamarni/composer-bin-plugin/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016 Bilal Amarni"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "vendor/php-cs-fixer/shim/*"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2012 Fabien Potencier, Dariusz Rumiński"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "vendor/psr/container/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2013-2016 container-interop, 2016 PHP Framework Interoperability Group"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "vendor/symfony/console/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2004 Fabien Potencier"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["vendor/symfony/polyfill-intl-grapheme/**", "vendor/symfony/polyfill-intl-normalizer/**", "vendor/symfony/polyfill-mbstring/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2015 Fabien Potencier"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["vendor/symfony/polyfill-ctype/**", "vendor/symfony/service-contracts/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2018 Fabien Potencier"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["vendor/symfony/string/**", "vendor/symfony/polyfill-php73/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2018 Fabien Potencier"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["vendor/symfony/deprecation-contracts/**", "vendor/symfony/polyfill-php80/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2020 Fabien Potencier"
+SPDX-License-Identifier = "MIT"

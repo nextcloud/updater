@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2016 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 Feature: CLI updater - master base
 
   Scenario: Update is available - master to master daily

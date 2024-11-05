@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2016 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 .PHONY: updater.phar
 
 updater.phar: updater.php lib/*.php buildVersionFile.php

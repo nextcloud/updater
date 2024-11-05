@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 Feature: CLI updater - stable25 base
 
   Scenario: Update is available - 25.0.0 beta 1 to 25.0.0 rc 1

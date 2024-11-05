@@ -1,3 +1,7 @@
+<!--
+  - SPDX-FileCopyrightText: 2016 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 # 1.0.3 - 2016-12-07
 
 - general: send PHP version to get compatible updates
