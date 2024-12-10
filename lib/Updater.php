@@ -415,6 +415,8 @@ class Updater {
 				}
 			}
 
+			// TODO: If it is a symbolic link, copy the link not the target
+			
 			// If it is a file copy it
 			if ($fileInfo->isFile()) {
 				$state = copy($fileInfo->getRealPath(), $backupFolderLocation . $fileName);
@@ -783,20 +785,45 @@ EOF;
 			\RecursiveIteratorIterator::CHILD_FIRST
 		);
 
+		$links = [];
 		$directories = [];
 		$files = [];
 		foreach ($iterator as $fileInfo) {
-			if ($fileInfo->isDir()) {
+			// Identify symbolic links first because:
+			//	a) Both `isDir()` and `isFile()` return `true` on symbolic links
+			//		Ref (plus easily tested): https://bugs.php.net/bug.php?id=72364
+			//		[This PR fixes that for the Updater]
+			//	b) We need to handle their path differently since getRealPath() resolves links
+			//		[TBD but no worse than we've been doing: we've been deleting getRealPath, thus
+			//		not deleting the links to actual files and duplicating them - i.e. see open Issue XXX]
+			//	TODO: Similar issues as (b) may exist in in our move/copy/rename and other delete ops in Updater
+			if ($fileInfo->isLink()) {
+			// Symlinks should not be resolved, but do need to be treated like files otherwise
+			//	(i.e. unlink() for deletion using an unresolved path)
+			//	PROBLEM: 
+			//		getRealPath() returns a resolved path for symlinks (i.e. returns target not link)
+			//		getPathname() returns an unresolved path, but doesn't return a canonicalized absolute pathname
+			//	QUESTIONS:
+			//		Do we even really need the canonicalized absolute pathname?
+			//		How are we already dealing with this already in `deleteOldFiles()`? (the latter part of it)
+				$links[] = $fileInfo->getPathname();
+			} else if ($fileInfo->isDir() {
 				$directories[] = $fileInfo->getRealPath();
-			} else {
-				if ($fileInfo->isLink()) {
-					$files[] = $fileInfo->getPathName();
-				} else {
-					$files[] = $fileInfo->getRealPath();
-				}
+			} else if ($fileInfo->isFile()) {
+				$files[] = $fileInfo->getRealPath();
+			} else { // we don't want to mess with irregular files
+				throw new \Exception('Detected a special file. Aborting to be safe: ' .
+						     $fileInfo->getPathname() ' . ' .
+						     $fileInfo->getRealPath()
+						     );
 			}
 		}
 
+		// TODO: Is the below really necessary or can't we do this above for better memory efficiency and performance?
+		//	If this is for ordering, I think CHILD_FIRST (and/or hasChildren()/getChildren()) make this unnecessary
+		foreach ($links as $link) {
+			unlink($link);
+		}
 		foreach ($files as $file) {
 			unlink($file);
 		}
