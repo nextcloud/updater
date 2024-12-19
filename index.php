@@ -7,6 +7,7 @@ declare(strict_types=1);
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+
 class UpdateException extends \Exception {
 
 	/** @param list<string> $data */
@@ -927,10 +928,13 @@ EOF;
 		 * @var string $path
 		 * @var \SplFileInfo $fileInfo
 		 */
+		$files = [];
+		$directories = [];
 		foreach ($this->getRecursiveDirectoryIterator() as $path => $fileInfo) {
 			$currentDir = $this->baseDir . '/../';
 			$fileName = explode($currentDir, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
+
 			// Exclude the exclusions
 			if (isset($folderStructure[0])) {
 				if (array_search($folderStructure[0], $excludedElements) !== false) {
@@ -942,18 +946,30 @@ EOF;
 				}
 			}
 			if ($fileInfo->isFile() || $fileInfo->isLink()) {
-				$state = unlink($path);
-				if ($state === false) {
-					throw new \Exception('Could not unlink: '.$path);
-				}
+				$files[] = $path;
 			} elseif ($fileInfo->isDir()) {
-				$state = rmdir($path);
-				if ($state === false) {
-					throw new \Exception('Could not rmdir: '.$path);
-				}
+				$directories[] = $path;
 			}
 		}
 
+		//
+		// Do the actual writes (outside the RDI to avoid problems on FreeBSD/etc)
+		//
+
+		foreach ($files as $file) {
+			$state = unlink($file);
+			if ($state === false) {
+				throw new \Exception('Could not unlink: '.$path);
+			}
+		}
+
+		foreach ($directories as $dir) {
+			$state = rmdir($dir);
+			if ($state === false) {
+				throw new \Exception('Could not rmdir: '.$path);
+			}
+		}
+			
 		$this->silentLog('[info] end of deleteOldFiles()');
 	}
 
@@ -967,6 +983,8 @@ EOF;
 		 * @var string $path
 		 * @var \SplFileInfo $fileInfo
 		 */
+		$files = [];
+		$directories = [];
 		foreach ($this->getRecursiveDirectoryIterator($dataLocation) as $path => $fileInfo) {
 			$fileName = explode($dataLocation, $path)[1];
 			$folderStructure = explode('/', $fileName, -1);
@@ -983,28 +1001,40 @@ EOF;
 			}
 
 			if ($fileInfo->isFile()) {
-				if (!file_exists($this->baseDir . '/../' . dirname($fileName))) {
-					$state = mkdir($this->baseDir . '/../' . dirname($fileName), 0755, true);
-					if ($state === false) {
-						throw new \Exception('Could not mkdir ' . $this->baseDir  . '/../' . dirname($fileName));
-					}
-				}
-				$state = rename($path, $this->baseDir  . '/../' . $fileName);
-				if ($state === false) {
-					throw new \Exception(
-						sprintf(
-							'Could not rename %s to %s',
-							$path,
-							$this->baseDir . '/../' . $fileName
-						)
-					);
-				}
+				$files[$path] = $fileName;
 			}
 			if ($fileInfo->isDir()) {
-				$state = rmdir($path);
+				$directories[] = $path;
+			}
+		}
+
+		//
+		// Do the actual writes (outside the RDI to avoid problems on FreeBSD/etc)
+		//
+
+		foreach ($files as $file => $fileName) {
+			if (!file_exists($this->baseDir . '/../' . dirname($fileName))) {
+				$state = mkdir($this->baseDir . '/../' . dirname($fileName), 0755, true);
 				if ($state === false) {
-					throw new \Exception('Could not rmdir ' . $path);
+					throw new \Exception('Could not mkdir ' . $this->baseDir  . '/../' . dirname($fileName));
 				}
+			}
+			$state = rename($file, $this->baseDir  . '/../' . $fileName);
+			if ($state === false) {
+				throw new \Exception(
+					sprintf(
+						'Could not rename %s to %s',
+						$file,
+						$this->baseDir . '/../' . $fileName
+					)
+				);
+			}
+		}
+
+		foreach ($directories as $dir) {
+			$state = rmdir($dir);
+			if ($state === false) {
+				throw new \Exception('Could not rmdir ' . $dir);
 			}
 		}
 	}
@@ -1059,6 +1089,11 @@ EOF;
 		if (function_exists('opcache_reset')) {
 			$this->silentLog('[info] call opcache_reset()');
 			opcache_reset();
+		}
+
+		if (function_exists('memory_get_peak_usage')) {
+			$memUsage = round(memory_get_peak_usage() / 1024 / 1024, 2);
+			$this->silentLog('[info] Peak memory usage: ' . $memUsage . 'MiB');
 		}
 
 		$this->silentLog('[info] end of finalize()');
