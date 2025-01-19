@@ -641,7 +641,7 @@ class Updater {
 		} else {
 			// download succeeded
 			$info = curl_getinfo($ch);
-			$this->silentLog("[info] download stats: size=" . $this->formatBytes($info['size_download']) . " bytes; total_time=" . round($info['total_time'], 2) . " secs; avg speed=" . $this->formatBytes($info['speed_download']) . "/sec");
+			$this->silentLog("[info] download stats: size=" . $this->formatBytes((int)$info['size_download']) . " bytes; total_time=" . round($info['total_time'], 2) . " secs; avg speed=" . $this->formatBytes((int)$info['speed_download']) . "/sec");
 		}
 
 		curl_close($ch);
