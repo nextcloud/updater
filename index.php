@@ -292,10 +292,10 @@ class Updater {
 	 * Gets the recursive directory iterator over the Nextcloud folder
 	 *
 	 * @param list<string> $excludedPaths Name of root directories to skip
-	 * @return Generator<string, \SplFileInfo>
+	 * @return \Generator<string, \SplFileInfo>
 	 */
-	private function getRecursiveDirectoryIterator(string $folder, array $excludedPaths): Generator {
-		foreach ($excludedElements as $element) {
+	private function getRecursiveDirectoryIterator(string $folder, array $excludedPaths): \Generator {
+		foreach ($excludedPaths as $element) {
 			if (strpos($element, '/') !== false) {
 				throw new \Exception('Excluding subpaths is not supported yet');
 			}
@@ -311,7 +311,7 @@ class Updater {
 			}
 			$path = $folder.'/'.$name;
 			yield from $this->getRecursiveDirectoryIterator($path, []);
-			yield $path => new SplFileInfo($path);
+			yield $path => new \SplFileInfo($path);
 		}
 
 
@@ -908,7 +908,7 @@ EOF;
 	/**
 	 * Moves the specified files except the excluded elements to the correct position
 	 *
-	 * @param list<string> $excludedPaths Name of root directories to skip
+	 * @param list<string> $excludedElements Name of root directories to skip
 	 * @throws \Exception
 	 */
 	private function moveWithExclusions(string $dataLocation, array $excludedElements): void {
