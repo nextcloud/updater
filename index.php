@@ -301,7 +301,12 @@ class Updater {
 			}
 		}
 		$exclusions = array_flip($excludedPaths);
+
 		$handle = opendir($folder);
+
+		if ($handle === false) {
+			throw new \Exception('Could not open '.$folder);
+		}
 		while ($name = readdir($handle)) {
 			if (in_array($name, ['.', '..'])) {
 				continue;
@@ -310,7 +315,9 @@ class Updater {
 				continue;
 			}
 			$path = $folder.'/'.$name;
-			yield from $this->getRecursiveDirectoryIterator($path, []);
+			if (is_dir($path)) {
+				yield from $this->getRecursiveDirectoryIterator($path, []);
+			}
 			yield $path => new \SplFileInfo($path);
 		}
 
