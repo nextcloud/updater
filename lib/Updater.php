@@ -291,10 +291,11 @@ class Updater {
 			if (isset($exclusions[$name])) {
 				continue;
 			}
-			yield from $this->getRecursiveDirectoryIterator($folder.'/'.$name, []);
+			$path = $folder.'/'.$name;
+			yield from $this->getRecursiveDirectoryIterator($path, []);
+			yield $path => new SplFileInfo($path);
 		}
 
-		yield $folder => new SplFileInfo($folder);
 
 		closedir($handle);
 	}
@@ -325,19 +326,14 @@ class Updater {
 	public function checkWritePermissions(): void {
 		$this->silentLog('[info] checkWritePermissions()');
 
-		$excludedPaths = [
-			'.rnd' => true,
-			'.well-known' => true,
-			'data' => true,
+		$excludedElements = [
+			'.rnd',
+			'.well-known',
+			'data',
 		];
 
-		$it = new \DirectoryIterator($this->nextcloudDir);
-
 		$notWritablePaths = [];
-		foreach ($it as $path => $fileInfo) {
-			if ($fileInfo->isDot() || isset($excludedPaths[$fileInfo->getFilename()])) {
-				continue;
-			}
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $path => $fileInfo) {
 			if (!$fileInfo->isWritable()) {
 				$notWritablePaths[] = $fileInfo->getFilename();
 			}
@@ -778,31 +774,19 @@ EOF;
 		if (!file_exists($folder)) {
 			return;
 		}
-		/** @var iterable<\SplFileInfo> $iterator */
-		$iterator = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS),
-			\RecursiveIteratorIterator::CHILD_FIRST
-		);
 
 		$directories = [];
 		$files = [];
-		foreach ($iterator as $fileInfo) {
+		foreach ($this->getRecursiveDirectoryIterator($folder, []) as $fileInfo) {
 			if ($fileInfo->isDir()) {
-				$directories[] = $fileInfo->getRealPath();
+				rmdir($fileInfo->getRealPath());
 			} else {
 				if ($fileInfo->isLink()) {
-					$files[] = $fileInfo->getPathName();
+					unlink($fileInfo->getPathName());
 				} else {
-					$files[] = $fileInfo->getRealPath();
+					unlink($fileInfo->getRealPath());
 				}
 			}
-		}
-
-		foreach ($files as $file) {
-			unlink($file);
-		}
-		foreach ($directories as $dir) {
-			rmdir($dir);
 		}
 
 		$state = rmdir($folder);
