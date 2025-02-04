@@ -259,8 +259,8 @@ class Updater {
 					throw new \Exception('Invalid configuration in apps_paths configuration key');
 				}
 				$appDir = basename($appsPath['path']);
-				if (strpos($appsPath['path'], $this->nextcloudDir) === 0) {
-					$relativePath = substr($appsPath['path'], strlen($this->nextcloudDir));
+				if (strpos($appsPath['path'], $this->nextcloudDir.'/') === 0) {
+					$relativePath = substr($appsPath['path'], strlen($this->nextcloudDir.'/'));
 					if ($relativePath !== 'apps') {
 						$expected[] = $relativePath;
 					}
