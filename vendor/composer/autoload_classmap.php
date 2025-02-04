@@ -27,7 +27,6 @@ return array(
     'NC\\Updater\\UpdateCommand' => $baseDir . '/lib/UpdateCommand.php',
     'NC\\Updater\\UpdateException' => $baseDir . '/lib/UpdateException.php',
     'NC\\Updater\\Updater' => $baseDir . '/lib/Updater.php',
-    'NC\\Updater\\Version' => $baseDir . '/lib/Version.php',
     'Nextcloud\\CodingStandard\\Config' => $vendorDir . '/nextcloud/coding-standard/src/Config.php',
     'Normalizer' => $vendorDir . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
     'PhpToken' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
