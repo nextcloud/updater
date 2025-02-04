@@ -245,7 +245,7 @@ class Updater {
 	/**
 	 * Returns app directories specified in config.php
 	 *
-	 * @return list<string>
+	 * @return list<string> Paths relative to nextcloud root directory
 	 */
 	private function getAppDirectories(): array {
 		$expected = [];
@@ -258,10 +258,12 @@ class Updater {
 				if (!is_array($appsPath) || !isset($appsPath['path']) || !is_string($appsPath['path'])) {
 					throw new \Exception('Invalid configuration in apps_paths configuration key');
 				}
-				$parentDir = realpath($this->baseDir . '/../');
 				$appDir = basename($appsPath['path']);
-				if (strpos($appsPath['path'], $parentDir) === 0 && $appDir !== 'apps') {
-					$expected[] = $appDir;
+				if (strpos($appsPath['path'], $this->nextcloudDir) === 0) {
+					$relativePath = substr($appsPath['path'], strlen($this->nextcloudDir));
+					if ($relativePath !== 'apps') {
+						$expected[] = $relativePath;
+					}
 				}
 			}
 		}
@@ -271,19 +273,30 @@ class Updater {
 	/**
 	 * Gets the recursive directory iterator over the Nextcloud folder
 	 *
-	 * @return \RecursiveIteratorIterator<\RecursiveDirectoryIterator|RecursiveDirectoryIteratorFilter>
+	 * @param list<string> $excludedPaths Name of root directories to skip
+	 * @return Generator<string, \SplFileInfo>
 	 */
-	private function getRecursiveDirectoryIterator(?string $folder = null, array $excludedPaths = []): \RecursiveIteratorIterator {
-		if ($folder === null) {
-			$folder = $this->baseDir . '/../';
+	private function getRecursiveDirectoryIterator(string $folder, array $excludedPaths): Generator {
+		foreach ($excludedElements as $element) {
+			if (strpos($element, '/') !== false) {
+				throw new \Exception('Excluding subpaths is not supported yet');
+			}
+		}
+		$exclusions = array_flip($excludedPaths);
+		$handle = opendir($folder);
+		while ($name = readdir($handle)) {
+			if (in_array($name, ['.', '..'])) {
+				continue;
+			}
+			if (isset($exclusions[$name])) {
+				continue;
+			}
+			yield from $this->getRecursiveDirectoryIterator($folder.'/'.$name, []);
 		}
 
-		$iterator = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
-		if (!empty($excludedPaths)) {
-			$iterator = new RecursiveDirectoryIteratorFilter($iterator, $excludedPaths);
-		}
+		yield $folder => new SplFileInfo($folder);
 
-		return new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
+		closedir($handle);
 	}
 
 	/**
@@ -392,27 +405,8 @@ class Updater {
 			throw new \Exception('Could not create backup folder location');
 		}
 
-		// Copy the backup files
-		$currentDir = $this->baseDir . '/../';
-
-		/**
-		 * @var string $path
-		 * @var \SplFileInfo $fileInfo
-		 */
-		foreach ($this->getRecursiveDirectoryIterator($currentDir, $excludedElements) as $path => $fileInfo) {
-			$fileName = explode($currentDir, $path)[1];
-			$folderStructure = explode('/', $fileName, -1);
-
-			// Exclude the exclusions
-			if (isset($folderStructure[0])) {
-				if (array_search($folderStructure[0], $excludedElements) !== false) {
-					continue;
-				}
-			} else {
-				if (array_search($fileName, $excludedElements) !== false) {
-					continue;
-				}
-			}
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $path => $fileInfo) {
+			$fileName = explode($this->nextcloudDir, $path)[1];
 
 			// Create folder if it doesn't exist
 			if (!file_exists($backupFolderLocation . '/' . dirname($fileName))) {
@@ -885,32 +879,14 @@ EOF;
 			'status.php',
 			'remote.php',
 			'public.php',
-			'ocs/v1.php',
-			'ocs/v2.php',
+			'ocs',
 			'config',
 			'themes',
 			'apps',
 			'updater',
 		];
 		$excludedElements = array_merge($excludedElements, $this->getAppDirectories());
-		/**
-		 * @var string $path
-		 * @var \SplFileInfo $fileInfo
-		 */
-		foreach ($this->getRecursiveDirectoryIterator() as $path => $fileInfo) {
-			$currentDir = $this->baseDir . '/../';
-			$fileName = explode($currentDir, $path)[1];
-			$folderStructure = explode('/', $fileName, -1);
-			// Exclude the exclusions
-			if (isset($folderStructure[0])) {
-				if (array_search($folderStructure[0], $excludedElements) !== false) {
-					continue;
-				}
-			} else {
-				if (array_search($fileName, $excludedElements) !== false) {
-					continue;
-				}
-			}
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $path => $fileInfo) {
 			if ($fileInfo->isFile() || $fileInfo->isLink()) {
 				$state = unlink($path);
 				if ($state === false) {
@@ -930,28 +906,12 @@ EOF;
 	/**
 	 * Moves the specified files except the excluded elements to the correct position
 	 *
-	 * @param string[] $excludedElements
+	 * @param list<string> $excludedPaths Name of root directories to skip
 	 * @throws \Exception
 	 */
 	private function moveWithExclusions(string $dataLocation, array $excludedElements): void {
-		/**
-		 * @var string $path
-		 * @var \SplFileInfo $fileInfo
-		 */
-		foreach ($this->getRecursiveDirectoryIterator($dataLocation) as $path => $fileInfo) {
+		foreach ($this->getRecursiveDirectoryIterator($dataLocation, $excludedElements) as $path => $fileInfo) {
 			$fileName = explode($dataLocation, $path)[1];
-			$folderStructure = explode('/', $fileName, -1);
-
-			// Exclude the exclusions
-			if (isset($folderStructure[0])) {
-				if (array_search($folderStructure[0], $excludedElements) !== false) {
-					continue;
-				}
-			} else {
-				if (array_search($fileName, $excludedElements) !== false) {
-					continue;
-				}
-			}
 
 			if ($fileInfo->isFile()) {
 				if (!file_exists($this->baseDir . '/../' . dirname($fileName))) {
@@ -995,15 +955,18 @@ EOF;
 			'status.php',
 			'remote.php',
 			'public.php',
-			'ocs/v1.php',
-			'ocs/v2.php',
+			'ocs',
 		];
 		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
+
+		// Rename apps and other stuff
 		$this->moveWithExclusions($storageLocation, $excludedElements);
 
-		// Rename everything except the updater files
+		// Rename everything except the updater (It will not move what was already moved as it’s not in $storageLocation anymore)
 		$this->moveWithExclusions($storageLocation, ['updater']);
+
+		// The updater folder is moved last in finalize()
 
 		$this->silentLog('[info] end of moveNewVersionInPlace()');
 	}
