@@ -303,7 +303,6 @@ class Updater {
 			yield $path => new \SplFileInfo($path);
 		}
 
-
 		closedir($handle);
 	}
 
@@ -408,25 +407,26 @@ class Updater {
 			throw new \Exception('Could not create backup folder location');
 		}
 
-		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $path => $fileInfo) {
-			$fileName = explode($this->nextcloudDir, $path)[1];
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $absolutePath => $fileInfo) {
+			$relativePath = explode($this->nextcloudDir, $absolutePath)[1];
+			$relativeDirectory = dirname($relativePath);
 
 			// Create folder if it doesn't exist
-			if (!file_exists($backupFolderLocation . '/' . dirname($fileName))) {
-				$state = mkdir($backupFolderLocation . '/' . dirname($fileName), 0750, true);
+			if (!file_exists($backupFolderLocation . '/' . $relativeDirectory)) {
+				$state = mkdir($backupFolderLocation . '/' . $relativeDirectory, 0750, true);
 				if ($state === false) {
-					throw new \Exception('Could not create folder: '.$backupFolderLocation.'/'.dirname($fileName));
+					throw new \Exception('Could not create folder: '.$backupFolderLocation.'/'.$relativeDirectory);
 				}
 			}
 
 			// If it is a file copy it
 			if ($fileInfo->isFile()) {
-				$state = copy($fileInfo->getRealPath(), $backupFolderLocation . $fileName);
+				$state = copy($fileInfo->getRealPath(), $backupFolderLocation . $relativePath);
 				if ($state === false) {
 					$message = sprintf(
 						'Could not copy "%s" to "%s"',
 						$fileInfo->getRealPath(),
-						$backupFolderLocation . $fileName
+						$backupFolderLocation . $relativePath
 					);
 
 					if (is_readable($fileInfo->getRealPath()) === false) {
@@ -437,11 +437,11 @@ class Updater {
 						);
 					}
 
-					if (is_writable($backupFolderLocation . $fileName) === false) {
+					if (is_writable($backupFolderLocation . $relativePath) === false) {
 						$message = sprintf(
 							'%s. Destination %s is not writable',
 							$message,
-							$backupFolderLocation . $fileName
+							$backupFolderLocation . $relativePath
 						);
 					}
 
