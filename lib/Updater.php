@@ -289,6 +289,9 @@ class Updater {
 		if ($handle === false) {
 			throw new \Exception('Could not open '.$folder);
 		}
+
+		/* Store first level children in an array to avoid trouble if changes happen while iterating */
+		$children = [];
 		while ($name = readdir($handle)) {
 			if (in_array($name, ['.', '..'])) {
 				continue;
@@ -296,14 +299,18 @@ class Updater {
 			if (isset($exclusions[$name])) {
 				continue;
 			}
+			$children[] = $name;
+		}
+
+		closedir($handle);
+
+		foreach ($children as $name) {
 			$path = $folder.'/'.$name;
 			if (is_dir($path)) {
 				yield from $this->getRecursiveDirectoryIterator($path, []);
 			}
 			yield $path => new \SplFileInfo($path);
 		}
-
-		closedir($handle);
 	}
 
 	/**
