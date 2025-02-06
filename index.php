@@ -42,7 +42,7 @@ class Updater {
 	 * @throws \Exception
 	 */
 	public function __construct(
-		private string $baseDir
+		string $baseDir,
 	) {
 		$this->nextcloudDir = realpath(dirname($baseDir));
 
@@ -307,6 +307,9 @@ class Updater {
 		if ($handle === false) {
 			throw new \Exception('Could not open '.$folder);
 		}
+
+		/* Store first level children in an array to avoid trouble if changes happen while iterating */
+		$children = [];
 		while ($name = readdir($handle)) {
 			if (in_array($name, ['.', '..'])) {
 				continue;
@@ -314,15 +317,18 @@ class Updater {
 			if (isset($exclusions[$name])) {
 				continue;
 			}
+			$children[] = $name;
+		}
+
+		closedir($handle);
+
+		foreach ($children as $name) {
 			$path = $folder.'/'.$name;
 			if (is_dir($path)) {
 				yield from $this->getRecursiveDirectoryIterator($path, []);
 			}
 			yield $path => new \SplFileInfo($path);
 		}
-
-
-		closedir($handle);
 	}
 
 	/**
@@ -381,7 +387,7 @@ class Updater {
 		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
 			$configFileName = rtrim($dir, '/') . '/config.php';
 		} else {
-			$configFileName = $this->baseDir . '/../config/config.php';
+			$configFileName = $this->nextcloudDir . '/config/config.php';
 		}
 		$this->silentLog('[info] configFileName ' . $configFileName);
 
@@ -426,25 +432,26 @@ class Updater {
 			throw new \Exception('Could not create backup folder location');
 		}
 
-		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $path => $fileInfo) {
-			$fileName = explode($this->nextcloudDir, $path)[1];
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $absolutePath => $fileInfo) {
+			$relativePath = explode($this->nextcloudDir, $absolutePath)[1];
+			$relativeDirectory = dirname($relativePath);
 
 			// Create folder if it doesn't exist
-			if (!file_exists($backupFolderLocation . '/' . dirname($fileName))) {
-				$state = mkdir($backupFolderLocation . '/' . dirname($fileName), 0750, true);
+			if (!file_exists($backupFolderLocation . '/' . $relativeDirectory)) {
+				$state = mkdir($backupFolderLocation . '/' . $relativeDirectory, 0750, true);
 				if ($state === false) {
-					throw new \Exception('Could not create folder: '.$backupFolderLocation.'/'.dirname($fileName));
+					throw new \Exception('Could not create folder: '.$backupFolderLocation.'/'.$relativeDirectory);
 				}
 			}
 
 			// If it is a file copy it
 			if ($fileInfo->isFile()) {
-				$state = copy($fileInfo->getRealPath(), $backupFolderLocation . $fileName);
+				$state = copy($fileInfo->getRealPath(), $backupFolderLocation . $relativePath);
 				if ($state === false) {
 					$message = sprintf(
 						'Could not copy "%s" to "%s"',
 						$fileInfo->getRealPath(),
-						$backupFolderLocation . $fileName
+						$backupFolderLocation . $relativePath
 					);
 
 					if (is_readable($fileInfo->getRealPath()) === false) {
@@ -455,11 +462,11 @@ class Updater {
 						);
 					}
 
-					if (is_writable($backupFolderLocation . $fileName) === false) {
+					if (is_writable($backupFolderLocation . $relativePath) === false) {
 						$message = sprintf(
 							'%s. Destination %s is not writable',
 							$message,
-							$backupFolderLocation . $fileName
+							$backupFolderLocation . $relativePath
 						);
 					}
 
@@ -746,7 +753,7 @@ EOF;
 
 		// Ensure that the downloaded version is not lower
 		$downloadedVersion = $this->getVersionByVersionFile(dirname($downloadedFilePath) . '/nextcloud/version.php');
-		$currentVersion = $this->getVersionByVersionFile($this->baseDir . '/../version.php');
+		$currentVersion = $this->getVersionByVersionFile($this->nextcloudDir . '/version.php');
 		if (version_compare($downloadedVersion, $currentVersion, '<')) {
 			throw new \Exception('Downloaded version is lower than installed version');
 		}
@@ -774,14 +781,14 @@ EOF;
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
 		foreach ($filesToReplace as $file) {
 			$this->silentLog('[info] replace ' . $file);
-			$parentDir = dirname($this->baseDir . '/../' . $file);
+			$parentDir = dirname($this->nextcloudDir . '/' . $file);
 			if (!file_exists($parentDir)) {
 				$r = mkdir($parentDir);
 				if ($r !== true) {
 					throw new \Exception('Can\'t create parent directory for entry point: ' . $file);
 				}
 			}
-			$state = file_put_contents($this->baseDir  . '/../' . $file, $content);
+			$state = file_put_contents($this->nextcloudDir . '/' . $file, $content);
 			if ($state === false) {
 				throw new \Exception('Can\'t replace entry point: '.$file);
 			}
@@ -828,7 +835,7 @@ EOF;
 	public function deleteOldFiles(): void {
 		$this->silentLog('[info] deleteOldFiles()');
 
-		$shippedAppsFile = $this->baseDir . '/../core/shipped.json';
+		$shippedAppsFile = $this->nextcloudDir . '/core/shipped.json';
 		$shippedAppsFileContent = file_get_contents($shippedAppsFile);
 		if ($shippedAppsFileContent === false) {
 			throw new \Exception('core/shipped.json is not available');
@@ -854,10 +861,10 @@ EOF;
 		$shippedApps = array_merge($shippedApps, $newShippedApps);
 		/** @var string $app */
 		foreach ($shippedApps as $app) {
-			$this->recursiveDelete($this->baseDir . '/../apps/' . $app);
+			$this->recursiveDelete($this->nextcloudDir . '/apps/' . $app);
 		}
 
-		$configSampleFile = $this->baseDir . '/../config/config.sample.php';
+		$configSampleFile = $this->nextcloudDir . '/config/config.sample.php';
 		if (file_exists($configSampleFile)) {
 			$this->silentLog('[info] config sample exists');
 
@@ -868,7 +875,7 @@ EOF;
 			}
 		}
 
-		$themesReadme = $this->baseDir . '/../themes/README';
+		$themesReadme = $this->nextcloudDir . '/themes/README';
 		if (file_exists($themesReadme)) {
 			$this->silentLog('[info] themes README exists');
 
@@ -878,7 +885,7 @@ EOF;
 				throw new \Exception('Could not delete themes README');
 			}
 		}
-		$this->recursiveDelete($this->baseDir . '/../themes/example/');
+		$this->recursiveDelete($this->nextcloudDir . '/themes/example/');
 
 		// Delete the rest
 		$excludedElements = [
@@ -923,19 +930,19 @@ EOF;
 			$fileName = explode($dataLocation, $path)[1];
 
 			if ($fileInfo->isFile()) {
-				if (!file_exists($this->baseDir . '/../' . dirname($fileName))) {
-					$state = mkdir($this->baseDir . '/../' . dirname($fileName), 0755, true);
+				if (!file_exists($this->nextcloudDir . '/' . dirname($fileName))) {
+					$state = mkdir($this->nextcloudDir . '/' . dirname($fileName), 0755, true);
 					if ($state === false) {
-						throw new \Exception('Could not mkdir ' . $this->baseDir  . '/../' . dirname($fileName));
+						throw new \Exception('Could not mkdir ' . $this->nextcloudDir . '/' . dirname($fileName));
 					}
 				}
-				$state = rename($path, $this->baseDir  . '/../' . $fileName);
+				$state = rename($path, $this->nextcloudDir . '/' . $fileName);
 				if ($state === false) {
 					throw new \Exception(
 						sprintf(
 							'Could not rename %s to %s',
 							$path,
-							$this->baseDir . '/../' . $fileName
+							$this->nextcloudDir . '/' . $fileName
 						)
 					);
 				}
