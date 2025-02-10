@@ -36,7 +36,6 @@ class ComposerStaticInit936ba63ded5d1b8248cdb4d5673af0ea
         ),
         'N' => 
         array (
-            'Nextcloud\\CodingStandard\\' => 25,
             'NC\\Updater\\' => 11,
         ),
         'B' => 
@@ -86,10 +85,6 @@ class ComposerStaticInit936ba63ded5d1b8248cdb4d5673af0ea
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Nextcloud\\CodingStandard\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nextcloud/coding-standard/src',
-        ),
         'NC\\Updater\\' => 
         array (
             0 => __DIR__ . '/../..' . '/lib',
@@ -123,7 +118,6 @@ class ComposerStaticInit936ba63ded5d1b8248cdb4d5673af0ea
         'NC\\Updater\\UpdateException' => __DIR__ . '/../..' . '/lib/UpdateException.php',
         'NC\\Updater\\Updater' => __DIR__ . '/../..' . '/lib/Updater.php',
         'NC\\Updater\\Version' => __DIR__ . '/../..' . '/lib/Version.php',
-        'Nextcloud\\CodingStandard\\Config' => __DIR__ . '/..' . '/nextcloud/coding-standard/src/Config.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
