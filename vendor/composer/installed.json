@@ -61,105 +61,6 @@
             "install-path": "../bamarni/composer-bin-plugin"
         },
         {
-            "name": "nextcloud/coding-standard",
-            "version": "v1.2.1",
-            "version_normalized": "1.2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nextcloud/coding-standard.git",
-                "reference": "cf5f18d989ec62fb4cdc7fc92a36baf34b3d829e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud/coding-standard/zipball/cf5f18d989ec62fb4cdc7fc92a36baf34b3d829e",
-                "reference": "cf5f18d989ec62fb4cdc7fc92a36baf34b3d829e",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.3|^8.0",
-                "php-cs-fixer/shim": "^3.17"
-            },
-            "time": "2024-02-01T14:54:37+00:00",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "psr-4": {
-                    "Nextcloud\\CodingStandard\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Christoph Wurst",
-                    "email": "christoph@winzerhof-wurst.at"
-                }
-            ],
-            "description": "Nextcloud coding standards for the php cs fixer",
-            "support": {
-                "issues": "https://github.com/nextcloud/coding-standard/issues",
-                "source": "https://github.com/nextcloud/coding-standard/tree/v1.2.1"
-            },
-            "install-path": "../nextcloud/coding-standard"
-        },
-        {
-            "name": "php-cs-fixer/shim",
-            "version": "v3.51.0",
-            "version_normalized": "3.51.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/PHP-CS-Fixer/shim.git",
-                "reference": "a792394f7f3934f75a4df9dca544796c6f503027"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/a792394f7f3934f75a4df9dca544796c6f503027",
-                "reference": "a792394f7f3934f75a4df9dca544796c6f503027",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "ext-tokenizer": "*",
-                "php": "^7.4 || ^8.0"
-            },
-            "replace": {
-                "friendsofphp/php-cs-fixer": "self.version"
-            },
-            "suggest": {
-                "ext-dom": "For handling output formats in XML",
-                "ext-mbstring": "For handling non-UTF8 characters."
-            },
-            "time": "2024-02-28T19:51:07+00:00",
-            "bin": [
-                "php-cs-fixer",
-                "php-cs-fixer.phar"
-            ],
-            "type": "application",
-            "installation-source": "dist",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Dariusz Rumiński",
-                    "email": "dariusz.ruminski@gmail.com"
-                }
-            ],
-            "description": "A tool to automatically fix PHP code style",
-            "support": {
-                "issues": "https://github.com/PHP-CS-Fixer/shim/issues",
-                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.51.0"
-            },
-            "install-path": "../php-cs-fixer/shim"
-        },
-        {
             "name": "psr/container",
             "version": "1.1.2",
             "version_normalized": "1.1.2.0",
@@ -212,17 +113,17 @@
         },
         {
             "name": "symfony/console",
-            "version": "v5.4.35",
-            "version_normalized": "5.4.35.0",
+            "version": "v5.4.47",
+            "version_normalized": "5.4.47.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "dbdf6adcb88d5f83790e1efb57ef4074309d3931"
+                "reference": "c4ba980ca61a9eb18ee6bcc73f28e475852bb1ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/dbdf6adcb88d5f83790e1efb57ef4074309d3931",
-                "reference": "dbdf6adcb88d5f83790e1efb57ef4074309d3931",
+                "url": "https://api.github.com/repos/symfony/console/zipball/c4ba980ca61a9eb18ee6bcc73f28e475852bb1ed",
+                "reference": "c4ba980ca61a9eb18ee6bcc73f28e475852bb1ed",
                 "shasum": ""
             },
             "require": {
@@ -260,7 +161,7 @@
                 "symfony/lock": "",
                 "symfony/process": ""
             },
-            "time": "2024-01-23T14:28:09+00:00",
+            "time": "2024-11-06T11:30:55+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -294,7 +195,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v5.4.35"
+                "source": "https://github.com/symfony/console/tree/v5.4.47"
             },
             "funding": [
                 {
@@ -314,31 +215,31 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v2.5.2",
-            "version_normalized": "2.5.2.0",
+            "version": "v2.5.4",
+            "version_normalized": "2.5.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "e8b495ea28c1d97b5e0c121748d6f9b53d075c66"
+                "reference": "605389f2a7e5625f273b53960dc46aeaf9c62918"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/e8b495ea28c1d97b5e0c121748d6f9b53d075c66",
-                "reference": "e8b495ea28c1d97b5e0c121748d6f9b53d075c66",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/605389f2a7e5625f273b53960dc46aeaf9c62918",
+                "reference": "605389f2a7e5625f273b53960dc46aeaf9c62918",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1"
             },
-            "time": "2022-01-02T09:53:40+00:00",
+            "time": "2024-09-25T14:11:13+00:00",
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "2.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "installation-source": "dist",
@@ -364,7 +265,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v2.5.2"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v2.5.4"
             },
             "funding": [
                 {
@@ -384,21 +285,21 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.28.0",
-            "version_normalized": "1.28.0.0",
+            "version": "v1.31.0",
+            "version_normalized": "1.31.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "ea208ce43cbb04af6867b4fdddb1bdbf84cc28cb"
+                "reference": "a3cc8b044a6ea513310cbd48ef7333b384945638"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/ea208ce43cbb04af6867b4fdddb1bdbf84cc28cb",
-                "reference": "ea208ce43cbb04af6867b4fdddb1bdbf84cc28cb",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/a3cc8b044a6ea513310cbd48ef7333b384945638",
+                "reference": "a3cc8b044a6ea513310cbd48ef7333b384945638",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=7.2"
             },
             "provide": {
                 "ext-ctype": "*"
@@ -406,15 +307,12 @@
             "suggest": {
                 "ext-ctype": "For best performance"
             },
-            "time": "2023-01-26T09:26:14+00:00",
+            "time": "2024-09-09T11:45:10+00:00",
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "1.28-dev"
-                },
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "installation-source": "dist",
@@ -449,7 +347,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.28.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.31.0"
             },
             "funding": [
                 {
@@ -469,34 +367,31 @@
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
-            "version": "v1.28.0",
-            "version_normalized": "1.28.0.0",
+            "version": "v1.31.0",
+            "version_normalized": "1.31.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-intl-grapheme.git",
-                "reference": "875e90aeea2777b6f135677f618529449334a612"
+                "reference": "b9123926e3b7bc2f98c02ad54f6a4b02b91a8abe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-intl-grapheme/zipball/875e90aeea2777b6f135677f618529449334a612",
-                "reference": "875e90aeea2777b6f135677f618529449334a612",
+                "url": "https://api.github.com/repos/symfony/polyfill-intl-grapheme/zipball/b9123926e3b7bc2f98c02ad54f6a4b02b91a8abe",
+                "reference": "b9123926e3b7bc2f98c02ad54f6a4b02b91a8abe",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=7.2"
             },
             "suggest": {
                 "ext-intl": "For best performance"
             },
-            "time": "2023-01-26T09:26:14+00:00",
+            "time": "2024-09-09T11:45:10+00:00",
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "1.28-dev"
-                },
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "installation-source": "dist",
@@ -533,7 +428,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.28.0"
+                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.31.0"
             },
             "funding": [
                 {
@@ -553,34 +448,31 @@
         },
         {
             "name": "symfony/polyfill-intl-normalizer",
-            "version": "v1.28.0",
-            "version_normalized": "1.28.0.0",
+            "version": "v1.31.0",
+            "version_normalized": "1.31.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-intl-normalizer.git",
-                "reference": "8c4ad05dd0120b6a53c1ca374dca2ad0a1c4ed92"
+                "reference": "3833d7255cc303546435cb650316bff708a1c75c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-intl-normalizer/zipball/8c4ad05dd0120b6a53c1ca374dca2ad0a1c4ed92",
-                "reference": "8c4ad05dd0120b6a53c1ca374dca2ad0a1c4ed92",
+                "url": "https://api.github.com/repos/symfony/polyfill-intl-normalizer/zipball/3833d7255cc303546435cb650316bff708a1c75c",
+                "reference": "3833d7255cc303546435cb650316bff708a1c75c",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=7.2"
             },
             "suggest": {
                 "ext-intl": "For best performance"
             },
-            "time": "2023-01-26T09:26:14+00:00",
+            "time": "2024-09-09T11:45:10+00:00",
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "1.28-dev"
-                },
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "installation-source": "dist",
@@ -620,7 +512,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.28.0"
+                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.31.0"
             },
             "funding": [
                 {
@@ -640,21 +532,21 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.28.0",
-            "version_normalized": "1.28.0.0",
+            "version": "v1.31.0",
+            "version_normalized": "1.31.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "42292d99c55abe617799667f454222c54c60e229"
+                "reference": "85181ba99b2345b0ef10ce42ecac37612d9fd341"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/42292d99c55abe617799667f454222c54c60e229",
-                "reference": "42292d99c55abe617799667f454222c54c60e229",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/85181ba99b2345b0ef10ce42ecac37612d9fd341",
+                "reference": "85181ba99b2345b0ef10ce42ecac37612d9fd341",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=7.2"
             },
             "provide": {
                 "ext-mbstring": "*"
@@ -662,15 +554,12 @@
             "suggest": {
                 "ext-mbstring": "For best performance"
             },
-            "time": "2023-07-28T09:04:16+00:00",
+            "time": "2024-09-09T11:45:10+00:00",
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "1.28-dev"
-                },
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "installation-source": "dist",
@@ -706,7 +595,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.28.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.31.0"
             },
             "funding": [
                 {
@@ -726,31 +615,28 @@
         },
         {
             "name": "symfony/polyfill-php73",
-            "version": "v1.28.0",
-            "version_normalized": "1.28.0.0",
+            "version": "v1.31.0",
+            "version_normalized": "1.31.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php73.git",
-                "reference": "fe2f306d1d9d346a7fee353d0d5012e401e984b5"
+                "reference": "0f68c03565dcaaf25a890667542e8bd75fe7e5bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php73/zipball/fe2f306d1d9d346a7fee353d0d5012e401e984b5",
-                "reference": "fe2f306d1d9d346a7fee353d0d5012e401e984b5",
+                "url": "https://api.github.com/repos/symfony/polyfill-php73/zipball/0f68c03565dcaaf25a890667542e8bd75fe7e5bb",
+                "reference": "0f68c03565dcaaf25a890667542e8bd75fe7e5bb",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=7.2"
             },
-            "time": "2023-01-26T09:26:14+00:00",
+            "time": "2024-09-09T11:45:10+00:00",
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "1.28-dev"
-                },
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "installation-source": "dist",
@@ -788,7 +674,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php73/tree/v1.28.0"
+                "source": "https://github.com/symfony/polyfill-php73/tree/v1.31.0"
             },
             "funding": [
                 {
@@ -808,31 +694,28 @@
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.28.0",
-            "version_normalized": "1.28.0.0",
+            "version": "v1.31.0",
+            "version_normalized": "1.31.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "6caa57379c4aec19c0a12a38b59b26487dcfe4b5"
+                "reference": "60328e362d4c2c802a54fcbf04f9d3fb892b4cf8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/6caa57379c4aec19c0a12a38b59b26487dcfe4b5",
-                "reference": "6caa57379c4aec19c0a12a38b59b26487dcfe4b5",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/60328e362d4c2c802a54fcbf04f9d3fb892b4cf8",
+                "reference": "60328e362d4c2c802a54fcbf04f9d3fb892b4cf8",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=7.2"
             },
-            "time": "2023-01-26T09:26:14+00:00",
+            "time": "2024-09-09T11:45:10+00:00",
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "1.28-dev"
-                },
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "installation-source": "dist",
@@ -874,7 +757,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.28.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.31.0"
             },
             "funding": [
                 {
@@ -894,17 +777,17 @@
         },
         {
             "name": "symfony/service-contracts",
-            "version": "v2.5.2",
-            "version_normalized": "2.5.2.0",
+            "version": "v2.5.4",
+            "version_normalized": "2.5.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "4b426aac47d6427cc1a1d0f7e2ac724627f5966c"
+                "reference": "f37b419f7aea2e9abf10abd261832cace12e3300"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/4b426aac47d6427cc1a1d0f7e2ac724627f5966c",
-                "reference": "4b426aac47d6427cc1a1d0f7e2ac724627f5966c",
+                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/f37b419f7aea2e9abf10abd261832cace12e3300",
+                "reference": "f37b419f7aea2e9abf10abd261832cace12e3300",
                 "shasum": ""
             },
             "require": {
@@ -918,15 +801,15 @@
             "suggest": {
                 "symfony/service-implementation": ""
             },
-            "time": "2022-05-30T19:17:29+00:00",
+            "time": "2024-09-25T14:11:13+00:00",
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "2.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "installation-source": "dist",
@@ -960,7 +843,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/v2.5.2"
+                "source": "https://github.com/symfony/service-contracts/tree/v2.5.4"
             },
             "funding": [
                 {
@@ -980,17 +863,17 @@
         },
         {
             "name": "symfony/string",
-            "version": "v5.4.35",
-            "version_normalized": "5.4.35.0",
+            "version": "v5.4.47",
+            "version_normalized": "5.4.47.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "c209c4d0559acce1c9a2067612cfb5d35756edc2"
+                "reference": "136ca7d72f72b599f2631aca474a4f8e26719799"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/c209c4d0559acce1c9a2067612cfb5d35756edc2",
-                "reference": "c209c4d0559acce1c9a2067612cfb5d35756edc2",
+                "url": "https://api.github.com/repos/symfony/string/zipball/136ca7d72f72b599f2631aca474a4f8e26719799",
+                "reference": "136ca7d72f72b599f2631aca474a4f8e26719799",
                 "shasum": ""
             },
             "require": {
@@ -1010,7 +893,7 @@
                 "symfony/translation-contracts": "^1.1|^2",
                 "symfony/var-exporter": "^4.4|^5.0|^6.0"
             },
-            "time": "2024-01-23T13:51:25+00:00",
+            "time": "2024-11-10T20:33:58+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1049,7 +932,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v5.4.35"
+                "source": "https://github.com/symfony/string/tree/v5.4.47"
             },
             "funding": [
                 {
@@ -1070,8 +953,6 @@
     ],
     "dev": true,
     "dev-package-names": [
-        "bamarni/composer-bin-plugin",
-        "nextcloud/coding-standard",
-        "php-cs-fixer/shim"
+        "bamarni/composer-bin-plugin"
     ]
 }

@@ -259,8 +259,8 @@ class Updater {
 					throw new \Exception('Invalid configuration in apps_paths configuration key');
 				}
 				$appDir = basename($appsPath['path']);
-				if (strpos($appsPath['path'], $this->nextcloudDir.'/') === 0) {
-					$relativePath = substr($appsPath['path'], strlen($this->nextcloudDir.'/'));
+				if (strpos($appsPath['path'], $this->nextcloudDir . '/') === 0) {
+					$relativePath = substr($appsPath['path'], strlen($this->nextcloudDir . '/'));
 					if ($relativePath !== 'apps') {
 						$expected[] = $relativePath;
 					}
@@ -287,7 +287,7 @@ class Updater {
 		$handle = opendir($folder);
 
 		if ($handle === false) {
-			throw new \Exception('Could not open '.$folder);
+			throw new \Exception('Could not open ' . $folder);
 		}
 
 		/* Store first level children in an array to avoid trouble if changes happen while iterating */
@@ -305,7 +305,7 @@ class Updater {
 		closedir($handle);
 
 		foreach ($children as $name) {
-			$path = $folder.'/'.$name;
+			$path = $folder . '/' . $name;
 			if (is_dir($path)) {
 				yield from $this->getRecursiveDirectoryIterator($path, []);
 			}
@@ -364,7 +364,7 @@ class Updater {
 	 * @throws \Exception when config.php can't be written
 	 */
 	public function setMaintenanceMode(bool $state): void {
-		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') .  '")');
+		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') . '")');
 
 		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
 			$configFileName = rtrim($dir, '/') . '/config.php';
@@ -406,7 +406,7 @@ class Updater {
 		];
 
 		// Create new folder for the backup
-		$backupFolderLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid').'/backups/nextcloud-'.$this->getConfigOptionMandatoryString('version') . '-' . time() . '/';
+		$backupFolderLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/backups/nextcloud-' . $this->getConfigOptionMandatoryString('version') . '-' . time() . '/';
 		$this->silentLog('[info] backup folder location: ' . $backupFolderLocation);
 
 		$state = mkdir($backupFolderLocation, 0750, true);
@@ -422,7 +422,7 @@ class Updater {
 			if (!file_exists($backupFolderLocation . '/' . $relativeDirectory)) {
 				$state = mkdir($backupFolderLocation . '/' . $relativeDirectory, 0750, true);
 				if ($state === false) {
-					throw new \Exception('Could not create folder: '.$backupFolderLocation.'/'.$relativeDirectory);
+					throw new \Exception('Could not create folder: ' . $backupFolderLocation . '/' . $relativeDirectory);
 				}
 			}
 
@@ -483,7 +483,7 @@ class Updater {
 		$this->silentLog('[info] releaseChannel: ' . $releaseChannel);
 		$this->silentLog('[info] internal version: ' . $this->getConfigOptionMandatoryString('version'));
 
-		$updateURL = $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOptionMandatoryString('version')) .'xxx'.$releaseChannel.'xx'.urlencode($this->buildTime).'x'.PHP_MAJOR_VERSION.'x'.PHP_MINOR_VERSION.'x'.PHP_RELEASE_VERSION;
+		$updateURL = $updaterServer . '?version=' . str_replace('.', 'x', $this->getConfigOptionMandatoryString('version')) . 'xxx' . $releaseChannel . 'xx' . urlencode($this->buildTime) . 'x' . PHP_MAJOR_VERSION . 'x' . PHP_MINOR_VERSION . 'x' . PHP_RELEASE_VERSION;
 		$this->silentLog('[info] updateURL: ' . $updateURL);
 
 		// Download update response
@@ -505,7 +505,7 @@ class Updater {
 		/** @var false|string $response */
 		$response = curl_exec($curl);
 		if ($response === false) {
-			throw new \Exception('Could not do request to updater server: '.curl_error($curl));
+			throw new \Exception('Could not do request to updater server: ' . curl_error($curl));
 		}
 		curl_close($curl);
 
@@ -533,7 +533,7 @@ class Updater {
 
 		$response = $this->getUpdateServerResponse();
 
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
 		if (file_exists($storageLocation)) {
 			$this->silentLog('[info] storage location exists');
 			$this->recursiveDelete($storageLocation);
@@ -604,7 +604,7 @@ class Updater {
 	 * @throws \Exception
 	 */
 	private function getDownloadedFilePath(): string {
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
 		$filesInStorageLocation = scandir($storageLocation);
@@ -714,7 +714,7 @@ EOF;
 			throw new \Exception('Required PHP extension missing: zip');
 		}
 
-		$libzip_version = defined("ZipArchive::LIBZIP_VERSION") ? \ZipArchive::LIBZIP_VERSION : "Unknown (but old)";
+		$libzip_version = defined('ZipArchive::LIBZIP_VERSION') ? \ZipArchive::LIBZIP_VERSION : 'Unknown (but old)';
 		$this->silentLog('[info] Libzip version detected: ' . $libzip_version);
 
 		$zip = new \ZipArchive;
@@ -722,15 +722,15 @@ EOF;
 		if ($zipState === true) {
 			$extraction = $zip->extractTo(dirname($downloadedFilePath));
 			if ($extraction === false) {
-				throw new \Exception('Error during unpacking zipfile: '.($zip->getStatusString()));
+				throw new \Exception('Error during unpacking zipfile: ' . ($zip->getStatusString()));
 			}
 			$zip->close();
 			$state = unlink($downloadedFilePath);
 			if ($state === false) {
-				throw new \Exception("Can't unlink ". $downloadedFilePath);
+				throw new \Exception("Can't unlink " . $downloadedFilePath);
 			}
 		} else {
-			throw new \Exception("Can't handle ZIP file. Error code is: ".print_r($zipState, true));
+			throw new \Exception("Can't handle ZIP file. Error code is: " . print_r($zipState, true));
 		}
 
 		// Ensure that the downloaded version is not lower
@@ -772,7 +772,7 @@ EOF;
 			}
 			$state = file_put_contents($this->nextcloudDir . '/' . $file, $content);
 			if ($state === false) {
-				throw new \Exception('Can\'t replace entry point: '.$file);
+				throw new \Exception('Can\'t replace entry point: ' . $file);
 			}
 		}
 
@@ -828,7 +828,7 @@ EOF;
 			throw new \Exception('core/shipped.json content is invalid');
 		}
 
-		$newShippedAppsFile = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/core/shipped.json';
+		$newShippedAppsFile = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/core/shipped.json';
 		$newShippedAppsFileContent = file_get_contents($newShippedAppsFile);
 		if ($newShippedAppsFileContent === false) {
 			throw new \Exception('core/shipped.json is not available in the new release');
@@ -888,12 +888,12 @@ EOF;
 			if ($fileInfo->isFile() || $fileInfo->isLink()) {
 				$state = unlink($path);
 				if ($state === false) {
-					throw new \Exception('Could not unlink: '.$path);
+					throw new \Exception('Could not unlink: ' . $path);
 				}
 			} elseif ($fileInfo->isDir()) {
 				$state = rmdir($path);
 				if ($state === false) {
-					throw new \Exception('Could not rmdir: '.$path);
+					throw new \Exception('Could not rmdir: ' . $path);
 				}
 			}
 		}
@@ -955,7 +955,7 @@ EOF;
 			'public.php',
 			'ocs',
 		];
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
 		// Rename apps and other stuff
@@ -975,7 +975,7 @@ EOF;
 	public function finalize(): void {
 		$this->silentLog('[info] finalize()');
 
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 		$this->moveWithExclusions($storageLocation, []);
 		$state = rmdir($storageLocation);
@@ -983,7 +983,7 @@ EOF;
 			throw new \Exception('Could not rmdir $storagelocation');
 		}
 
-		$state = unlink($this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/.step');
+		$state = unlink($this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/.step');
 		if ($state === false) {
 			throw new \Exception('Could not rmdir .step');
 		}
@@ -1000,7 +1000,7 @@ EOF;
 	 * @throws \Exception
 	 */
 	private function writeStep(string $state, int $step): void {
-		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid');
+		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid');
 		if (!file_exists($updaterDir . '/.step')) {
 			if (!file_exists($updaterDir)) {
 				$result = mkdir($updaterDir);
@@ -1042,8 +1042,8 @@ EOF;
 	public function currentStep(): array {
 		$this->silentLog('[info] currentStep()');
 
-		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid');
-		if (!file_exists($updaterDir. '/.step')) {
+		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid');
+		if (!file_exists($updaterDir . '/.step')) {
 			return [];
 		}
 
@@ -1061,7 +1061,7 @@ EOF;
 	}
 
 	public function getUpdateStepFileLocation(): string {
-		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
+		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOption('instanceid');
 		return $updaterDir . '/.step';
 	}
 
@@ -1073,7 +1073,7 @@ EOF;
 	public function rollbackChanges(int $step): void {
 		$this->silentLog('[info] rollbackChanges("' . $step . '")');
 
-		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid');
+		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid');
 		if (file_exists($updaterDir . '/.step')) {
 			$this->silentLog('[info] unlink .step');
 			$state = unlink($updaterDir . '/.step');

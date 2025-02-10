@@ -43,7 +43,7 @@ class UpdateCommand extends Command {
 		$this
 			->setName('update')
 			->setDescription('Updates the code of an Nextcloud instance')
-			->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.")
+			->setHelp('This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.')
 			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version')
 			->addOption('no-upgrade', null, InputOption::VALUE_NONE, "Don't automatically run occ upgrade");
 	}
@@ -80,7 +80,7 @@ class UpdateCommand extends Command {
 		}
 
 		if (!function_exists('posix_getuid')) {
-			$output->writeln("The posix extensions are required - see http://php.net/manual/en/book.posix.php");
+			$output->writeln('The posix extensions are required - see http://php.net/manual/en/book.posix.php');
 			return -1;
 		}
 
@@ -92,9 +92,9 @@ class UpdateCommand extends Command {
 		$user = posix_getpwuid(posix_getuid());
 		$configUser = posix_getpwuid(fileowner($configFileName));
 		if ($user['name'] !== $configUser['name']) {
-			$output->writeln("Console has to be executed with the user that owns the file config/config.php");
-			$output->writeln("Current user: " . $user['name']);
-			$output->writeln("Owner of config.php: " . $configUser['name']);
+			$output->writeln('Console has to be executed with the user that owns the file config/config.php');
+			$output->writeln('Current user: ' . $user['name']);
+			$output->writeln('Owner of config.php: ' . $configUser['name']);
 			$output->writeln("Try adding 'sudo -u " . $configUser['name'] . " ' to the beginning of the command (without the single quotes)");
 			return -1;
 		}
@@ -252,7 +252,7 @@ class UpdateCommand extends Command {
 					}
 				} else {
 					if (is_string($result['response'])) {
-						$output->writeln('<error>' . $result['response'] .  '</error>');
+						$output->writeln('<error>' . $result['response'] . '</error>');
 					} else {
 						$output->writeln('<error>Something has gone wrong. Please check the log file in the data dir.</error>');
 					}
