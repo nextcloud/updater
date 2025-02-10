@@ -29,32 +29,7 @@ class Updater {
 	) {
 		$this->nextcloudDir = realpath(dirname($baseDir));
 
-		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
-			$configFileName = realpath($dir . '/config.php');
-		} else {
-			$configFileName = $this->nextcloudDir . '/config/config.php';
-		}
-		if (!file_exists($configFileName)) {
-			throw new \Exception('Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?');
-		}
-		$filePointer = @fopen($configFileName, 'r');
-		if ($filePointer === false) {
-			throw new \Exception('Could not open config.php.');
-		}
-		if (!flock($filePointer, LOCK_SH)) {
-			throw new \Exception(sprintf('Could not acquire a shared lock on the config file'));
-		}
-
-		try {
-			require_once $configFileName;
-		} finally {
-			// Close the file pointer and release the lock
-			flock($filePointer, LOCK_UN);
-			fclose($filePointer);
-		}
-
-		/** @var array $CONFIG */
-		$this->configValues = $CONFIG;
+		[$this->configValues] = $this->readConfigFile();
 
 		if (php_sapi_name() !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false)) {
 			// updater disabled
@@ -94,6 +69,38 @@ class Updater {
 
 		$this->currentVersion = implode('.', $splittedVersion);
 		$this->buildTime = $buildTime;
+	}
+
+	/**
+	 * @return array{array, string}
+	 */
+	private function readConfigFile(): array {
+		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
+			$configFileName = realpath($dir . '/config.php');
+		} else {
+			$configFileName = $this->nextcloudDir . '/config/config.php';
+		}
+		if (!file_exists($configFileName)) {
+			throw new \Exception('Could not find config.php (' . $configFileName . '). Is this file in the "updater" subfolder of Nextcloud?');
+		}
+		$filePointer = @fopen($configFileName, 'r');
+		if ($filePointer === false) {
+			throw new \Exception('Could not open config.php (' . $configFileName . ').');
+		}
+		if (!flock($filePointer, LOCK_SH)) {
+			throw new \Exception('Could not acquire a shared lock on the config file (' . $configFileName . ')');
+		}
+
+		try {
+			require $configFileName;
+		} finally {
+			// Close the file pointer and release the lock
+			flock($filePointer, LOCK_UN);
+			fclose($filePointer);
+		}
+
+		/** @var array $CONFIG */
+		return [$CONFIG,$configFileName];
 	}
 
 	/**
@@ -381,35 +388,9 @@ class Updater {
 	public function setMaintenanceMode(bool $state): void {
 		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') . '")');
 
-		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
-			$configFileName = rtrim($dir, '/') . '/config.php';
-		} else {
-			$configFileName = $this->nextcloudDir . '/config/config.php';
-		}
+		[$CONFIG, $configFileName] = $this->readConfigFile();
 		$this->silentLog('[info] configFileName ' . $configFileName);
 
-		// usually is already tested in the constructor but just to be on the safe side
-		if (!file_exists($configFileName)) {
-			throw new \Exception('Could not find config.php.');
-		}
-
-		$filePointer = @fopen($configFileName, 'r');
-		if ($filePointer === false) {
-			throw new \Exception('Could not open config.php.');
-		}
-		if (!flock($filePointer, LOCK_SH)) {
-			throw new \Exception(sprintf('Could not acquire a shared lock on the config file'));
-		}
-
-		try {
-			require $configFileName;
-		} finally {
-			// Close the file pointer and release the lock
-			flock($filePointer, LOCK_UN);
-			fclose($filePointer);
-		}
-
-		/** @var array $CONFIG */
 		$CONFIG['maintenance'] = $state;
 		$content = "<?php\n";
 		$content .= '$CONFIG = ';
@@ -417,7 +398,7 @@ class Updater {
 		$content .= ";\n";
 		$writeSuccess = file_put_contents($configFileName, $content, LOCK_EX);
 		if ($writeSuccess === false) {
-			throw new \Exception('Could not write to config.php');
+			throw new \Exception('Could not write to config.php (' . $configFileName . ')');
 		}
 		$this->silentLog('[info] end of setMaintenanceMode()');
 	}
