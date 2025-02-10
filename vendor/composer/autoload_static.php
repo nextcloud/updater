@@ -119,7 +119,6 @@ class ComposerStaticInit936ba63ded5d1b8248cdb4d5673af0ea
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'NC\\Updater\\CommandApplication' => __DIR__ . '/../..' . '/lib/CommandApplication.php',
         'NC\\Updater\\LogException' => __DIR__ . '/../..' . '/lib/LogException.php',
-        'NC\\Updater\\RecursiveDirectoryIteratorWithoutData' => __DIR__ . '/../..' . '/lib/RecursiveDirectoryIteratorWithoutData.php',
         'NC\\Updater\\UpdateCommand' => __DIR__ . '/../..' . '/lib/UpdateCommand.php',
         'NC\\Updater\\UpdateException' => __DIR__ . '/../..' . '/lib/UpdateException.php',
         'NC\\Updater\\Updater' => __DIR__ . '/../..' . '/lib/Updater.php',

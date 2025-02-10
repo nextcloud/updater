@@ -62,24 +62,24 @@
         },
         {
             "name": "nextcloud/coding-standard",
-            "version": "v1.1.1",
-            "version_normalized": "1.1.1.0",
+            "version": "v1.2.1",
+            "version_normalized": "1.2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud/coding-standard.git",
-                "reference": "55def702fb9a37a219511e1d8c6fe8e37164c1fb"
+                "reference": "cf5f18d989ec62fb4cdc7fc92a36baf34b3d829e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud/coding-standard/zipball/55def702fb9a37a219511e1d8c6fe8e37164c1fb",
-                "reference": "55def702fb9a37a219511e1d8c6fe8e37164c1fb",
+                "url": "https://api.github.com/repos/nextcloud/coding-standard/zipball/cf5f18d989ec62fb4cdc7fc92a36baf34b3d829e",
+                "reference": "cf5f18d989ec62fb4cdc7fc92a36baf34b3d829e",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.3|^8.0",
                 "php-cs-fixer/shim": "^3.17"
             },
-            "time": "2023-06-01T12:05:01+00:00",
+            "time": "2024-02-01T14:54:37+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -100,23 +100,23 @@
             "description": "Nextcloud coding standards for the php cs fixer",
             "support": {
                 "issues": "https://github.com/nextcloud/coding-standard/issues",
-                "source": "https://github.com/nextcloud/coding-standard/tree/v1.1.1"
+                "source": "https://github.com/nextcloud/coding-standard/tree/v1.2.1"
             },
             "install-path": "../nextcloud/coding-standard"
         },
         {
             "name": "php-cs-fixer/shim",
-            "version": "v3.17.0",
-            "version_normalized": "3.17.0.0",
+            "version": "v3.51.0",
+            "version_normalized": "3.51.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/shim.git",
-                "reference": "f51b4aed90565c447136f1d015798f6f7c82490f"
+                "reference": "a792394f7f3934f75a4df9dca544796c6f503027"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/f51b4aed90565c447136f1d015798f6f7c82490f",
-                "reference": "f51b4aed90565c447136f1d015798f6f7c82490f",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/a792394f7f3934f75a4df9dca544796c6f503027",
+                "reference": "a792394f7f3934f75a4df9dca544796c6f503027",
                 "shasum": ""
             },
             "require": {
@@ -131,7 +131,7 @@
                 "ext-dom": "For handling output formats in XML",
                 "ext-mbstring": "For handling non-UTF8 characters."
             },
-            "time": "2023-05-22T20:00:38+00:00",
+            "time": "2024-02-28T19:51:07+00:00",
             "bin": [
                 "php-cs-fixer",
                 "php-cs-fixer.phar"
@@ -155,7 +155,7 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/shim/issues",
-                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.17.0"
+                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.51.0"
             },
             "install-path": "../php-cs-fixer/shim"
         },
