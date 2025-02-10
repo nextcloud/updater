@@ -562,7 +562,7 @@ class Updater {
 			throw new \Exception('Response from update server is missing url');
 		}
 
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
 		$saveLocation = $storageLocation . basename($response['url']);
 		$this->previousProgress = 0;
 
@@ -594,7 +594,7 @@ class Updater {
 		curl_setopt_array($ch, [
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_NOPROGRESS => false,
-			CURLOPT_PROGRESSFUNCTION => array($this, 'downloadProgressCallback'),
+			CURLOPT_PROGRESSFUNCTION => [$this, 'downloadProgressCallback'],
 			CURLOPT_FILE => $fp,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
 		]);
@@ -641,7 +641,7 @@ class Updater {
 		} else {
 			// download succeeded
 			$info = curl_getinfo($ch);
-			$this->silentLog("[info] download stats: size=" . $this->formatBytes((int)$info['size_download']) . " bytes; total_time=" . round($info['total_time'], 2) . " secs; avg speed=" . $this->formatBytes((int)$info['speed_download']) . "/sec");
+			$this->silentLog('[info] download stats: size=' . $this->formatBytes((int)$info['size_download']) . ' bytes; total_time=' . round($info['total_time'], 2) . ' secs; avg speed=' . $this->formatBytes((int)$info['speed_download']) . '/sec');
 		}
 
 		curl_close($ch);
@@ -657,14 +657,14 @@ class Updater {
 				$this->previousProgress = $progress;
 				// log every 2% increment for the first 10% then only log every 10% increment after that
 				if ($progress % 10 === 0 || ($progress < 10 && $progress % 2 === 0)) {
-					$this->silentLog("[info] download progress: $progress% (" . $this->formatBytes($downloaded) . " of " . $this->formatBytes($download_size) . ")");
+					$this->silentLog("[info] download progress: $progress% (" . $this->formatBytes($downloaded) . ' of ' . $this->formatBytes($download_size) . ')');
 				}
 			}
 		}
 	}
 
 	private function formatBytes(int $bytes, int $precision = 2): string {
-		$units = array('B', 'KB', 'MB', 'GB', 'TB');
+		$units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
 		$bytes = max($bytes, 0);
 		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
