@@ -278,6 +278,8 @@ class Updater {
 			'COPYING-AGPL',
 			'occ',
 			'db_structure.xml',
+			'.php-ini',
+			'.php-version'
 		];
 		return array_merge($expected, $this->getAppDirectories());
 	}
