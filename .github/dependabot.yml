@@ -15,13 +15,21 @@ updates:
   labels:
     - "3. to review"
     - "dependencies"
+
+# behat
 - package-ecosystem: composer
-  directory: "/tests"
+  directory: "/vendor-bin/tests"
   schedule:
     interval: monthly
     time: "03:00"
     timezone: Europe/Paris
   open-pull-requests-limit: 10
+  reviewers:
+    - come-nc
+    - Altahrim
+  labels:
+    - "3. to review"
+    - "dependencies"
 
 # box
 - package-ecosystem: composer
