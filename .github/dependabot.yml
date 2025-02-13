@@ -10,8 +10,11 @@ updates:
     timezone: Europe/Paris
   open-pull-requests-limit: 10
   reviewers:
-  - rullzer
-  - MorrisJobke
+    - come-nc
+    - Altahrim
+  labels:
+    - "3. to review"
+    - "dependencies"
 - package-ecosystem: composer
   directory: "/tests"
   schedule:
@@ -19,3 +22,48 @@ updates:
     time: "03:00"
     timezone: Europe/Paris
   open-pull-requests-limit: 10
+
+# box
+- package-ecosystem: composer
+  directory: "/vendor-bin/box"
+  schedule:
+    interval: monthly
+    time: "03:00"
+    timezone: Europe/Paris
+  open-pull-requests-limit: 10
+  reviewers:
+    - come-nc
+    - Altahrim
+  labels:
+    - "3. to review"
+    - "dependencies"
+
+# coding-standard
+- package-ecosystem: composer
+  directory: "/vendor-bin/coding-standard"
+  schedule:
+    interval: monthly
+    time: "03:00"
+    timezone: Europe/Paris
+  open-pull-requests-limit: 10
+  reviewers:
+    - come-nc
+    - Altahrim
+  labels:
+    - "3. to review"
+    - "dependencies"
+
+# psalm
+- package-ecosystem: composer
+  directory: "/vendor-bin/psalm"
+  schedule:
+    interval: monthly
+    time: "03:00"
+    timezone: Europe/Paris
+  open-pull-requests-limit: 10
+  reviewers:
+    - come-nc
+    - Altahrim
+  labels:
+    - "3. to review"
+    - "dependencies"
