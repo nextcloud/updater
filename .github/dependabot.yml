@@ -11,7 +11,7 @@ updates:
   open-pull-requests-limit: 10
   reviewers:
     - come-nc
-    - kesselb
+    - Altahrim
   labels:
     - "3. to review"
     - "dependencies"
@@ -33,7 +33,7 @@ updates:
   open-pull-requests-limit: 10
   reviewers:
     - come-nc
-    - kesselb
+    - Altahrim
   labels:
     - "3. to review"
     - "dependencies"
@@ -48,7 +48,7 @@ updates:
   open-pull-requests-limit: 10
   reviewers:
     - come-nc
-    - kesselb
+    - Altahrim
   labels:
     - "3. to review"
     - "dependencies"
@@ -63,7 +63,7 @@ updates:
   open-pull-requests-limit: 10
   reviewers:
     - come-nc
-    - kesselb
+    - Altahrim
   labels:
     - "3. to review"
     - "dependencies"
