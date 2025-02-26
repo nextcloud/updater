@@ -757,14 +757,26 @@ NY/nARy4Oi4uOe88SuWITj9KhrFmEvrUlgM8FvoXA1ldrR7KiEg=
 -----END CERTIFICATE-----
 EOF;
 
-		$validSignature = openssl_verify(
-			file_get_contents($this->getDownloadedFilePath()),
-			base64_decode($response['signature']),
-			$certificate,
-			OPENSSL_ALGO_SHA512
-		) === 1;
+		$fh = fopen($this->getDownloadedFilePath(), 'r');
+		if ($fh === false) {
+			throw new \Exception('Failed to open downloaded file for integrity check');
+		}
 
-		if ($validSignature === false) {
+		$data = '';
+		while (!feof($fh)) {
+			$chunk = fread($fh, 8192);
+			if ($chunk === false) {
+				fclose($fh);
+				throw new \Exception('Error reading file during integrity check');
+			}
+			$data .= $chunk;
+		}
+		fclose($fh);
+
+		$signature = base64_decode($response['signature']);
+
+		$validSignature = openssl_verify($data, $signature, $certificate, OPENSSL_ALGO_SHA512);
+		if ($validSignature !== 1) {
 			throw new \Exception('Signature of update is not valid');
 		}
 
