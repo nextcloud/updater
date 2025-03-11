@@ -76,8 +76,8 @@ foreach ($iterator as $path => $fileInfo) {
 }
 
 if ($failedFiles !== []) {
-	echo "Code is not the same" . PHP_EOL;
+	echo 'Code is not the same' . PHP_EOL;
 	exit(1);
 }
 
-echo "Code is the same" . PHP_EOL;
+echo 'Code is the same' . PHP_EOL;

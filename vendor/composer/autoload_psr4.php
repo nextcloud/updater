@@ -16,7 +16,6 @@ return array(
     'Symfony\\Component\\String\\' => array($vendorDir . '/symfony/string'),
     'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
-    'Nextcloud\\CodingStandard\\' => array($vendorDir . '/nextcloud/coding-standard/src'),
     'NC\\Updater\\' => array($baseDir . '/lib'),
     'Bamarni\\Composer\\Bin\\' => array($vendorDir . '/bamarni/composer-bin-plugin/src'),
 );

@@ -113,7 +113,7 @@ class FeatureContext implements SnippetAcceptingContext {
 			$zip->extractTo($this->serverDir);
 			$zip->close();
 		} else {
-			throw new \Exception('Cant handle ZIP file. Error code is: '.$zipState);
+			throw new \Exception('Cant handle ZIP file. Error code is: ' . $zipState);
 		}
 
 		if ($installed === '') {
@@ -271,7 +271,7 @@ t87PcaZyrupEfAIfD9uQRA==',
  <url>https://download.nextcloud.com/server/releases/nextcloud-' . $version . '.zip</url>
  <web>https://docs.nextcloud.org/server/10/admin_manual/maintenance/manual_upgrade.html</web>
  <autoupdater>' . $this->autoupdater . '</autoupdater>
- <signature>'.$this->getSignatureForVersion($version).'</signature>
+ <signature>' . $this->getSignatureForVersion($version) . '</signature>
 </nextcloud>
 ';
 		file_put_contents($this->updateServerDir . 'index.php', $content);
@@ -296,7 +296,7 @@ t87PcaZyrupEfAIfD9uQRA==',
  <url>https://download.nextcloud.com/server/prereleases/nextcloud-' . $version . '.zip</url>
  <web>https://docs.nextcloud.org/server/10/admin_manual/maintenance/manual_upgrade.html</web>
  <autoupdater>1</autoupdater>
- <signature>'.$this->getSignatureForVersion($version).'</signature>
+ <signature>' . $this->getSignatureForVersion($version) . '</signature>
 </nextcloud>
 ';
 		file_put_contents($this->updateServerDir . 'index.php', $content);
@@ -340,7 +340,7 @@ t87PcaZyrupEfAIfD9uQRA==',
 			throw new Exception('Update server already started');
 		}
 
-		$cmd = "php -S localhost:8870 -t " . $this->updateServerDir . " 2>/dev/null 1>/dev/null";
+		$cmd = 'php -S localhost:8870 -t ' . $this->updateServerDir . ' 2>/dev/null 1>/dev/null';
 		$this->updaterServerProcess = proc_open($cmd, [], $pipes, $this->updateServerDir);
 
 		if (!is_resource($this->updaterServerProcess)) {
@@ -399,7 +399,7 @@ t87PcaZyrupEfAIfD9uQRA==',
 
 		chdir($this->serverDir . 'nextcloud');
 		shell_exec('chmod +x occ');
-		exec('./occ config:system:set --value '.$channel.' updater.release.channel');
+		exec('./occ config:system:set --value ' . $channel . ' updater.release.channel');
 	}
 
 	/**

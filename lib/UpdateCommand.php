@@ -42,8 +42,8 @@ class UpdateCommand extends Command {
 	protected function configure(): void {
 		$this
 			->setName('update')
-			->setDescription('Updates the code of an Nextcloud instance')
-			->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.")
+			->setDescription('Updates the code of a Nextcloud instance')
+			->setHelp('This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.')
 			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version')
 			->addOption('no-upgrade', null, InputOption::VALUE_NONE, "Don't automatically run occ upgrade");
 	}
@@ -80,7 +80,7 @@ class UpdateCommand extends Command {
 		}
 
 		if (!function_exists('posix_getuid')) {
-			$output->writeln("The posix extensions are required - see http://php.net/manual/en/book.posix.php");
+			$output->writeln('The posix extensions are required - see http://php.net/manual/en/book.posix.php');
 			return -1;
 		}
 
@@ -92,9 +92,9 @@ class UpdateCommand extends Command {
 		$user = posix_getpwuid(posix_getuid());
 		$configUser = posix_getpwuid(fileowner($configFileName));
 		if ($user['name'] !== $configUser['name']) {
-			$output->writeln("Console has to be executed with the user that owns the file config/config.php");
-			$output->writeln("Current user: " . $user['name']);
-			$output->writeln("Owner of config.php: " . $configUser['name']);
+			$output->writeln('Console has to be executed with the user that owns the file config/config.php');
+			$output->writeln('Current user: ' . $user['name']);
+			$output->writeln('Owner of config.php: ' . $configUser['name']);
 			$output->writeln("Try adding 'sudo -u " . $configUser['name'] . " ' to the beginning of the command (without the single quotes)");
 			return -1;
 		}
@@ -252,7 +252,7 @@ class UpdateCommand extends Command {
 					}
 				} else {
 					if (is_string($result['response'])) {
-						$output->writeln('<error>' . $result['response'] .  '</error>');
+						$output->writeln('<error>' . $result['response'] . '</error>');
 					} else {
 						$output->writeln('<error>Something has gone wrong. Please check the log file in the data dir.</error>');
 					}
@@ -266,9 +266,14 @@ class UpdateCommand extends Command {
 			$this->updater->log('[info] update of code successful.');
 			$output->writeln('Update of code successful.');
 
+			//
+			// Handle `occ upgrade` run
+			//
+			
 			if ($this->skipUpgrade) {
-				$output->writeln('Please now execute "./occ upgrade" to finish the upgrade.');
+				$this->updater->log('[info] "occ upgrade" was skipped');
 				$this->updater->log('[info] updater finished');
+				$output->writeln('Please execute "./occ upgrade" manually to finish the upgrade.');
 				return 0;
 			}
 
@@ -280,20 +285,46 @@ class UpdateCommand extends Command {
 				$question = new ConfirmationQuestion('Should the "occ upgrade" command be executed? [Y/n] ', true);
 
 				if (!$helper->ask($input, $output, $question)) {
-					$output->writeln('Please now execute "./occ upgrade" to finish the upgrade.');
+					$this->updater->log('[info] "occ upgrade" was skipped');
 					$this->updater->log('[info] updater finished');
+					$output->writeln('Please execute "./occ upgrade" manually to finish the upgrade.');
 					return 0;
 				}
 			} else {
-				$this->updater->log('[info] updater run in non-interactive mode - occ upgrade is started');
+				$this->updater->log('[info] updater run in non-interactive mode - will start "occ upgrade" now');
 				$output->writeln('Updater run in non-interactive mode - will start "occ upgrade" now.');
 				$output->writeln('');
 			}
 
-			chdir($path . '/..');
-			chmod('occ', 0755); # TODO do this in the updater
-			system(PHP_BINARY . ' ./occ upgrade -v', $returnValue);
+			$occPath = $path . '/../occ';
+			if (!file_exists($occPath)) {
+				$this->updater->log('[error] FATAL: "occ" is missing from: ' . $occPath);
+				$output->writeln('');
+				throw new \Exception('FATAL: "occ" is missing from: ' . $occPath);
+			}
+			if (chmod($occPath, 0755) === false) { # TODO do this in the updater
+				throw new \Exception('FATAL: Unable to make "occ" executable: ' . $occPath);
+			}
+			$occRunCommand = PHP_BINARY . ' ' . $occPath;
 
+			$this->updater->log('[info] Starting "occ upgrade"');
+			system($occRunCommand . ' upgrade -v', $returnValue);
+			if ($returnValue === 0) {
+				$this->updater->log('[info] "occ upgrade" finished');
+				$output->writeln('');
+				$output->writeln('"occ upgrade" finished');
+			} else { // something went wrong
+				$this->updater->log('[info] "occ upgrade" failed - return code: ' . $returnValue);
+				$output->writeln('');
+				$output->writeln('"occ upgrade" failed - return code: ' . $returnValue);
+				$this->updater->log('[info] updater finished - with errors');
+				return $returnValue;
+			}
+
+			//
+			// Handle maintenance mode toggle
+			//
+			
 			$output->writeln('');
 			if ($input->isInteractive()) {
 				/** @var QuestionHelper */
@@ -301,28 +332,31 @@ class UpdateCommand extends Command {
 				$question = new ConfirmationQuestion($this->checkTexts[11] . ' [y/N] ', false);
 
 				if ($helper->ask($input, $output, $question)) {
-					$output->writeln('Maintenance mode kept active');
-					$this->updater->log('[info] updater finished - maintenance mode kept active');
-					return $returnValue;
+					$this->updater->log('[info] maintenance mode kept active');
+					$output->writeln('Please execute "./occ maintenance:mode --off" manually to finish the upgrade.');
+					$this->updater->log('[info] updater finished');
+					return 0;
 				}
 			} else {
-				$this->updater->log('[info] updater run in non-interactive mode - disabling maintenance mode');
+				$this->updater->log('[info] updater run in non-interactive mode - will disable maintenance mode now');
 				$output->writeln('Updater run in non-interactive mode - will disable maintenance mode now.');
+				$output->writeln('');
 			}
 
-			try {
-				system(PHP_BINARY . ' ./occ maintenance:mode --off', $returnValueMaintenanceMode);
-				$this->updater->log('[info] maintenance mode is disabled - return code: ' . $returnValueMaintenanceMode);
+			$this->updater->log('[info] Disabling maintenance mode');
+			system($occRunCommand . ' maintenance:mode --off', $returnValueMaintenanceMode);
+			if ($returnValueMaintenanceMode === 0) {
+				$this->updater->log('[info] maintenance mode disabled');
 				$output->writeln('');
 				$output->writeln('Maintenance mode is disabled');
-			} catch (\Exception $e) {
-				$this->updater->log('[info] maintenance mode can not be disabled');
-				$this->updater->logException($e);
+				return 0;
+			} else { // something went wrong
+				$this->updater->log('[info] Disabling maintenance mode failed - return code: ' . $returnValueMaintenanceMode);
 				$output->writeln('');
-				$output->writeln('Maintenance mode can not be disabled');
+				$output->writeln('Disabling Maintenance mode failed - return code:' . $returnValueMaintenanceMode);
+				$this->updater->log('[info] updater finished - with errors');
+				return $returnValueMaintenanceMode;
 			}
-
-			return $returnValue;
 		} else {
 			if ($this->shouldStop) {
 				$output->writeln('<error>Update stopped. To resume or retry just execute the updater again.</error>');

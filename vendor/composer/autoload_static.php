@@ -36,7 +36,6 @@ class ComposerStaticInit936ba63ded5d1b8248cdb4d5673af0ea
         ),
         'N' => 
         array (
-            'Nextcloud\\CodingStandard\\' => 25,
             'NC\\Updater\\' => 11,
         ),
         'B' => 
@@ -86,10 +85,6 @@ class ComposerStaticInit936ba63ded5d1b8248cdb4d5673af0ea
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Nextcloud\\CodingStandard\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nextcloud/coding-standard/src',
-        ),
         'NC\\Updater\\' => 
         array (
             0 => __DIR__ . '/../..' . '/lib',
@@ -119,12 +114,10 @@ class ComposerStaticInit936ba63ded5d1b8248cdb4d5673af0ea
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'NC\\Updater\\CommandApplication' => __DIR__ . '/../..' . '/lib/CommandApplication.php',
         'NC\\Updater\\LogException' => __DIR__ . '/../..' . '/lib/LogException.php',
-        'NC\\Updater\\RecursiveDirectoryIteratorWithoutData' => __DIR__ . '/../..' . '/lib/RecursiveDirectoryIteratorWithoutData.php',
         'NC\\Updater\\UpdateCommand' => __DIR__ . '/../..' . '/lib/UpdateCommand.php',
         'NC\\Updater\\UpdateException' => __DIR__ . '/../..' . '/lib/UpdateException.php',
         'NC\\Updater\\Updater' => __DIR__ . '/../..' . '/lib/Updater.php',
         'NC\\Updater\\Version' => __DIR__ . '/../..' . '/lib/Version.php',
-        'Nextcloud\\CodingStandard\\Config' => __DIR__ . '/..' . '/nextcloud/coding-standard/src/Config.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
@@ -253,11 +246,14 @@ class ComposerStaticInit936ba63ded5d1b8248cdb4d5673af0ea
         'Symfony\\Contracts\\Service\\Attribute\\Required' => __DIR__ . '/..' . '/symfony/service-contracts/Attribute/Required.php',
         'Symfony\\Contracts\\Service\\Attribute\\SubscribedService' => __DIR__ . '/..' . '/symfony/service-contracts/Attribute/SubscribedService.php',
         'Symfony\\Contracts\\Service\\ResetInterface' => __DIR__ . '/..' . '/symfony/service-contracts/ResetInterface.php',
+        'Symfony\\Contracts\\Service\\ServiceCollectionInterface' => __DIR__ . '/..' . '/symfony/service-contracts/ServiceCollectionInterface.php',
         'Symfony\\Contracts\\Service\\ServiceLocatorTrait' => __DIR__ . '/..' . '/symfony/service-contracts/ServiceLocatorTrait.php',
+        'Symfony\\Contracts\\Service\\ServiceMethodsSubscriberTrait' => __DIR__ . '/..' . '/symfony/service-contracts/ServiceMethodsSubscriberTrait.php',
         'Symfony\\Contracts\\Service\\ServiceProviderInterface' => __DIR__ . '/..' . '/symfony/service-contracts/ServiceProviderInterface.php',
         'Symfony\\Contracts\\Service\\ServiceSubscriberInterface' => __DIR__ . '/..' . '/symfony/service-contracts/ServiceSubscriberInterface.php',
         'Symfony\\Contracts\\Service\\ServiceSubscriberTrait' => __DIR__ . '/..' . '/symfony/service-contracts/ServiceSubscriberTrait.php',
         'Symfony\\Contracts\\Service\\Test\\ServiceLocatorTest' => __DIR__ . '/..' . '/symfony/service-contracts/Test/ServiceLocatorTest.php',
+        'Symfony\\Contracts\\Service\\Test\\ServiceLocatorTestCase' => __DIR__ . '/..' . '/symfony/service-contracts/Test/ServiceLocatorTestCase.php',
         'Symfony\\Polyfill\\Ctype\\Ctype' => __DIR__ . '/..' . '/symfony/polyfill-ctype/Ctype.php',
         'Symfony\\Polyfill\\Intl\\Grapheme\\Grapheme' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/Grapheme.php',
         'Symfony\\Polyfill\\Intl\\Normalizer\\Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Normalizer.php',

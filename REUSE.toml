@@ -12,7 +12,7 @@ SPDX-FileCopyrightText = "2015 ownCloud, Inc., 2016 Nextcloud GmbH and Nextcloud
 SPDX-License-Identifier = "AGPL-3.0-or-later"
 
 [[annotations]]
-path = ["updater.phar", "box.json", "tests/composer.json", "tests/composer.lock"]
+path = ["updater.phar", "box.json", "vendor-bin/tests/composer.json", "vendor-bin/tests/composer.lock"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2016 Nextcloud GmbH and Nextcloud contributors"
 SPDX-License-Identifier = "AGPL-3.0-or-later"

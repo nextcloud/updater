@@ -7,6 +7,7 @@ declare(strict_types=1);
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+
 class UpdateException extends \Exception {
 
 	/** @param list<string> $data */
@@ -26,55 +27,27 @@ class LogException extends \Exception {
 }
 
 
-class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
-	public function accept(): bool {
-		$excludes = [
-			'.rnd',
-			'.well-known',
-			'data',
-			'..',
-		];
-
-		/** @var \SplFileInfo|false */
-		$current = $this->current();
-		if (!$current) {
-			return false;
-		}
-
-		return !(in_array($current->getFilename(), $excludes, true) || $current->isDir());
-	}
-}
-
-
 class Updater {
-	private string $baseDir;
+	private string $nextcloudDir;
 	private array $configValues = [];
 	private string $currentVersion = 'unknown';
 	private string $buildTime;
 	private bool $updateAvailable = false;
 	private ?string $requestID = null;
 	private bool $disabled = false;
+	private int $previousProgress = 0;
 
 	/**
 	 * Updater constructor
 	 * @param string $baseDir the absolute path to the /updater/ directory in the Nextcloud root
 	 * @throws \Exception
 	 */
-	public function __construct(string $baseDir) {
-		$this->baseDir = $baseDir;
+	public function __construct(
+		string $baseDir,
+	) {
+		$this->nextcloudDir = realpath(dirname($baseDir));
 
-		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
-			$configFileName = rtrim($dir, '/') . '/config.php';
-		} else {
-			$configFileName = $this->baseDir . '/../config/config.php';
-		}
-		if (!file_exists($configFileName)) {
-			throw new \Exception('Could not find config.php. Is this file in the "updater" subfolder of Nextcloud?');
-		}
-
-		/** @var array $CONFIG */
-		require_once $configFileName;
-		$this->configValues = $CONFIG;
+		[$this->configValues] = $this->readConfigFile();
 
 		if (php_sapi_name() !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false)) {
 			// updater disabled
@@ -87,7 +60,7 @@ class Updater {
 			throw new \Exception('Could not read data directory from config.php.');
 		}
 
-		$versionFileName = $this->baseDir . '/../version.php';
+		$versionFileName = $this->nextcloudDir . '/version.php';
 		if (!file_exists($versionFileName)) {
 			// fallback to version in config.php
 			$version = $this->getConfigOptionString('version');
@@ -117,20 +90,48 @@ class Updater {
 	}
 
 	/**
-	 * Returns whether the web updater is disabled
-	 *
-	 * @return bool
+	 * @return array{array, string}
 	 */
-	public function isDisabled() {
+	private function readConfigFile(): array {
+		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
+			$configFileName = realpath($dir . '/config.php');
+		} else {
+			$configFileName = $this->nextcloudDir . '/config/config.php';
+		}
+		if (!file_exists($configFileName)) {
+			throw new \Exception('Could not find config.php (' . $configFileName . '). Is this file in the "updater" subfolder of Nextcloud?');
+		}
+		$filePointer = @fopen($configFileName, 'r');
+		if ($filePointer === false) {
+			throw new \Exception('Could not open config.php (' . $configFileName . ').');
+		}
+		if (!flock($filePointer, LOCK_SH)) {
+			throw new \Exception('Could not acquire a shared lock on the config file (' . $configFileName . ')');
+		}
+
+		try {
+			require $configFileName;
+		} finally {
+			// Close the file pointer and release the lock
+			flock($filePointer, LOCK_UN);
+			fclose($filePointer);
+		}
+
+		/** @var array $CONFIG */
+		return [$CONFIG,$configFileName];
+	}
+
+	/**
+	 * Returns whether the web updater is disabled
+	 */
+	public function isDisabled(): bool {
 		return $this->disabled;
 	}
 
 	/**
 	 * Returns current version or "unknown" if this could not be determined.
-	 *
-	 * @return string
 	 */
-	public function getCurrentVersion() {
+	public function getCurrentVersion(): string {
 		return $this->currentVersion;
 	}
 
@@ -138,7 +139,7 @@ class Updater {
 	 * Returns currently used release channel
 	 */
 	private function getCurrentReleaseChannel(): string {
-		return ($this->getConfigOptionString('updater.release.channel') ?? 'stable');
+		return $this->getConfigOptionString('updater.release.channel') ?? 'stable';
 	}
 
 	/**
@@ -284,7 +285,7 @@ class Updater {
 	/**
 	 * Returns app directories specified in config.php
 	 *
-	 * @return list<string>
+	 * @return list<string> Paths relative to nextcloud root directory
 	 */
 	private function getAppDirectories(): array {
 		$expected = [];
@@ -297,10 +298,12 @@ class Updater {
 				if (!is_array($appsPath) || !isset($appsPath['path']) || !is_string($appsPath['path'])) {
 					throw new \Exception('Invalid configuration in apps_paths configuration key');
 				}
-				$parentDir = realpath($this->baseDir . '/../');
 				$appDir = basename($appsPath['path']);
-				if (strpos($appsPath['path'], $parentDir) === 0 && $appDir !== 'apps') {
-					$expected[] = $appDir;
+				if (strpos($appsPath['path'], $this->nextcloudDir . '/') === 0) {
+					$relativePath = substr($appsPath['path'], strlen($this->nextcloudDir . '/'));
+					if ($relativePath !== 'apps') {
+						$expected[] = $relativePath;
+					}
 				}
 			}
 		}
@@ -310,16 +313,44 @@ class Updater {
 	/**
 	 * Gets the recursive directory iterator over the Nextcloud folder
 	 *
-	 * @return \RecursiveIteratorIterator<\RecursiveDirectoryIterator>
+	 * @param list<string> $excludedPaths Name of root directories to skip
+	 * @return \Generator<string, \SplFileInfo>
 	 */
-	private function getRecursiveDirectoryIterator(?string $folder = null): \RecursiveIteratorIterator {
-		if ($folder === null) {
-			$folder = $this->baseDir . '/../';
+	private function getRecursiveDirectoryIterator(string $folder, array $excludedPaths): \Generator {
+		foreach ($excludedPaths as $element) {
+			if (strpos($element, '/') !== false) {
+				throw new \Exception('Excluding subpaths is not supported yet');
+			}
 		}
-		return new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS),
-			\RecursiveIteratorIterator::CHILD_FIRST
-		);
+		$exclusions = array_flip($excludedPaths);
+
+		$handle = opendir($folder);
+
+		if ($handle === false) {
+			throw new \Exception('Could not open ' . $folder);
+		}
+
+		/* Store first level children in an array to avoid trouble if changes happen while iterating */
+		$children = [];
+		while ($name = readdir($handle)) {
+			if (in_array($name, ['.', '..'])) {
+				continue;
+			}
+			if (isset($exclusions[$name])) {
+				continue;
+			}
+			$children[] = $name;
+		}
+
+		closedir($handle);
+
+		foreach ($children as $name) {
+			$path = $folder . '/' . $name;
+			if (is_dir($path)) {
+				yield from $this->getRecursiveDirectoryIterator($path, []);
+			}
+			yield $path => new \SplFileInfo($path);
+		}
 	}
 
 	/**
@@ -330,7 +361,7 @@ class Updater {
 
 		$expectedElements = $this->getExpectedElementsList();
 		$unexpectedElements = [];
-		foreach (new \DirectoryIterator($this->baseDir . '/../') as $fileInfo) {
+		foreach (new \DirectoryIterator($this->nextcloudDir) as $fileInfo) {
 			if (array_search($fileInfo->getFilename(), $expectedElements) === false) {
 				$unexpectedElements[] = $fileInfo->getFilename();
 			}
@@ -348,15 +379,16 @@ class Updater {
 	public function checkWritePermissions(): void {
 		$this->silentLog('[info] checkWritePermissions()');
 
-		$notWritablePaths = array();
-		$dir = new \RecursiveDirectoryIterator($this->baseDir . '/../');
-		$filter = new RecursiveDirectoryIteratorWithoutData($dir);
-		/** @var iterable<string, \SplFileInfo> */
-		$it = new \RecursiveIteratorIterator($filter);
+		$excludedElements = [
+			'.rnd',
+			'.well-known',
+			'data',
+		];
 
-		foreach ($it as $path => $dir) {
-			if (!is_writable($path)) {
-				$notWritablePaths[] = $path;
+		$notWritablePaths = [];
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $path => $fileInfo) {
+			if (!$fileInfo->isWritable()) {
+				$notWritablePaths[] = $fileInfo->getFilename();
 			}
 		}
 		if (count($notWritablePaths) > 0) {
@@ -372,29 +404,19 @@ class Updater {
 	 * @throws \Exception when config.php can't be written
 	 */
 	public function setMaintenanceMode(bool $state): void {
-		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') .  '")');
+		$this->silentLog('[info] setMaintenanceMode("' . ($state ? 'true' : 'false') . '")');
 
-		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
-			$configFileName = rtrim($dir, '/') . '/config.php';
-		} else {
-			$configFileName = $this->baseDir . '/../config/config.php';
-		}
+		[$CONFIG, $configFileName] = $this->readConfigFile();
 		$this->silentLog('[info] configFileName ' . $configFileName);
 
-		// usually is already tested in the constructor but just to be on the safe side
-		if (!file_exists($configFileName)) {
-			throw new \Exception('Could not find config.php.');
-		}
-		/** @var array $CONFIG */
-		require $configFileName;
 		$CONFIG['maintenance'] = $state;
 		$content = "<?php\n";
 		$content .= '$CONFIG = ';
 		$content .= var_export($CONFIG, true);
 		$content .= ";\n";
-		$state = file_put_contents($configFileName, $content);
-		if ($state === false) {
-			throw new \Exception('Could not write to config.php');
+		$writeSuccess = file_put_contents($configFileName, $content, LOCK_EX);
+		if ($writeSuccess === false) {
+			throw new \Exception('Could not write to config.php (' . $configFileName . ')');
 		}
 		$this->silentLog('[info] end of setMaintenanceMode()');
 	}
@@ -414,7 +436,7 @@ class Updater {
 		];
 
 		// Create new folder for the backup
-		$backupFolderLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid').'/backups/nextcloud-'.$this->getConfigOptionMandatoryString('version') . '-' . time() . '/';
+		$backupFolderLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/backups/nextcloud-' . $this->getConfigOptionMandatoryString('version') . '-' . time() . '/';
 		$this->silentLog('[info] backup folder location: ' . $backupFolderLocation);
 
 		$state = mkdir($backupFolderLocation, 0750, true);
@@ -422,44 +444,26 @@ class Updater {
 			throw new \Exception('Could not create backup folder location');
 		}
 
-		// Copy the backup files
-		$currentDir = $this->baseDir . '/../';
-
-		/**
-		 * @var string $path
-		 * @var \SplFileInfo $fileInfo
-		 */
-		foreach ($this->getRecursiveDirectoryIterator($currentDir) as $path => $fileInfo) {
-			$fileName = explode($currentDir, $path)[1];
-			$folderStructure = explode('/', $fileName, -1);
-
-			// Exclude the exclusions
-			if (isset($folderStructure[0])) {
-				if (array_search($folderStructure[0], $excludedElements) !== false) {
-					continue;
-				}
-			} else {
-				if (array_search($fileName, $excludedElements) !== false) {
-					continue;
-				}
-			}
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $absolutePath => $fileInfo) {
+			$relativePath = explode($this->nextcloudDir, $absolutePath)[1];
+			$relativeDirectory = dirname($relativePath);
 
 			// Create folder if it doesn't exist
-			if (!file_exists($backupFolderLocation . '/' . dirname($fileName))) {
-				$state = mkdir($backupFolderLocation . '/' . dirname($fileName), 0750, true);
+			if (!file_exists($backupFolderLocation . '/' . $relativeDirectory)) {
+				$state = mkdir($backupFolderLocation . '/' . $relativeDirectory, 0750, true);
 				if ($state === false) {
-					throw new \Exception('Could not create folder: '.$backupFolderLocation.'/'.dirname($fileName));
+					throw new \Exception('Could not create folder: ' . $backupFolderLocation . '/' . $relativeDirectory);
 				}
 			}
 
 			// If it is a file copy it
 			if ($fileInfo->isFile()) {
-				$state = copy($fileInfo->getRealPath(), $backupFolderLocation . $fileName);
+				$state = copy($fileInfo->getRealPath(), $backupFolderLocation . $relativePath);
 				if ($state === false) {
 					$message = sprintf(
 						'Could not copy "%s" to "%s"',
 						$fileInfo->getRealPath(),
-						$backupFolderLocation . $fileName
+						$backupFolderLocation . $relativePath
 					);
 
 					if (is_readable($fileInfo->getRealPath()) === false) {
@@ -470,11 +474,11 @@ class Updater {
 						);
 					}
 
-					if (is_writable($backupFolderLocation . $fileName) === false) {
+					if (is_writable($backupFolderLocation . $relativePath) === false) {
 						$message = sprintf(
 							'%s. Destination %s is not writable',
 							$message,
-							$backupFolderLocation . $fileName
+							$backupFolderLocation . $relativePath
 						);
 					}
 
@@ -509,7 +513,7 @@ class Updater {
 		$this->silentLog('[info] releaseChannel: ' . $releaseChannel);
 		$this->silentLog('[info] internal version: ' . $this->getConfigOptionMandatoryString('version'));
 
-		$updateURL = $updaterServer . '?version='. str_replace('.', 'x', $this->getConfigOptionMandatoryString('version')) .'xxx'.$releaseChannel.'xx'.urlencode($this->buildTime).'x'.PHP_MAJOR_VERSION.'x'.PHP_MINOR_VERSION.'x'.PHP_RELEASE_VERSION;
+		$updateURL = $updaterServer . '?version=' . str_replace('.', 'x', $this->getConfigOptionMandatoryString('version')) . 'xxx' . $releaseChannel . 'xx' . urlencode($this->buildTime) . 'x' . PHP_MAJOR_VERSION . 'x' . PHP_MINOR_VERSION . 'x' . PHP_RELEASE_VERSION;
 		$this->silentLog('[info] updateURL: ' . $updateURL);
 
 		// Download update response
@@ -531,7 +535,7 @@ class Updater {
 		/** @var false|string $response */
 		$response = curl_exec($curl);
 		if ($response === false) {
-			throw new \Exception('Could not do request to updater server: '.curl_error($curl));
+			throw new \Exception('Could not do request to updater server: ' . curl_error($curl));
 		}
 		curl_close($curl);
 
@@ -552,30 +556,56 @@ class Updater {
 	/**
 	 * Downloads the nextcloud folder to $DATADIR/updater-$instanceid/downloads/$filename
 	 *
+	 * Logs download progress
+	 * Resumes incomplete downloads if possible
+	 * Supports outbound proxy usage
+	 * Logs download statistics upon completion
+	 *
+	 * TODO: Provide download progress in real-time (in both CLI and Web modes)
+	 *
 	 * @throws \Exception
 	 */
 	public function downloadUpdate(): void {
 		$this->silentLog('[info] downloadUpdate()');
 
 		$response = $this->getUpdateServerResponse();
-
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
-		if (file_exists($storageLocation)) {
-			$this->silentLog('[info] storage location exists');
-			$this->recursiveDelete($storageLocation);
-		}
-		$state = mkdir($storageLocation, 0750, true);
-		if ($state === false) {
-			throw new \Exception('Could not mkdir storage location');
-		}
-
 		if (!isset($response['url']) || !is_string($response['url'])) {
 			throw new \Exception('Response from update server is missing url');
 		}
 
-		$fp = fopen($storageLocation . basename($response['url']), 'w+');
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
+		$saveLocation = $storageLocation . basename($response['url']);
+		$this->previousProgress = 0;
+
 		$ch = curl_init($response['url']);
+
+		if (!file_exists($storageLocation)) {
+			$state = mkdir($storageLocation, 0750, true);
+			if ($state === false) {
+				throw new \Exception('Could not mkdir storage location');
+			}
+			$this->silentLog('[info] storage location created');
+		} else {
+			$this->silentLog('[info] storage location already exists');
+			// clean-up leftover extracted content from any prior runs, but leave any downloaded Archives alone
+			if (file_exists($storageLocation . 'nextcloud/')) {
+				$this->silentLog('[info] extracted Archive location exists');
+				$this->recursiveDelete($storageLocation . 'nextcloud/');
+			}
+			// see if there's an existing incomplete download to resume
+			if (is_file($saveLocation)) {
+				$size = filesize($saveLocation);
+				$range = $size . '-';
+				curl_setopt($ch, CURLOPT_RANGE, $range);
+				$this->silentLog('[info] previous download found; resuming from ' . $this->formatBytes($size));
+			}
+		}
+
+		$fp = fopen($saveLocation, 'a');
 		curl_setopt_array($ch, [
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_NOPROGRESS => false,
+			CURLOPT_PROGRESSFUNCTION => [$this, 'downloadProgressCallback'],
 			CURLOPT_FILE => $fp,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
 		]);
@@ -592,7 +622,7 @@ class Updater {
 			throw new \Exception('Curl error: ' . curl_error($ch));
 		}
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($httpCode !== 200) {
+		if ($httpCode !== 200 && $httpCode !== 206) {
 			$statusCodes = [
 				400 => 'Bad request',
 				401 => 'Unauthorized',
@@ -619,18 +649,50 @@ class Updater {
 			$message .= ' - URL: ' . htmlentities($response['url']);
 
 			throw new \Exception($message);
+		} else {
+			// download succeeded
+			$info = curl_getinfo($ch);
+			$this->silentLog('[info] download stats: size=' . $this->formatBytes((int)$info['size_download']) . ' bytes; total_time=' . round($info['total_time'], 2) . ' secs; avg speed=' . $this->formatBytes((int)$info['speed_download']) . '/sec');
 		}
+
 		curl_close($ch);
 		fclose($fp);
 
 		$this->silentLog('[info] end of downloadUpdate()');
 	}
 
+	private function downloadProgressCallback(\CurlHandle $resource, int $download_size, int $downloaded, int $upload_size, int $uploaded): void {
+		if ($download_size !== 0) {
+			$progress = (int)round($downloaded * 100 / $download_size);
+			if ($progress > $this->previousProgress) {
+				$this->previousProgress = $progress;
+				// log every 2% increment for the first 10% then only log every 10% increment after that
+				if ($progress % 10 === 0 || ($progress < 10 && $progress % 2 === 0)) {
+					$this->silentLog("[info] download progress: $progress% (" . $this->formatBytes($downloaded) . ' of ' . $this->formatBytes($download_size) . ')');
+				}
+			}
+		}
+	}
+
+	private function formatBytes(int $bytes, int $precision = 2): string {
+		$units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+		$bytes = max($bytes, 0);
+		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+		$pow = min($pow, count($units) - 1);
+
+		// Uncomment one of the following alternatives
+		$bytes /= pow(1024, $pow);
+		// $bytes /= (1 << (10 * $pow));
+
+		return round($bytes, $precision) . $units[(int)$pow];
+	}
+
 	/**
 	 * @throws \Exception
 	 */
 	private function getDownloadedFilePath(): string {
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
 		$filesInStorageLocation = scandir($storageLocation);
@@ -740,7 +802,7 @@ EOF;
 			throw new \Exception('Required PHP extension missing: zip');
 		}
 
-		$libzip_version = defined("ZipArchive::LIBZIP_VERSION") ? \ZipArchive::LIBZIP_VERSION : "Unknown (but old)";
+		$libzip_version = defined('ZipArchive::LIBZIP_VERSION') ? \ZipArchive::LIBZIP_VERSION : 'Unknown (but old)';
 		$this->silentLog('[info] Libzip version detected: ' . $libzip_version);
 
 		$zip = new \ZipArchive;
@@ -748,20 +810,20 @@ EOF;
 		if ($zipState === true) {
 			$extraction = $zip->extractTo(dirname($downloadedFilePath));
 			if ($extraction === false) {
-				throw new \Exception('Error during unpacking zipfile: '.($zip->getStatusString()));
+				throw new \Exception('Error during unpacking zipfile: ' . ($zip->getStatusString()));
 			}
 			$zip->close();
 			$state = unlink($downloadedFilePath);
 			if ($state === false) {
-				throw new \Exception("Can't unlink ". $downloadedFilePath);
+				throw new \Exception("Can't unlink " . $downloadedFilePath);
 			}
 		} else {
-			throw new \Exception("Can't handle ZIP file. Error code is: ".print_r($zipState, true));
+			throw new \Exception("Can't handle ZIP file. Error code is: " . print_r($zipState, true));
 		}
 
 		// Ensure that the downloaded version is not lower
 		$downloadedVersion = $this->getVersionByVersionFile(dirname($downloadedFilePath) . '/nextcloud/version.php');
-		$currentVersion = $this->getVersionByVersionFile($this->baseDir . '/../version.php');
+		$currentVersion = $this->getVersionByVersionFile($this->nextcloudDir . '/version.php');
 		if (version_compare($downloadedVersion, $currentVersion, '<')) {
 			throw new \Exception('Downloaded version is lower than installed version');
 		}
@@ -789,16 +851,16 @@ EOF;
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
 		foreach ($filesToReplace as $file) {
 			$this->silentLog('[info] replace ' . $file);
-			$parentDir = dirname($this->baseDir . '/../' . $file);
+			$parentDir = dirname($this->nextcloudDir . '/' . $file);
 			if (!file_exists($parentDir)) {
 				$r = mkdir($parentDir);
 				if ($r !== true) {
 					throw new \Exception('Can\'t create parent directory for entry point: ' . $file);
 				}
 			}
-			$state = file_put_contents($this->baseDir  . '/../' . $file, $content);
+			$state = file_put_contents($this->nextcloudDir . '/' . $file, $content);
 			if ($state === false) {
-				throw new \Exception('Can\'t replace entry point: '.$file);
+				throw new \Exception('Can\'t replace entry point: ' . $file);
 			}
 		}
 
@@ -814,31 +876,19 @@ EOF;
 		if (!file_exists($folder)) {
 			return;
 		}
-		/** @var iterable<\SplFileInfo> $iterator */
-		$iterator = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS),
-			\RecursiveIteratorIterator::CHILD_FIRST
-		);
 
 		$directories = [];
 		$files = [];
-		foreach ($iterator as $fileInfo) {
+		foreach ($this->getRecursiveDirectoryIterator($folder, []) as $fileInfo) {
 			if ($fileInfo->isDir()) {
-				$directories[] = $fileInfo->getRealPath();
+				rmdir($fileInfo->getRealPath());
 			} else {
 				if ($fileInfo->isLink()) {
-					$files[] = $fileInfo->getPathName();
+					unlink($fileInfo->getPathName());
 				} else {
-					$files[] = $fileInfo->getRealPath();
+					unlink($fileInfo->getRealPath());
 				}
 			}
-		}
-
-		foreach ($files as $file) {
-			unlink($file);
-		}
-		foreach ($directories as $dir) {
-			rmdir($dir);
 		}
 
 		$state = rmdir($folder);
@@ -855,7 +905,7 @@ EOF;
 	public function deleteOldFiles(): void {
 		$this->silentLog('[info] deleteOldFiles()');
 
-		$shippedAppsFile = $this->baseDir . '/../core/shipped.json';
+		$shippedAppsFile = $this->nextcloudDir . '/core/shipped.json';
 		$shippedAppsFileContent = file_get_contents($shippedAppsFile);
 		if ($shippedAppsFileContent === false) {
 			throw new \Exception('core/shipped.json is not available');
@@ -866,7 +916,7 @@ EOF;
 			throw new \Exception('core/shipped.json content is invalid');
 		}
 
-		$newShippedAppsFile = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/core/shipped.json';
+		$newShippedAppsFile = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/core/shipped.json';
 		$newShippedAppsFileContent = file_get_contents($newShippedAppsFile);
 		if ($newShippedAppsFileContent === false) {
 			throw new \Exception('core/shipped.json is not available in the new release');
@@ -881,10 +931,10 @@ EOF;
 		$shippedApps = array_merge($shippedApps, $newShippedApps);
 		/** @var string $app */
 		foreach ($shippedApps as $app) {
-			$this->recursiveDelete($this->baseDir . '/../apps/' . $app);
+			$this->recursiveDelete($this->nextcloudDir . '/apps/' . $app);
 		}
 
-		$configSampleFile = $this->baseDir . '/../config/config.sample.php';
+		$configSampleFile = $this->nextcloudDir . '/config/config.sample.php';
 		if (file_exists($configSampleFile)) {
 			$this->silentLog('[info] config sample exists');
 
@@ -895,7 +945,7 @@ EOF;
 			}
 		}
 
-		$themesReadme = $this->baseDir . '/../themes/README';
+		$themesReadme = $this->nextcloudDir . '/themes/README';
 		if (file_exists($themesReadme)) {
 			$this->silentLog('[info] themes README exists');
 
@@ -905,7 +955,7 @@ EOF;
 				throw new \Exception('Could not delete themes README');
 			}
 		}
-		$this->recursiveDelete($this->baseDir . '/../themes/example/');
+		$this->recursiveDelete($this->nextcloudDir . '/themes/example/');
 
 		// Delete the rest
 		$excludedElements = [
@@ -915,41 +965,23 @@ EOF;
 			'status.php',
 			'remote.php',
 			'public.php',
-			'ocs/v1.php',
-			'ocs/v2.php',
+			'ocs',
 			'config',
 			'themes',
 			'apps',
 			'updater',
 		];
 		$excludedElements = array_merge($excludedElements, $this->getAppDirectories());
-		/**
-		 * @var string $path
-		 * @var \SplFileInfo $fileInfo
-		 */
-		foreach ($this->getRecursiveDirectoryIterator() as $path => $fileInfo) {
-			$currentDir = $this->baseDir . '/../';
-			$fileName = explode($currentDir, $path)[1];
-			$folderStructure = explode('/', $fileName, -1);
-			// Exclude the exclusions
-			if (isset($folderStructure[0])) {
-				if (array_search($folderStructure[0], $excludedElements) !== false) {
-					continue;
-				}
-			} else {
-				if (array_search($fileName, $excludedElements) !== false) {
-					continue;
-				}
-			}
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $path => $fileInfo) {
 			if ($fileInfo->isFile() || $fileInfo->isLink()) {
 				$state = unlink($path);
 				if ($state === false) {
-					throw new \Exception('Could not unlink: '.$path);
+					throw new \Exception('Could not unlink: ' . $path);
 				}
 			} elseif ($fileInfo->isDir()) {
 				$state = rmdir($path);
 				if ($state === false) {
-					throw new \Exception('Could not rmdir: '.$path);
+					throw new \Exception('Could not rmdir: ' . $path);
 				}
 			}
 		}
@@ -958,44 +990,29 @@ EOF;
 	}
 
 	/**
-	 * Moves the specified filed except the excluded elements to the correct position
+	 * Moves the specified files except the excluded elements to the correct position
 	 *
+	 * @param list<string> $excludedElements Name of root directories to skip
 	 * @throws \Exception
 	 */
 	private function moveWithExclusions(string $dataLocation, array $excludedElements): void {
-		/**
-		 * @var string $path
-		 * @var \SplFileInfo $fileInfo
-		 */
-		foreach ($this->getRecursiveDirectoryIterator($dataLocation) as $path => $fileInfo) {
+		foreach ($this->getRecursiveDirectoryIterator($dataLocation, $excludedElements) as $path => $fileInfo) {
 			$fileName = explode($dataLocation, $path)[1];
-			$folderStructure = explode('/', $fileName, -1);
-
-			// Exclude the exclusions
-			if (isset($folderStructure[0])) {
-				if (array_search($folderStructure[0], $excludedElements) !== false) {
-					continue;
-				}
-			} else {
-				if (array_search($fileName, $excludedElements) !== false) {
-					continue;
-				}
-			}
 
 			if ($fileInfo->isFile()) {
-				if (!file_exists($this->baseDir . '/../' . dirname($fileName))) {
-					$state = mkdir($this->baseDir . '/../' . dirname($fileName), 0755, true);
+				if (!file_exists($this->nextcloudDir . '/' . dirname($fileName))) {
+					$state = mkdir($this->nextcloudDir . '/' . dirname($fileName), 0755, true);
 					if ($state === false) {
-						throw new \Exception('Could not mkdir ' . $this->baseDir  . '/../' . dirname($fileName));
+						throw new \Exception('Could not mkdir ' . $this->nextcloudDir . '/' . dirname($fileName));
 					}
 				}
-				$state = rename($path, $this->baseDir  . '/../' . $fileName);
+				$state = rename($path, $this->nextcloudDir . '/' . $fileName);
 				if ($state === false) {
 					throw new \Exception(
 						sprintf(
 							'Could not rename %s to %s',
 							$path,
-							$this->baseDir . '/../' . $fileName
+							$this->nextcloudDir . '/' . $fileName
 						)
 					);
 				}
@@ -1024,15 +1041,18 @@ EOF;
 			'status.php',
 			'remote.php',
 			'public.php',
-			'ocs/v1.php',
-			'ocs/v2.php',
+			'ocs',
 		];
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
+
+		// Rename apps and other stuff
 		$this->moveWithExclusions($storageLocation, $excludedElements);
 
-		// Rename everything except the updater files
+		// Rename everything except the updater (It will not move what was already moved as it’s not in $storageLocation anymore)
 		$this->moveWithExclusions($storageLocation, ['updater']);
+
+		// The updater folder is moved last in finalize()
 
 		$this->silentLog('[info] end of moveNewVersionInPlace()');
 	}
@@ -1043,7 +1063,7 @@ EOF;
 	public function finalize(): void {
 		$this->silentLog('[info] finalize()');
 
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/nextcloud/';
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 		$this->moveWithExclusions($storageLocation, []);
 		$state = rmdir($storageLocation);
@@ -1051,7 +1071,7 @@ EOF;
 			throw new \Exception('Could not rmdir $storagelocation');
 		}
 
-		$state = unlink($this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/.step');
+		$state = unlink($this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/.step');
 		if ($state === false) {
 			throw new \Exception('Could not rmdir .step');
 		}
@@ -1081,7 +1101,7 @@ EOF;
 	 * @throws \Exception
 	 */
 	private function writeStep(string $state, int $step): void {
-		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid');
+		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid');
 		if (!file_exists($updaterDir . '/.step')) {
 			if (!file_exists($updaterDir)) {
 				$result = mkdir($updaterDir);
@@ -1123,8 +1143,8 @@ EOF;
 	public function currentStep(): array {
 		$this->silentLog('[info] currentStep()');
 
-		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid');
-		if (!file_exists($updaterDir. '/.step')) {
+		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid');
+		if (!file_exists($updaterDir . '/.step')) {
 			return [];
 		}
 
@@ -1142,7 +1162,7 @@ EOF;
 	}
 
 	public function getUpdateStepFileLocation(): string {
-		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid');
+		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOption('instanceid');
 		return $updaterDir . '/.step';
 	}
 
@@ -1154,7 +1174,7 @@ EOF;
 	public function rollbackChanges(int $step): void {
 		$this->silentLog('[info] rollbackChanges("' . $step . '")');
 
-		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid');
+		$updaterDir = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid');
 		if (file_exists($updaterDir . '/.step')) {
 			$this->silentLog('[info] unlink .step');
 			$state = unlink($updaterDir . '/.step');
@@ -1291,6 +1311,7 @@ try {
 	if (isset($_POST['step'])) {
 		// mark step as failed
 		http_response_code(500);
+		header('Content-Type: application/json');
 		echo(json_encode(['proceed' => false, 'response' => $e->getMessage()]));
 		die();
 	}
@@ -1377,6 +1398,7 @@ if (isset($_POST['step']) && !is_array($_POST['step'])) {
 				break;
 		}
 		$updater->endStep($step);
+		header('Content-Type: application/json');
 		echo(json_encode(['proceed' => true]));
 	} catch (UpdateException $e) {
 		$data = $e->getData();
@@ -1392,6 +1414,7 @@ if (isset($_POST['step']) && !is_array($_POST['step'])) {
 			$updater->rollbackChanges($step);
 		}
 		http_response_code(500);
+		header('Content-Type: application/json');
 		echo(json_encode(['proceed' => false, 'response' => $data]));
 	} catch (\Exception $e) {
 		$message = $e->getMessage();
@@ -1407,6 +1430,7 @@ if (isset($_POST['step']) && !is_array($_POST['step'])) {
 			$updater->rollbackChanges($step);
 		}
 		http_response_code(500);
+		header('Content-Type: application/json');
 		echo(json_encode(['proceed' => false, 'response' => $message]));
 	}
 
