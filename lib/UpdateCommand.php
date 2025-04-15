@@ -269,7 +269,7 @@ class UpdateCommand extends Command {
 			//
 			// Handle `occ upgrade` run
 			//
-			
+
 			if ($this->skipUpgrade) {
 				$this->updater->log('[info] "occ upgrade" was skipped');
 				$this->updater->log('[info] updater finished');
@@ -324,7 +324,7 @@ class UpdateCommand extends Command {
 			//
 			// Handle maintenance mode toggle
 			//
-			
+
 			$output->writeln('');
 			if ($input->isInteractive()) {
 				/** @var QuestionHelper */
@@ -344,7 +344,7 @@ class UpdateCommand extends Command {
 			}
 
 			$this->updater->log('[info] Disabling maintenance mode');
-			system($occRunCommand . ' maintenance:mode --off', $returnValueMaintenanceMode);
+			$systemOutput = system($occRunCommand . ' maintenance:mode --off', $returnValueMaintenanceMode);
 			if ($returnValueMaintenanceMode === 0) {
 				$this->updater->log('[info] maintenance mode disabled');
 				$output->writeln('');
@@ -354,6 +354,13 @@ class UpdateCommand extends Command {
 				$this->updater->log('[info] Disabling maintenance mode failed - return code: ' . $returnValueMaintenanceMode);
 				$output->writeln('');
 				$output->writeln('Disabling Maintenance mode failed - return code:' . $returnValueMaintenanceMode);
+				if ($systemOutput === false) {
+					$this->updater->log('[info] System call failed');
+					$output->writeln('System call failed');
+				} else {
+					$this->updater->log('[info] occ output: ' . $systemOutput);
+					$output->writeln('occ output: ' . $systemOutput);
+				}
 				$this->updater->log('[info] updater finished - with errors');
 				return $returnValueMaintenanceMode;
 			}
