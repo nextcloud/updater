@@ -504,6 +504,8 @@ class Updater {
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_URL => $updateURL,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
+			CURLOPT_FOLLOWLOCATION => 1,
+			CURLOPT_MAXREDIRS => 2,
 		]);
 
 		if ($this->getConfigOption('proxy') !== null) {
