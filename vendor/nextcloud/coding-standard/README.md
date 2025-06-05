@@ -46,7 +46,7 @@ For convenience you may add it to the `scripts` section of your `composer.json`:
 }
 ```
 
-*Note: Don't forget to exclude .php_cs.dist in your build scripts.*
+*Note: Don't forget to exclude `.php-cs-fixer.dist.php` and `.php-cs-fixer.cache` in your build scripts.*
 
 ## Upgrade from v0.x to v1.0
 
