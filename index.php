@@ -522,6 +522,8 @@ class Updater {
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_URL => $updateURL,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
+			CURLOPT_FOLLOWLOCATION => 1,
+			CURLOPT_MAXREDIRS => 2,
 		]);
 
 		if ($this->getConfigOption('proxy') !== null) {
@@ -1006,7 +1008,7 @@ EOF;
 						throw new \Exception('Could not mkdir ' . $this->nextcloudDir . '/' . dirname($fileName));
 					}
 				}
-				$state = rename($path, $this->nextcloudDir . '/' . $fileName);
+				$state = @rename($path, $this->nextcloudDir . '/' . $fileName);
 				if ($state === false) {
 					throw new \Exception(
 						sprintf(
