@@ -964,8 +964,8 @@ EOF;
 			throw new \Exception('core/shipped.json is not available');
 		}
 		$shippedAppsFileContentDecoded = json_decode($shippedAppsFileContent, true);
-		if (!is_array($shippedAppsFileContentDecoded) ||
-			!is_array($shippedApps = $shippedAppsFileContentDecoded['shippedApps'] ?? [])) {
+		if (!is_array($shippedAppsFileContentDecoded)
+			|| !is_array($shippedApps = $shippedAppsFileContentDecoded['shippedApps'] ?? [])) {
 			throw new \Exception('core/shipped.json content is invalid');
 		}
 
@@ -975,8 +975,8 @@ EOF;
 			throw new \Exception('core/shipped.json is not available in the new release');
 		}
 		$newShippedAppsFileContentDecoded = json_decode($newShippedAppsFileContent, true);
-		if (!is_array($newShippedAppsFileContentDecoded) ||
-			!is_array($newShippedApps = $newShippedAppsFileContentDecoded['shippedApps'] ?? [])) {
+		if (!is_array($newShippedAppsFileContentDecoded)
+			|| !is_array($newShippedApps = $newShippedAppsFileContentDecoded['shippedApps'] ?? [])) {
 			throw new \Exception('core/shipped.json content is invalid in the new release');
 		}
 
