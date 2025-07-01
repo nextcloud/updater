@@ -269,7 +269,7 @@ class UpdateCommand extends Command {
 			//
 			// Handle `occ upgrade` run
 			//
-			
+
 			if ($this->skipUpgrade) {
 				$this->updater->log('[info] "occ upgrade" was skipped');
 				$this->updater->log('[info] updater finished');
@@ -324,7 +324,7 @@ class UpdateCommand extends Command {
 			//
 			// Handle maintenance mode toggle
 			//
-			
+
 			$output->writeln('');
 			if ($input->isInteractive()) {
 				/** @var QuestionHelper */
