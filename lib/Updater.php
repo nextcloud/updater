@@ -26,6 +26,8 @@ declare(strict_types=1);
 
 namespace NC\Updater;
 
+use CurlHandle;
+
 class Updater {
 	private string $baseDir;
 	private array $configValues = [];
@@ -493,20 +495,7 @@ class Updater {
 		$this->silentLog('[info] updateURL: ' . $updateURL);
 
 		// Download update response
-		$curl = curl_init();
-		curl_setopt_array($curl, [
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => $updateURL,
-			CURLOPT_USERAGENT => 'Nextcloud Updater',
-		]);
-
-		if ($this->getConfigOption('proxy') !== null) {
-			curl_setopt_array($curl, [
-				CURLOPT_PROXY => $this->getConfigOptionString('proxy'),
-				CURLOPT_PROXYUSERPWD => $this->getConfigOptionString('proxyuserpwd'),
-				CURLOPT_HTTPPROXYTUNNEL => $this->getConfigOption('proxy') ? 1 : 0,
-			]);
-		}
+		$curl = $this->getCurl($updateURL);
 
 		/** @var false|string $response */
 		$response = curl_exec($curl);
@@ -570,9 +559,35 @@ class Updater {
 			]);
 		}
 
+		return $ch;
+	}
+
+	private function downloadArchive(string $fromUrl, string $toLocation): bool {
+		$ch = $this->getCurl($fromUrl);
+
+		// see if there's an existing incomplete download to resume
+		if (is_file($toLocation)) {
+			$size = (int)filesize($toLocation);
+			$range = $size . '-';
+			curl_setopt($ch, CURLOPT_RANGE, $range);
+			$this->silentLog('[info] previous download found; resuming from ' . $this->formatBytes($size));
+		}
+
+		$fp = fopen($toLocation, 'ab');
+		if ($fp === false) {
+			throw new \Exception('Fail to open file in ' . $toLocation);
+		}
+
+		curl_setopt_array($ch, [
+			CURLOPT_NOPROGRESS => false,
+			CURLOPT_PROGRESSFUNCTION => [$this, 'downloadProgressCallback'],
+			CURLOPT_FILE => $fp,
+		]);
+
 		if (curl_exec($ch) === false) {
 			throw new \Exception('Curl error: ' . curl_error($ch));
 		}
+
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if ($httpCode !== 200) {
 			$statusCodes = [
@@ -606,6 +621,15 @@ class Updater {
 		fclose($fp);
 
 		$this->silentLog('[info] end of downloadUpdate()');
+		return true;
+	}
+
+	/**
+	 * Check if PHP is able to decompress archive format
+	 */
+	private function isAbleToDecompress(string $ext): bool {
+		// Only zip is supported for now
+		return $ext === 'zip' && extension_loaded($ext);
 	}
 
 	/**
@@ -617,13 +641,14 @@ class Updater {
 
 		$filesInStorageLocation = scandir($storageLocation);
 		$files = array_values(array_filter($filesInStorageLocation, function (string $path) {
-			return $path !== '.' && $path !== '..';
+			// Match files with - in the name and extension (*-*.*)
+			return preg_match('/^.*-.*\..*$/i', $path);
 		}));
 		// only the downloaded archive
 		if (count($files) !== 1) {
 			throw new \Exception('There are more files than the downloaded archive in the downloads/ folder.');
 		}
-		return $storageLocation . '/' . $files[0];
+		return $storageLocation . $files[0];
 	}
 
 	/**
