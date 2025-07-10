@@ -617,6 +617,11 @@ class Updater {
 			return;
 		}
 
+		if ($urlOverride) {
+			$this->silentLog('[info] custom download url provided, cannot verify signature');
+			return;
+		}
+
 		$response = $this->getUpdateServerResponse();
 		if (empty($response['signature'])) {
 			throw new \Exception('No signature specified for defined update');
