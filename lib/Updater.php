@@ -1,24 +1,7 @@
 <?php
 /**
- * @copyright Copyright (c) 2016-2017 Lukas Reschke <lukas@statuscode.ch>
- * @copyright Copyright (c) 2016 Morris Jobke <hey@morrisjobke.de>
- * @copyright Copyright (c) 2018 Jonas Sulzer <jonas@violoncello.ch>
- *
- * @license GNU AGPL version 3 or any later version
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * SPDX-FileCopyrightText: 2016 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
 namespace NC\Updater;
@@ -529,10 +512,8 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function downloadUpdate(): void {
+	public function downloadUpdate(?string $url = null): void {
 		$this->silentLog('[info] downloadUpdate()');
-
-		$response = $this->getUpdateServerResponse();
 
 		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
 		if (file_exists($storageLocation)) {
@@ -544,12 +525,26 @@ class Updater {
 			throw new \Exception('Could not mkdir storage location');
 		}
 
-		if (!isset($response['url']) || !is_string($response['url'])) {
-			throw new \Exception('Response from update server is missing url');
+		$downloadURL = '';
+		if ($url) {
+			// If a URL is provided, use it directly
+			$downloadURL = $url;
+		} else {
+			// Otherwise, get the download URLs from the update server
+			$response = $this->getUpdateServerResponse();
+
+			if (!isset($response['url']) || !is_string($response['url'])) {
+				throw new \Exception('Response from update server is missing url');
+			}
+			$downloadURL = $response['url'];
 		}
 
-		$fp = fopen($storageLocation . basename($response['url']), 'w+');
-		$ch = curl_init($response['url']);
+		if (!$downloadURL) {
+			throw new \Exception('No download URL provided or available from update server');
+		}
+
+		$fp = fopen($storageLocation . basename($downloadURL), 'w+');
+		$ch = curl_init($downloadURL);
 		curl_setopt_array($ch, [
 			CURLOPT_FILE => $fp,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
@@ -591,7 +586,7 @@ class Updater {
 				$message .= ' - curl error message: ' . $curlErrorMessage;
 			}
 
-			$message .= ' - URL: ' . htmlentities($response['url']);
+			$message .= ' - URL: ' . htmlentities($downloadURL);
 
 			throw new \Exception($message);
 		}
@@ -624,11 +619,16 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function verifyIntegrity(): void {
+	public function verifyIntegrity(?string $urlOverride = null): void {
 		$this->silentLog('[info] verifyIntegrity()');
 
 		if ($this->getCurrentReleaseChannel() === 'daily') {
 			$this->silentLog('[info] current channel is "daily" which is not signed. Skipping verification.');
+			return;
+		}
+
+		if ($urlOverride) {
+			$this->silentLog('[info] custom download url provided, cannot verify signature');
 			return;
 		}
 
