@@ -146,7 +146,12 @@ class UpdateCommand extends Command {
 		$output->writeln('Current version is ' . $this->updater->getCurrentVersion() . '.');
 
 		// needs to be called that early because otherwise updateAvailable() returns false
-		$updateString = $this->updater->checkForUpdate();
+		if ($this->urlOverride) {
+			$this->updater->log('[info] Using URL override: ' . $this->urlOverride);
+			$updateString = 'Update check forced with URL override: ' . $this->urlOverride;
+		} else {
+			$updateString = $this->updater->checkForUpdate();
+		}
 
 		$output->writeln('');
 
@@ -159,9 +164,11 @@ class UpdateCommand extends Command {
 
 		$output->writeln('');
 
-		if (!$this->updater->updateAvailable() && $stepNumber === 0) {
-			$output->writeln('Nothing to do.');
-			return 0;
+		if (!$this->urlOverride) {
+			if (!$this->updater->updateAvailable() && $stepNumber === 0) {
+				$output->writeln('Nothing to do.');
+				return 0;
+			}
 		}
 
 		$questionText = 'Start update';
@@ -362,10 +369,10 @@ class UpdateCommand extends Command {
 					}
 					break;
 				case 4:
-					$this->updater->downloadUpdate();
+					$this->updater->downloadUpdate($this->urlOverride);
 					break;
 				case 5:
-					$this->updater->verifyIntegrity();
+					$this->updater->verifyIntegrity($this->urlOverride);
 					break;
 				case 6:
 					$this->updater->extractDownload();
