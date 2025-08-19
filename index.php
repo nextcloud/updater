@@ -47,6 +47,8 @@ class RecursiveDirectoryIteratorWithoutData extends \RecursiveFilterIterator {
 }
 
 
+use CurlHandle;
+
 class Updater {
 	private string $baseDir;
 	private array $configValues = [];
@@ -55,6 +57,7 @@ class Updater {
 	private bool $updateAvailable = false;
 	private ?string $requestID = null;
 	private bool $disabled = false;
+	private int $previousProgress = 0;
 
 	/**
 	 * Updater constructor
@@ -278,6 +281,7 @@ class Updater {
 			'COPYING-AGPL',
 			'occ',
 			'db_structure.xml',
+			'REUSE.toml',
 		];
 		return array_merge($expected, $this->getAppDirectories());
 	}
@@ -514,20 +518,7 @@ class Updater {
 		$this->silentLog('[info] updateURL: ' . $updateURL);
 
 		// Download update response
-		$curl = curl_init();
-		curl_setopt_array($curl, [
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => $updateURL,
-			CURLOPT_USERAGENT => 'Nextcloud Updater',
-		]);
-
-		if ($this->getConfigOption('proxy') !== null) {
-			curl_setopt_array($curl, [
-				CURLOPT_PROXY => $this->getConfigOptionString('proxy'),
-				CURLOPT_PROXYUSERPWD => $this->getConfigOptionString('proxyuserpwd'),
-				CURLOPT_HTTPPROXYTUNNEL => $this->getConfigOption('proxy') ? 1 : 0,
-			]);
-		}
+		$curl = $this->getCurl($updateURL);
 
 		/** @var false|string $response */
 		$response = curl_exec($curl);
@@ -558,26 +549,79 @@ class Updater {
 	public function downloadUpdate(): void {
 		$this->silentLog('[info] downloadUpdate()');
 
+		$downloadURLs = $this->getDownloadURLs();
+		$this->silentLog('[info] will try to download archive from: ' . implode(', ', $downloadURLs));
+
+		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-' . $this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
+
+		if (!file_exists($storageLocation)) {
+			$state = mkdir($storageLocation, 0750, true);
+			if ($state === false) {
+				throw new \Exception('Could not mkdir storage location');
+			}
+			$this->silentLog('[info] storage location created');
+		} else {
+			$this->silentLog('[info] storage location already exists');
+			// clean-up leftover extracted content from any prior runs, but leave any downloaded Archives alone
+			if (file_exists($storageLocation . 'nextcloud/')) {
+				$this->silentLog('[info] extracted Archive location exists');
+				$this->recursiveDelete($storageLocation . 'nextcloud/');
+			}
+		}
+
+		foreach ($downloadURLs as $url) {
+			$this->previousProgress = 0;
+			$saveLocation = $storageLocation . basename($url);
+			if ($this->downloadArchive($url, $saveLocation)) {
+				return;
+			}
+		}
+
+		throw new \Exception('All downloads failed. See updater logs for more information.');
+	}
+
+	private function getDownloadURLs(): array {
 		$response = $this->getUpdateServerResponse();
-
-		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOptionMandatoryString('instanceid') . '/downloads/';
-		if (file_exists($storageLocation)) {
-			$this->silentLog('[info] storage location exists');
-			$this->recursiveDelete($storageLocation);
+		$downloadURLs = [];
+		if (!isset($response['downloads']) || !is_array($response['downloads'])) {
+			if (isset($response['url']) && is_string($response['url'])) {
+				// Compatibility with previous verison of updater_server
+				$ext = pathinfo($response['url'], PATHINFO_EXTENSION);
+				$response['downloads'] = [
+					$ext => [$response['url']]
+				];
+			} else {
+				throw new \Exception('Response from update server is missing download URLs');
+			}
 		}
-		$state = mkdir($storageLocation, 0750, true);
-		if ($state === false) {
-			throw new \Exception('Could not mkdir storage location');
+		foreach ($response['downloads'] as $format => $urls) {
+			if (!$this->isAbleToDecompress($format)) {
+				continue;
+			}
+			foreach ($urls as $url) {
+				if (!is_string($url)) {
+					continue;
+				}
+				$downloadURLs[] = $url;
+			}
 		}
 
-		if (!isset($response['url']) || !is_string($response['url'])) {
-			throw new \Exception('Response from update server is missing url');
+		if (empty($downloadURLs)) {
+			throw new \Exception('Your PHP install is not able to decompress any archive. Try to install modules like zip or bzip.');
 		}
 
-		$fp = fopen($storageLocation . basename($response['url']), 'w+');
-		$ch = curl_init($response['url']);
+		return array_unique($downloadURLs);
+
+	}
+
+	private function getCurl(string $url): CurlHandle {
+		$ch = curl_init($url);
+		if ($ch === false) {
+			throw new \Exception('Fail to open cUrl handler');
+		}
+
 		curl_setopt_array($ch, [
-			CURLOPT_FILE => $fp,
+			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
 			CURLOPT_FOLLOWLOCATION => 1,
 			CURLOPT_MAXREDIRS => 2,
@@ -591,42 +635,88 @@ class Updater {
 			]);
 		}
 
+		return $ch;
+	}
+
+	private function downloadArchive(string $fromUrl, string $toLocation): bool {
+		$ch = $this->getCurl($fromUrl);
+
+		// see if there's an existing incomplete download to resume
+		if (is_file($toLocation)) {
+			$size = (int)filesize($toLocation);
+			$range = $size . '-';
+			curl_setopt($ch, CURLOPT_RANGE, $range);
+			$this->silentLog('[info] previous download found; resuming from ' . $this->formatBytes($size));
+		}
+
+		$fp = fopen($toLocation, 'ab');
+		if ($fp === false) {
+			throw new \Exception('Fail to open file in ' . $toLocation);
+		}
+
+		curl_setopt_array($ch, [
+			CURLOPT_NOPROGRESS => false,
+			CURLOPT_PROGRESSFUNCTION => [$this, 'downloadProgressCallback'],
+			CURLOPT_FILE => $fp,
+		]);
+
 		if (curl_exec($ch) === false) {
 			throw new \Exception('Curl error: ' . curl_error($ch));
 		}
+
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($httpCode !== 200) {
-			$statusCodes = [
-				400 => 'Bad request',
-				401 => 'Unauthorized',
-				403 => 'Forbidden',
-				404 => 'Not Found',
-				500 => 'Internal Server Error',
-				502 => 'Bad Gateway',
-				503 => 'Service Unavailable',
-				504 => 'Gateway Timeout',
-			];
+		if ($httpCode !== 200 && $httpCode !== 206) {
+			fclose($fp);
+			unlink($toLocation);
+			$this->silentLog('[warn] fail to download archive from ' . $fromUrl . '. Error: ' . $httpCode . ' ' . curl_error($ch));
+			curl_close($ch);
 
-			$message = 'Download failed';
-			if (is_int($httpCode) && isset($statusCodes[$httpCode])) {
-				$message .= ' - ' . $statusCodes[$httpCode] . ' (HTTP ' . $httpCode . ')';
-			} else {
-				$message .= ' - HTTP status code: ' . (string)$httpCode;
-			}
-
-			$curlErrorMessage = curl_error($ch);
-			if (!empty($curlErrorMessage)) {
-				$message .= ' - curl error message: ' . $curlErrorMessage;
-			}
-
-			$message .= ' - URL: ' . htmlentities($response['url']);
-
-			throw new \Exception($message);
+			return false;
 		}
+		// download succeeded
+		$info = curl_getinfo($ch);
+		$this->silentLog('[info] download stats: size=' . $this->formatBytes((int)$info['size_download']) . ' bytes; total_time=' . round($info['total_time'], 2) . ' secs; avg speed=' . $this->formatBytes((int)$info['speed_download']) . '/sec');
+
 		curl_close($ch);
 		fclose($fp);
 
 		$this->silentLog('[info] end of downloadUpdate()');
+		return true;
+	}
+
+	/**
+	 * Check if PHP is able to decompress archive format
+	 */
+	private function isAbleToDecompress(string $ext): bool {
+		// Only zip is supported for now
+		return $ext === 'zip' && extension_loaded($ext);
+	}
+
+	private function downloadProgressCallback(CurlHandle $resource, int $download_size, int $downloaded, int $upload_size, int $uploaded): void {
+		if ($download_size !== 0) {
+			$progress = (int)round($downloaded * 100 / $download_size);
+			if ($progress > $this->previousProgress) {
+				$this->previousProgress = $progress;
+				// log every 2% increment for the first 10% then only log every 10% increment after that
+				if ($progress % 10 === 0 || ($progress < 10 && $progress % 2 === 0)) {
+					$this->silentLog("[info] download progress: $progress% (" . $this->formatBytes($downloaded) . ' of ' . $this->formatBytes($download_size) . ')');
+				}
+			}
+		}
+	}
+
+	private function formatBytes(int $bytes, int $precision = 2): string {
+		$units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
+
+		$bytes = max($bytes, 0);
+		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+		$pow = min($pow, count($units) - 1);
+
+		// Uncomment one of the following alternatives
+		$bytes /= pow(1024, $pow);
+		// $bytes /= (1 << (10 * $pow));
+
+		return round($bytes, $precision) . $units[(int)$pow];
 	}
 
 	/**
@@ -638,13 +728,14 @@ class Updater {
 
 		$filesInStorageLocation = scandir($storageLocation);
 		$files = array_values(array_filter($filesInStorageLocation, function (string $path) {
-			return $path !== '.' && $path !== '..';
+			// Match files with - in the name and extension (*-*.*)
+			return preg_match('/^.*-.*\..*$/i', $path);
 		}));
 		// only the downloaded archive
 		if (count($files) !== 1) {
 			throw new \Exception('There are more files than the downloaded archive in the downloads/ folder.');
 		}
-		return $storageLocation . '/' . $files[0];
+		return $storageLocation . $files[0];
 	}
 
 	/**

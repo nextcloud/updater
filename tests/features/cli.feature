@@ -28,7 +28,7 @@ Feature: CLI updater
     And there is an update to version 25.0.503 available
     When the CLI updater is run
     Then the return code should not be 0
-    And the output should contain "Download failed - Not Found (HTTP 404)"
+    And the output should contain "All downloads failed."
     And the installed version should be 25.0.0
     And maintenance mode should be off
     And upgrade is not required
