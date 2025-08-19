@@ -281,6 +281,7 @@ class Updater {
 			'COPYING-AGPL',
 			'occ',
 			'db_structure.xml',
+			'REUSE.toml',
 		];
 		return array_merge($expected, $this->getAppDirectories());
 	}
