@@ -253,7 +253,6 @@ class Updater {
 			'.',
 			'..',
 			// Folders
-			'.reuse',
 			'.well-known',
 			'3rdparty',
 			'apps',
@@ -295,6 +294,7 @@ class Updater {
 			'COPYING-AGPL',
 			'occ',
 			'db_structure.xml',
+			'REUSE.toml',
 		];
 		return array_merge($expected, $this->getAppDirectories());
 	}
