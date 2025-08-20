@@ -2,6 +2,9 @@
 #
 # https://github.com/nextcloud/.github
 # https://docs.github.com/en/actions/learn-github-actions/sharing-workflows-with-your-organization
+#
+# SPDX-FileCopyrightText: 2022-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: MIT
 
 name: Static analysis
 
@@ -16,6 +19,9 @@ on:
 concurrency:
   group: psalm-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   static-analysis:
@@ -32,6 +38,8 @@ jobs:
           php-version: 8.1
           coverage: none
           ini-file: development
+          # Temporary workaround for missing pcntl_* in PHP 8.3
+          ini-values: disable_functions=
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -39,4 +47,4 @@ jobs:
         run: composer i
 
       - name: Run coding standards check
-        run: composer run psalm
+        run: composer run psalm -- --threads=1 --monochrome --no-progress --output-format=github
