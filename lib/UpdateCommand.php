@@ -41,6 +41,7 @@ class UpdateCommand extends Command {
 	protected $skipBackup = false;
 
 	protected bool $skipUpgrade = false;
+	protected string $urlOverride = '';
 
 	/** @var array strings of text for stages of updater */
 	protected $checkTexts = [
@@ -65,7 +66,8 @@ class UpdateCommand extends Command {
 			->setDescription('Updates the code of an Nextcloud instance')
 			->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.")
 			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version')
-			->addOption('no-upgrade', null, InputOption::VALUE_NONE, "Don't automatically run occ upgrade");
+			->addOption('no-upgrade', null, InputOption::VALUE_NONE, "Don't automatically run occ upgrade")
+			->addOption('url', null, InputOption::VALUE_OPTIONAL, 'The URL of the Nextcloud release to download');
 	}
 
 	public static function getUpdaterVersion(): string {
@@ -78,8 +80,9 @@ class UpdateCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$this->skipBackup = $input->getOption('no-backup');
-		$this->skipUpgrade = $input->getOption('no-upgrade');
+		$this->skipBackup = (bool)$input->getOption('no-backup');
+		$this->skipUpgrade = (bool)$input->getOption('no-upgrade');
+		$this->urlOverride = (string)$input->getOption('url');
 
 		$version = static::getUpdaterVersion();
 		$output->writeln('Nextcloud Updater - version: ' . $version);
@@ -152,7 +155,12 @@ class UpdateCommand extends Command {
 		$output->writeln('Current version is ' . $this->updater->getCurrentVersion() . '.');
 
 		// needs to be called that early because otherwise updateAvailable() returns false
-		$updateString = $this->updater->checkForUpdate();
+		if ($this->urlOverride) {
+			$this->updater->log('[info] Using URL override: ' . $this->urlOverride);
+			$updateString = 'Update check forced with URL override: ' . $this->urlOverride;
+		} else {
+			$updateString = $this->updater->checkForUpdate();
+		}
 
 		$output->writeln('');
 
@@ -165,9 +173,11 @@ class UpdateCommand extends Command {
 
 		$output->writeln('');
 
-		if (!$this->updater->updateAvailable() && $stepNumber === 0) {
-			$output->writeln('Nothing to do.');
-			return 0;
+		if (!$this->urlOverride) {
+			if (!$this->updater->updateAvailable() && $stepNumber === 0) {
+				$output->writeln('Nothing to do.');
+				return 0;
+			}
 		}
 
 		$questionText = 'Start update';
@@ -374,10 +384,10 @@ class UpdateCommand extends Command {
 					}
 					break;
 				case 4:
-					$this->updater->downloadUpdate();
+					$this->updater->downloadUpdate($this->urlOverride);
 					break;
 				case 5:
-					$this->updater->verifyIntegrity();
+					$this->updater->verifyIntegrity($this->urlOverride);
 					break;
 				case 6:
 					$this->updater->extractDownload();

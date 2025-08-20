@@ -517,10 +517,8 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function downloadUpdate() {
+	public function downloadUpdate(?string $url = null) {
 		$this->silentLog('[info] downloadUpdate()');
-
-		$response = $this->getUpdateServerResponse();
 
 		$storageLocation = $this->getUpdateDirectoryLocation() . '/updater-'.$this->getConfigOption('instanceid') . '/downloads/';
 		if (file_exists($storageLocation)) {
@@ -532,8 +530,26 @@ class Updater {
 			throw new \Exception('Could not mkdir storage location');
 		}
 
-		$fp = fopen($storageLocation . basename($response['url']), 'w+');
-		$ch = curl_init($response['url']);
+		$downloadURL = '';
+		if ($url) {
+			// If a URL is provided, use it directly
+			$downloadURL = $url;
+		} else {
+			// Otherwise, get the download URLs from the update server
+			$response = $this->getUpdateServerResponse();
+
+			if (!isset($response['url']) || !is_string($response['url'])) {
+				throw new \Exception('Response from update server is missing url');
+			}
+			$downloadURL = $response['url'];
+		}
+
+		if (!$downloadURL) {
+			throw new \Exception('No download URL provided or available from update server');
+		}
+
+		$fp = fopen($storageLocation . basename($downloadURL), 'w+');
+		$ch = curl_init($downloadURL);
 		curl_setopt_array($ch, [
 			CURLOPT_FILE => $fp,
 			CURLOPT_USERAGENT => 'Nextcloud Updater',
@@ -575,7 +591,7 @@ class Updater {
 				$message .= ' - curl error message: ' . $curlErrorMessage;
 			}
 
-			$message .= ' - URL: ' . htmlentities($response['url']);
+			$message .= ' - URL: ' . htmlentities($downloadURL);
 
 			throw new \Exception($message);
 		}
@@ -609,11 +625,16 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function verifyIntegrity() {
+	public function verifyIntegrity(?string $urlOverride = null): void {
 		$this->silentLog('[info] verifyIntegrity()');
 
 		if ($this->getCurrentReleaseChannel() === 'daily') {
 			$this->silentLog('[info] current channel is "daily" which is not signed. Skipping verification.');
+			return;
+		}
+
+		if ($urlOverride) {
+			$this->silentLog('[info] custom download url provided, cannot verify signature');
 			return;
 		}
 
