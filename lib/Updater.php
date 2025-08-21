@@ -1111,6 +1111,20 @@ EOF;
 			throw new \Exception('Could not rmdir .step');
 		}
 
+		/* Check if there is the need to extend .user.ini */
+		$user_ini_additional_lines = $this->getConfigOption('user_ini_additional_lines');
+		if ($user_ini_additional_lines) {
+			$this->silentLog('[info] Extend .user.ini');
+			if (is_array($user_ini_additional_lines)) {
+				$user_ini_additional_lines = implode(PHP_EOL, $user_ini_additional_lines);
+			}
+
+			$result = file_put_contents($this->nextcloudDir . '/.user.ini', PHP_EOL . '; Additional settings from config.php:' . PHP_EOL . $user_ini_additional_lines . PHP_EOL, FILE_APPEND);
+			if ($result === false) {
+				throw new \Exception('Could not append to .user.ini');
+			}
+		}
+
 		if (function_exists('opcache_reset')) {
 			$this->silentLog('[info] call opcache_reset()');
 			opcache_reset();

@@ -403,6 +403,46 @@ t87PcaZyrupEfAIfD9uQRA==',
 	}
 
 	/**
+	 * @Given the config key :key is set to :value of type :type
+	 * @param string $key
+	 * @param mixed $value
+	 * @param string $type ('string', 'boolean', 'integer', 'double')
+	 */
+	public function theConfigKeyIsSetTo(string $key, $value, string $type = 'string') {
+		if ($this->skipIt) {
+			return;
+		}
+
+		if (!in_array($type, ['string', 'boolean', 'integer', 'double'])) {
+			throw new Exception('Invalid type given: ' . $type);
+		}
+
+		chdir($this->serverDir . 'nextcloud');
+		shell_exec('chmod +x occ');
+		exec("./occ config:system:set $key --value '$value' --type '$type'");
+	}
+
+	/**
+	 * @Then the user ini file contains :content
+	 * @param string $content
+	 */
+	public function theUserIniFileContains(string $content) {
+		if ($this->skipIt) {
+			return;
+		}
+
+		$userIniFile = $this->serverDir . 'nextcloud/.user.ini';
+		if (!file_exists($userIniFile)) {
+			throw new Exception('User ini file does not exist: ' . $userIniFile);
+		}
+
+		$contents = file_get_contents($userIniFile);
+		if (!str_contains($contents, $content)) {
+			throw new Exception('Content not found in user ini file: ' . $content);
+		}
+	}
+
+	/**
 	 * @Then /upgrade is (not required|required)/
 	 */
 	public function upgradeIs($state) {
