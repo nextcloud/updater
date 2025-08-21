@@ -9,5 +9,6 @@
 /vendor/bin
 /vendor/symfony/console/Tests
 /vendor/symfony/debug/Tests
+/vendor/symfony/service-contracts/Test
 /vendor-bin/**/vendor
 .php-cs-fixer.cache

@@ -380,8 +380,8 @@ t87PcaZyrupEfAIfD9uQRA==',
 		shell_exec('chmod +x occ');
 		exec('./occ maintenance:mode', $output, $returnCode);
 
-		$expectedOutput = 'Maintenance mode is currently ' .
-			($state === 'on' ? 'enabled' : 'disabled');
+		$expectedOutput = 'Maintenance mode is currently '
+			. ($state === 'on' ? 'enabled' : 'disabled');
 
 		if ($returnCode !== 0 || strpos(join(PHP_EOL, $output), $expectedOutput) === false) {
 			throw new Exception('Maintenance mode does not match ' . PHP_EOL . join(PHP_EOL, $output));
