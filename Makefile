@@ -39,6 +39,9 @@ test-stable26: updater.phar test/vendor
 test-master: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat features/master.feature
 
+test-user.ini: updater.phar test/vendor
+	cd tests && ../vendor/bin/behat features/user.ini.feature
+
 check-same-code-base:
 	cd tests && php checkSameCodeBase.php
 
