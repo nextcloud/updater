@@ -354,7 +354,25 @@ class UpdateCommand extends Command {
 			}
 
 			$this->updater->log('[info] Disabling maintenance mode');
-			system($occRunCommand . ' maintenance:mode --off', $returnValueMaintenanceMode);
+			$descriptorSpec = [
+				0 => ['pipe', 'r'], // stdin
+				1 => ['pipe', 'w'], // stdout
+				2 => ['pipe', 'w'], // stderr
+			];
+			$process = proc_open($occRunCommand . ' maintenance:mode --off', $descriptorSpec, $pipes);
+			if (!is_resource($process)) {
+				$this->updater->log('[info] Could not run the command to disable maintenance mode');
+				$output->writeln('');
+				$output->writeln('Could not run the command to disable maintenance mode');
+				return 1;
+			}
+			fclose($pipes[0]);
+			$stdoutContent = stream_get_contents($pipes[1]);
+			fclose($pipes[1]);
+			$stderrContent = stream_get_contents($pipes[2]);
+			fclose($pipes[2]);
+			$returnValueMaintenanceMode = proc_close($process);
+
 			if ($returnValueMaintenanceMode === 0) {
 				$this->updater->log('[info] maintenance mode disabled');
 				$output->writeln('');
@@ -364,6 +382,14 @@ class UpdateCommand extends Command {
 				$this->updater->log('[info] Disabling maintenance mode failed - return code: ' . $returnValueMaintenanceMode);
 				$output->writeln('');
 				$output->writeln('Disabling Maintenance mode failed - return code:' . $returnValueMaintenanceMode);
+				if ($stdoutContent) {
+					$this->updater->log('[info] occ stdout: ' . $stdoutContent);
+					$output->writeln('occ stdout: ' . $stdoutContent);
+				}
+				if ($stderrContent) {
+					$this->updater->log('[info] occ stderr: ' . $stderrContent);
+					$output->writeln('occ stderr: ' . $stderrContent);
+				}
 				$this->updater->log('[info] updater finished - with errors');
 				return $returnValueMaintenanceMode;
 			}
