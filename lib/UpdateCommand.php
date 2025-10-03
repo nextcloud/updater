@@ -229,7 +229,7 @@ class UpdateCommand extends Command {
 
 			$output->write('[ ] ' . $this->checkTexts[$i] . ' ...');
 
-			$result = $this->executeStep($i);
+			$result = $this->executeStep($i, $output);
 
 			// Move the cursor to the beginning of the line
 			$output->write("\x0D");
@@ -387,7 +387,7 @@ class UpdateCommand extends Command {
 	/**
 	 * @return array{proceed:bool,response:string|list<string>} with options 'proceed' which is a boolean and defines if the step succeeded and an optional 'response' string or array
 	 */
-	protected function executeStep(int $step): array {
+	protected function executeStep(int $step, OutputInterface $output): array {
 		if ($this->updater === null) {
 			return ['proceed' => false, 'response' => 'Initialization problem'];
 		}
@@ -411,7 +411,14 @@ class UpdateCommand extends Command {
 					}
 					break;
 				case 4:
-					$this->updater->downloadUpdate($this->urlOverride);
+					// Ensure that we have the same number of characters, that we want to override in the progress method
+					$output->write(str_pad(' 0%', 5, ' ', STR_PAD_LEFT));
+
+					$this->updater->downloadUpdate($this->urlOverride, function (int $progress, string $downloaded, string $download_size) use ($output) {
+						// Move cursor 5 to the left and write the new progress
+						$output->write("\x1B[5D");
+						$output->write(str_pad(' ' . $progress . '%', 5, ' ', STR_PAD_LEFT));
+					});
 					break;
 				case 5:
 					$this->updater->verifyIntegrity($this->urlOverride);
