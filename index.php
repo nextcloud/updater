@@ -266,6 +266,8 @@ class Updater {
 			'composer.lock',
 			'console.php',
 			'cron.php',
+			'custom.d.ts',
+			'cypress.d.ts',
 			'index.php',
 			'package.json',
 			'package-lock.json',
@@ -535,9 +537,12 @@ class Updater {
 			return [];
 		}
 
+		libxml_use_internal_errors(true);
 		$xml = simplexml_load_string($response);
 		if ($xml === false) {
-			throw new \Exception('Could not parse updater server XML response');
+			$content = strlen($response) > 200 ? substr($response, 0, 200) . '…' : $response;
+			$errors = implode("\n", array_map(fn ($error) => $error->message, libxml_get_errors()));
+			throw new \Exception('Could not parse updater server XML response: ' . $content . "\nErrors:\n" . $errors);
 		}
 		$response = get_object_vars($xml);
 		$this->silentLog('[info] getUpdateServerResponse response: ' . print_r($response, true));

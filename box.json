@@ -1,14 +1,16 @@
 {
-  "chmod": "0755",
-  "directories": ["lib"],
-  "finder": [
-    {
-      "name": "*.php",
-      "exclude": ["Tests"],
-      "in": "vendor"
-    }
-  ],
-  "main": "updater.php",
-  "output": "updater.phar",
-  "stub": true
+	"directories": [
+		"lib"
+	],
+	"finder": [
+		{
+			"name": "*.php",
+			"exclude": [
+				"Tests"
+			],
+			"in": "vendor"
+		}
+	],
+	"main": "updater.php",
+	"force-autodiscovery": true
 }

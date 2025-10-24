@@ -45,7 +45,8 @@ jobs:
 
       - name: check-updater-phar
         run: |
-          ./vendor/bin/box info -l updater.phar | grep -v "^Signature Hash" | grep -v "^  Version.php " | grep -v "^Contents: " | grep -v "^    installed.php " > updater.old.txt
+          composer -V --ansi
+          ./vendor/bin/box info -lm flat updater.phar | LC_LOCALE=C sort | grep -Ev "^(Signature Hash|  Version.php |Contents: |    installed.php |Timestamp: )" > updater.old.txt
           make updater.phar
-          ./vendor/bin/box info -l updater.phar | grep -v "^Signature Hash" | grep -v "^  Version.php " | grep -v "^Contents: " | grep -v "^    installed.php " > updater.txt
-          diff updater.txt updater.old.txt
+          ./vendor/bin/box info -lm flat updater.phar | LC_LOCALE=C sort | grep -Ev "^(Signature Hash|  Version.php |Contents: |    installed.php |Timestamp: )" > updater.txt
+          diff --suppress-common-lines -t --tabsize=4 -d -y --color=always updater.txt updater.old.txt

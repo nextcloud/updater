@@ -27,14 +27,14 @@ test: updater.phar test/vendor
 test-cli: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat features/cli.feature
 
-test-stable24: updater.phar test/vendor
-	cd tests && ../vendor/bin/behat features/stable24.feature
-
-test-stable25: updater.phar test/vendor
-	cd tests && ../vendor/bin/behat features/stable25.feature
-
 test-stable26: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat features/stable26.feature
+
+test-stable27: updater.phar test/vendor
+	cd tests && ../vendor/bin/behat features/stable27.feature
+
+test-stable28: updater.phar test/vendor
+	cd tests && ../vendor/bin/behat features/stable28.feature
 
 test-master: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat features/master.feature

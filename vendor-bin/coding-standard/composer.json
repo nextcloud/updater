@@ -1,11 +1,11 @@
 {
-    "require-dev": {
+	"require-dev": {
 		"friendsofphp/php-cs-fixer": "^3.37",
 		"nextcloud/coding-standard": "^1.1.1"
-    },
-    "config": {
-        "platform": {
-            "php": "8.1"
-        }
-    }
+	},
+	"config": {
+		"platform": {
+			"php": "8.2"
+		}
+	}
 }
