@@ -160,7 +160,8 @@ class Updater {
 		if ($version !== '' && $version !== $this->currentVersion) {
 			$this->updateAvailable = true;
 			$releaseChannel = $this->getCurrentReleaseChannel();
-			$updateText = 'Update to ' . htmlentities($versionString) . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . (string)$response['url'] . '</code>';
+			$downloadUrl = current($this->getDownloadURLs());
+			$updateText = 'Update to ' . htmlentities($versionString) . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $downloadUrl . '</code>';
 
 			// only show changelog link for stable releases (non-RC & non-beta)
 			if (!preg_match('!(rc|beta)!i', $versionString)) {
@@ -546,10 +547,10 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function downloadUpdate(?string $url = null): void {
+	public function downloadUpdate(string $url = ''): void {
 		$this->silentLog('[info] downloadUpdate()');
 
-		if ($url) {
+		if ($url !== '') {
 			// If a URL is provided, use it directly
 			$downloadURLs = [$url];
 		} else {
@@ -590,7 +591,10 @@ class Updater {
 	private function getDownloadURLs(): array {
 		$response = $this->getUpdateServerResponse();
 		$downloadURLs = [];
-		if (!isset($response['downloads']) || !is_array($response['downloads'])) {
+
+		if (isset($response['downloads'])) {
+			$response['downloads'] = (array)$response['downloads'];
+		} else {
 			if (isset($response['url']) && is_string($response['url'])) {
 				// Compatibility with previous verison of updater_server
 				$ext = pathinfo($response['url'], PATHINFO_EXTENSION);
@@ -601,6 +605,7 @@ class Updater {
 				throw new \Exception('Response from update server is missing download URLs');
 			}
 		}
+
 		foreach ($response['downloads'] as $format => $urls) {
 			if (!$this->isAbleToDecompress($format)) {
 				continue;
