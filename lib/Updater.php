@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace NC\Updater;
 
+use Closure;
 use CurlHandle;
 
 class Updater {
@@ -20,6 +21,7 @@ class Updater {
 	private ?string $requestID = null;
 	private bool $disabled = false;
 	private int $previousProgress = 0;
+	private ?Closure $downloadProgress = null;
 
 	/**
 	 * Updater constructor
@@ -537,8 +539,9 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function downloadUpdate(?string $url = null): void {
+	public function downloadUpdate(?string $url = null, ?Closure $downloadProgress = null): void {
 		$this->silentLog('[info] downloadUpdate()');
+		$this->downloadProgress = $downloadProgress;
 
 		if ($url) {
 			// If a URL is provided, use it directly
@@ -698,6 +701,10 @@ class Updater {
 				// log every 2% increment for the first 10% then only log every 10% increment after that
 				if ($progress % 10 === 0 || ($progress < 10 && $progress % 2 === 0)) {
 					$this->silentLog("[info] download progress: $progress% (" . $this->formatBytes($downloaded) . ' of ' . $this->formatBytes($download_size) . ')');
+
+					if ($this->downloadProgress) {
+						($this->downloadProgress)($progress, $this->formatBytes($downloaded), $this->formatBytes($download_size));
+					}
 				}
 			}
 		}
