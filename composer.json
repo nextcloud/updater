@@ -25,7 +25,8 @@
 		"lint": "find . -name \\*.php -not -path './vendor*' -not -path './build/*' -not -path './node_modules/*' -print0 | xargs -0 -n1 php -l",
 		"psalm": "psalm --threads=$(nproc)",
 		"psalm:ci": "psalm --threads=1",
-		"psalm:fix": "- --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType"
+		"psalm:fix": "- --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType",
+		"rector": "rector && composer run cs:fix"
 	},
 	"require-dev": {
 		"bamarni/composer-bin-plugin": "^1.8"
