@@ -59,7 +59,7 @@ class UpdateCommand extends Command {
 		}
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->skipBackup = (bool)$input->getOption('no-backup');
 		$this->skipUpgrade = (bool)$input->getOption('no-upgrade');
 		$this->urlOverride = (string)$input->getOption('url');
