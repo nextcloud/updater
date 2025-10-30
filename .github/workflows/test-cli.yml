@@ -13,12 +13,16 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: updater-test-cli-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   test-cli:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ["8.1"]
+        php-versions: ["8.2"]
 
     name: test-cli
 

@@ -13,6 +13,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: updater-test-master-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   test-master:
     runs-on: ubuntu-latest

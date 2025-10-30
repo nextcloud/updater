@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace NC\Updater;
 
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -31,7 +32,7 @@ class CommandApplication extends Application {
 	 *
 	 * @return string The command name
 	 */
-	protected function getCommandName(InputInterface $input) {
+	protected function getCommandName(InputInterface $input): ?string {
 		// This should return the name of your command.
 		return 'update';
 	}
@@ -41,7 +42,7 @@ class CommandApplication extends Application {
 	 *
 	 * @return \Symfony\Component\Console\Command\Command[] An array of default Command instances
 	 */
-	protected function getDefaultCommands() {
+	protected function getDefaultCommands(): array {
 		// Keep the core default commands to have the HelpCommand
 		// which is used when using the --help option
 		$defaultCommands = parent::getDefaultCommands();
@@ -55,7 +56,7 @@ class CommandApplication extends Application {
 	 * Overridden so that the application doesn't expect the command
 	 * name to be the first argument.
 	 */
-	public function getDefinition() {
+	public function getDefinition(): InputDefinition {
 		$inputDefinition = parent::getDefinition();
 		// clear out the normal first argument, which is the command name
 		$inputDefinition->setArguments();
