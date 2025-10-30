@@ -19,7 +19,7 @@ $content = '<?php
 namespace NC\Updater;
 
 class Version {
-	function get() {
+	function get(): string {
 		return \'' . $currentTag . $dirty . '\';
 	}
 }

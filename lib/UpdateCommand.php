@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace NC\Updater;
 
+use Override;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,7 +24,7 @@ class UpdateCommand extends Command {
 	protected bool $skipUpgrade = false;
 	protected string $urlOverride = '';
 
-	/** @var list<string> strings of text for stages of updater */
+	/** Strings of text for stages of updater */
 	protected array $checkTexts = [
 		0 => '',
 		1 => 'Check for expected files',
@@ -40,6 +41,7 @@ class UpdateCommand extends Command {
 		12 => 'Done',
 	];
 
+	#[Override]
 	protected function configure(): void {
 		$this
 			->setName('update')
@@ -59,6 +61,7 @@ class UpdateCommand extends Command {
 		}
 	}
 
+	#[Override]
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->skipBackup = (bool)$input->getOption('no-backup');
 		$this->skipUpgrade = (bool)$input->getOption('no-upgrade');
@@ -87,13 +90,17 @@ class UpdateCommand extends Command {
 			return -1;
 		}
 
-		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
-			$configFileName = rtrim($dir, '/') . '/config.php';
-		} else {
-			$configFileName = $path . '/../config/config.php';
-		}
+		$dir = (string)getenv('NEXTCLOUD_CONFIG_DIR');
+		$configFileName = $dir === ''
+			? $configFileName = $path . '/../config/config.php'
+			: $configFileName = rtrim($dir, '/') . '/config.php';
+
 		$user = posix_getpwuid(posix_getuid());
-		$configUser = posix_getpwuid(fileowner($configFileName));
+		$fileowner = fileowner($configFileName);
+		if ($fileowner === false) {
+			throw new \Exception('Unable to read configuration file owner');
+		}
+		$configUser = posix_getpwuid($fileowner);
 		if ($user['name'] !== $configUser['name']) {
 			$output->writeln('Console has to be executed with the user that owns the file config/config.php');
 			$output->writeln('Current user: ' . $user['name']);
@@ -414,7 +421,7 @@ class UpdateCommand extends Command {
 					// Ensure that we have the same number of characters, that we want to override in the progress method
 					$output->write(str_pad(' 0%', 5, ' ', STR_PAD_LEFT));
 
-					$this->updater->downloadUpdate($this->urlOverride, function (int $progress, string $downloaded, string $download_size) use ($output) {
+					$this->updater->downloadUpdate($this->urlOverride, function (int $progress) use ($output) {
 						// Move cursor 5 to the left and write the new progress
 						$output->write("\x1B[5D");
 						$output->write(str_pad(' ' . $progress . '%', 5, ' ', STR_PAD_LEFT));

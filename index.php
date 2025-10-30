@@ -31,6 +31,7 @@ use Closure;
 use CurlHandle;
 
 class Updater {
+	/** @var non-empty-string */
 	private string $nextcloudDir;
 	private array $configValues = [];
 	private string $currentVersion = 'unknown';
@@ -49,11 +50,15 @@ class Updater {
 	public function __construct(
 		string $baseDir,
 	) {
-		$this->nextcloudDir = realpath(dirname($baseDir));
+		$nextcloudDir = realpath(dirname($baseDir));
+		if ($nextcloudDir === false || $nextcloudDir === '') {
+			throw new \Exception('Invalid baseDir provided');
+		}
+		$this->nextcloudDir = $nextcloudDir;
 
 		[$this->configValues] = $this->readConfigFile();
 
-		if (php_sapi_name() !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false)) {
+		if (php_sapi_name() !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false) !== true) {
 			// updater disabled
 			$this->disabled = true;
 			return;
@@ -70,11 +75,12 @@ class Updater {
 			$version = $this->getConfigOptionString('version');
 			$buildTime = '';
 		} else {
-			/** @var ?string $OC_Build */
-			require_once $versionFileName;
-			/** @psalm-suppress UndefinedVariable
-			 * @var ?string $version
+			/**
+			 * @var ?string $OC_Build
+			 * @var ?string $OC_VersionString
 			 */
+			require_once $versionFileName;
+
 			$version = $OC_VersionString;
 			$buildTime = $OC_Build;
 		}
@@ -97,8 +103,11 @@ class Updater {
 	 * @return array{array, string}
 	 */
 	private function readConfigFile(): array {
-		if ($dir = getenv('NEXTCLOUD_CONFIG_DIR')) {
+		if ($dir = (string)getenv('NEXTCLOUD_CONFIG_DIR')) {
 			$configFileName = realpath($dir . '/config.php');
+			if ($configFileName === false) {
+				throw new \Exception('Configuration not found in ' . $dir);
+			}
 		} else {
 			$configFileName = $this->nextcloudDir . '/config/config.php';
 		}
@@ -147,10 +156,9 @@ class Updater {
 	}
 
 	/**
-	 * @return string
 	 * @throws \Exception
 	 */
-	public function checkForUpdate() {
+	public function checkForUpdate(): string {
 		$response = $this->getUpdateServerResponse();
 
 		$this->silentLog('[info] checkForUpdate() ' . print_r($response, true));
@@ -234,6 +242,8 @@ class Updater {
 
 	/**
 	 * Returns the expected files and folders as array
+	 *
+	 * @return list<string>
 	 */
 	private function getExpectedElementsList(): array {
 		$expected = [
@@ -287,6 +297,7 @@ class Updater {
 			'db_structure.xml',
 			'REUSE.toml',
 		];
+
 		return array_merge($expected, $this->getAppDirectories());
 	}
 
@@ -306,7 +317,6 @@ class Updater {
 				if (!is_array($appsPath) || !isset($appsPath['path']) || !is_string($appsPath['path'])) {
 					throw new \Exception('Invalid configuration in apps_paths configuration key');
 				}
-				$appDir = basename($appsPath['path']);
 				if (strpos($appsPath['path'], $this->nextcloudDir . '/') === 0) {
 					$relativePath = substr($appsPath['path'], strlen($this->nextcloudDir . '/'));
 					if ($relativePath !== 'apps') {
@@ -395,13 +405,13 @@ class Updater {
 		];
 
 		$notWritablePaths = [];
-		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $path => $fileInfo) {
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $fileInfo) {
 			if (!$fileInfo->isWritable()) {
 				$notWritablePaths[] = $fileInfo->getFilename();
 			}
 		}
 		// Special handling for included default theme
-		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir . '/themes/example', $excludedElements) as $path => $fileInfo) {
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir . '/themes/example', $excludedElements) as $fileInfo) {
 			if (!$fileInfo->isWritable()) {
 				$notWritablePaths[] = $fileInfo->getFilename();
 			}
@@ -733,7 +743,7 @@ class Updater {
 		return $ext === 'zip' && extension_loaded($ext);
 	}
 
-	private function downloadProgressCallback(\CurlHandle $resource, int $download_size, int $downloaded, int $upload_size, int $uploaded): void {
+	private function downloadProgressCallback(\CurlHandle $resource, int $download_size, int $downloaded): void {
 		if ($download_size !== 0) {
 			$progress = (int)round($downloaded * 100 / $download_size);
 			if ($progress > $this->previousProgress) {
@@ -788,7 +798,7 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function verifyIntegrity(?string $urlOverride = null): void {
+	public function verifyIntegrity(string $urlOverride = ''): void {
 		$this->silentLog('[info] verifyIntegrity()');
 
 		if ($this->getCurrentReleaseChannel() === 'daily') {
@@ -796,7 +806,7 @@ class Updater {
 			return;
 		}
 
-		if ($urlOverride) {
+		if ($urlOverride !== '') {
 			$this->silentLog('[info] custom download url provided, cannot verify signature');
 			return;
 		}
@@ -959,8 +969,6 @@ EOF;
 			return;
 		}
 
-		$directories = [];
-		$files = [];
 		foreach ($this->getRecursiveDirectoryIterator($folder, []) as $fileInfo) {
 			if ($fileInfo->isDir()) {
 				rmdir($fileInfo->getRealPath());
@@ -1079,6 +1087,10 @@ EOF;
 	 */
 	private function moveWithExclusions(string $dataLocation, array $excludedElements): void {
 		foreach ($this->getRecursiveDirectoryIterator($dataLocation, $excludedElements) as $path => $fileInfo) {
+			if ($dataLocation === '') {
+				throw new \Exception('Invalid dataLocation procided');
+
+			}
 			$fileName = explode($dataLocation, $path)[1];
 
 			if ($fileInfo->isFile()) {
