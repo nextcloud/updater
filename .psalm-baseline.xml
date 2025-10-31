@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<files psalm-version="5.26.1@d747f6500b38ac4f7dfc5edbcae6e4b637d7add0">
+  <file src="buildVersionFile.php">
+    <ForbiddenCode>
+      <code><![CDATA[shell_exec('git describe --tags')]]></code>
+    </ForbiddenCode>
+  </file>
+  <file src="index.web.php">
+    <UndefinedClass>
+      <code><![CDATA[$e]]></code>
+      <code><![CDATA[$logE]]></code>
+      <code><![CDATA[$logE]]></code>
+      <code><![CDATA[$this->updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[$updater]]></code>
+      <code><![CDATA[LogException]]></code>
+      <code><![CDATA[LogException]]></code>
+      <code><![CDATA[UpdateException]]></code>
+      <code><![CDATA[Updater]]></code>
+      <code><![CDATA[private]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Updater.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[isDisabled]]></code>
+    </PossiblyUnusedMethod>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[strrpos($version, '.')]]></code>
+    </RiskyTruthyFalsyComparison>
+    <UnusedMethod>
+      <code><![CDATA[downloadProgressCallback]]></code>
+    </UnusedMethod>
+  </file>
+</files>
