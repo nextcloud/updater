@@ -1283,16 +1283,16 @@
         },
         {
             "name": "humbug/box",
-            "version": "4.6.8",
+            "version": "4.6.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/box-project/box.git",
-                "reference": "05d205d99ddb72f3729658a0115db02cfc08912e"
+                "reference": "6dc6a1314d63e9d75c8195c996e1081e68514c36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/box-project/box/zipball/05d205d99ddb72f3729658a0115db02cfc08912e",
-                "reference": "05d205d99ddb72f3729658a0115db02cfc08912e",
+                "url": "https://api.github.com/repos/box-project/box/zipball/6dc6a1314d63e9d75c8195c996e1081e68514c36",
+                "reference": "6dc6a1314d63e9d75c8195c996e1081e68514c36",
                 "shasum": ""
             },
             "require": {
@@ -1321,7 +1321,7 @@
                 "symfony/process": "^6.4.0 || ^7.0.0",
                 "symfony/var-dumper": "^6.4.0 || ^7.0.0",
                 "thecodingmachine/safe": "^2.5 || ^3.0",
-                "webmozart/assert": "^1.11"
+                "webmozart/assert": "^1.12"
             },
             "conflict": {
                 "marc-mabe/php-enum": "<4.4"
@@ -1391,9 +1391,9 @@
             ],
             "support": {
                 "issues": "https://github.com/box-project/box/issues",
-                "source": "https://github.com/box-project/box/tree/4.6.8"
+                "source": "https://github.com/box-project/box/tree/4.6.10"
             },
-            "time": "2025-10-13T17:13:17+00:00"
+            "time": "2025-10-31T18:38:02+00:00"
         },
         {
             "name": "humbug/php-scoper",
@@ -4094,16 +4094,16 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "1.12.0",
+            "version": "1.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozarts/assert.git",
-                "reference": "541057574806f942c94662b817a50f63f7345360"
+                "reference": "9be6926d8b485f55b9229203f962b51ed377ba68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/541057574806f942c94662b817a50f63f7345360",
-                "reference": "541057574806f942c94662b817a50f63f7345360",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/9be6926d8b485f55b9229203f962b51ed377ba68",
+                "reference": "9be6926d8b485f55b9229203f962b51ed377ba68",
                 "shasum": ""
             },
             "require": {
@@ -4146,9 +4146,9 @@
             ],
             "support": {
                 "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/1.12.0"
+                "source": "https://github.com/webmozarts/assert/tree/1.12.1"
             },
-            "time": "2025-10-20T12:43:39+00:00"
+            "time": "2025-10-29T15:56:20+00:00"
         }
     ],
     "aliases": [],
