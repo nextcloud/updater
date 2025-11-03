@@ -391,6 +391,7 @@ class Updater {
 			'.rnd',
 			'.well-known',
 			'data',
+			'themes'
 		];
 
 		$notWritablePaths = [];
@@ -399,6 +400,17 @@ class Updater {
 				$notWritablePaths[] = $fileInfo->getFilename();
 			}
 		}
+		// Special handling for included default theme
+		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir . '/themes/example', $excludedElements) as $path => $fileInfo) {
+			if (!$fileInfo->isWritable()) {
+				$notWritablePaths[] = $fileInfo->getFilename();
+			}
+		}
+		$themesReadmeFileInfo = new \SplFileInfo($this->nextcloudDir . '/themes/README');
+		if (!$themesReadmeFileInfo->isWritable()) {
+			$notWritablePaths[] = $themesReadmeFileInfo->getFilename();
+		}
+
 		if (count($notWritablePaths) > 0) {
 			throw new UpdateException($notWritablePaths);
 		}
