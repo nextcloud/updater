@@ -17,31 +17,32 @@ $indexPhpContent = file_get_contents(__DIR__ . '/../index.php');
 
 function findDiffPos($original, $copy) {
 	$lowerLimit = 0;
-	$upperLimit = strlen($copy) - 1;
+	$upperLimit = strlen((string)$copy) - 1;
 
 	do {
 		$index = $lowerLimit + round(($upperLimit - $lowerLimit) / 2);
 
-		$partOfCopy = substr($copy, 0, $index);
-		if (strpos($original, $partOfCopy) === false) {
+		$partOfCopy = substr((string)$copy, 0, $index);
+		if (in_array(str_contains((string)$original, $partOfCopy), [0, false], true)) {
 			$upperLimit = $index;
 		} else {
 			$lowerLimit = $index;
 		}
 	} while ($upperLimit - $lowerLimit > 5);
 
-	$matchingSubstring = substr($copy, 0, $lowerLimit);
+	$matchingSubstring = substr((string)$copy, 0, $lowerLimit);
 	if (strlen($matchingSubstring) <= 20) {
 		$originalStart = 0;
 		$copyStart = 0;
 	} else {
-		$originalStart = strpos($original, $matchingSubstring) + strlen($matchingSubstring) - 20;
+		$originalStart = strpos((string)$original, $matchingSubstring) + strlen($matchingSubstring) - 20;
 		$copyStart = strlen($matchingSubstring) - 20;
 	}
-	$stringOriginal = substr($original, $originalStart, 40);
-	$stringCopy = substr($copy, $copyStart, 40);
 
-	echo "diff is in here: (between character $lowerLimit and $upperLimit):" . PHP_EOL;
+	$stringOriginal = substr((string)$original, $originalStart, 40);
+	$stringCopy = substr((string)$copy, $copyStart, 40);
+
+	echo sprintf('diff is in here: (between character %s and %s):', $lowerLimit, $upperLimit) . PHP_EOL;
 	echo '...' . $stringOriginal . '...' . PHP_EOL;
 	echo '...' . $stringCopy . '...' . PHP_EOL;
 }
@@ -57,7 +58,7 @@ $iterator = new \RecursiveDirectoryIterator(
 foreach ($iterator as $path => $fileInfo) {
 	$fileName = explode($libDir, $path)[1];
 
-	if (array_search($fileName, $excludedFiles) !== false) {
+	if (in_array($fileName, $excludedFiles)) {
 		continue;
 	}
 
@@ -67,9 +68,9 @@ foreach ($iterator as $path => $fileInfo) {
 
 	$fileContent = trim($fileContent);
 
-	if (strpos($indexPhpContent, $fileContent) === false) {
+	if (in_array(str_contains($indexPhpContent, $fileContent), [0, false], true)) {
 		$failedFiles[] = $fileName;
-		echo "$fileName" . PHP_EOL . PHP_EOL;
+		echo $fileName . PHP_EOL . PHP_EOL;
 		findDiffPos($indexPhpContent, $fileContent);
 		echo PHP_EOL;
 	}

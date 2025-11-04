@@ -12,20 +12,31 @@ use Behat\Behat\Context\SnippetAcceptingContext;
  */
 class FeatureContext implements SnippetAcceptingContext {
 	protected $buildDir;
+
 	protected $serverDir;
+
 	protected $updateServerDir;
+
 	protected $tmpDownloadDir;
+
 	protected $downloadURL = 'https://download.nextcloud.com/server/releases/';
+
 	protected $dailyDownloadURL = 'https://download.nextcloud.com/server/daily/latest-';
+
 	protected $prereleasesDownloadURL = 'https://download.nextcloud.com/server/prereleases/';
+
 	/** @var resource */
-	protected $updaterServerProcess = null;
+	protected $updaterServerProcess;
+
 	/** @var string[] */
 	protected $CLIOutput;
+
 	/** @var integer */
 	protected $CLIReturnCode;
+
 	/** @var string */
 	protected $autoupdater = '1';
+
 	/** @var bool */
 	protected $skipIt = false;
 
@@ -38,12 +49,15 @@ class FeatureContext implements SnippetAcceptingContext {
 		if (!file_exists($baseDir) && !mkdir($baseDir)) {
 			throw new RuntimeException('Creating tmp download dir failed');
 		}
+
 		if (!file_exists($this->serverDir) && !mkdir($this->serverDir)) {
 			throw new RuntimeException('Creating server dir failed');
 		}
+
 		if (!file_exists($this->tmpDownloadDir) && !mkdir($this->tmpDownloadDir)) {
 			throw new RuntimeException('Creating tmp download dir failed');
 		}
+
 		if (!file_exists($this->updateServerDir) && !mkdir($this->updateServerDir)) {
 			throw new RuntimeException('Creating update server dir failed');
 		}
@@ -66,6 +80,7 @@ class FeatureContext implements SnippetAcceptingContext {
 		if ($this->skipIt) {
 			return;
 		}
+
 		// recursive deletion of server folder
 		if (file_exists($this->serverDir)) {
 			$iterator = new RecursiveIteratorIterator(
@@ -77,6 +92,7 @@ class FeatureContext implements SnippetAcceptingContext {
 				$action = $fileInfo->isDir() ? 'rmdir' : 'unlink';
 				$action($fileInfo->getRealPath());
 			}
+
 			$state = rmdir($this->serverDir);
 			if ($state === false) {
 				throw new \Exception('Could not rmdir ' . $this->serverDir);
@@ -88,21 +104,24 @@ class FeatureContext implements SnippetAcceptingContext {
 		if (!file_exists($this->tmpDownloadDir . $filename)) {
 			$fp = fopen($this->tmpDownloadDir . $filename, 'w+');
 			$url = $this->downloadURL . $filename;
-			if (str_contains($version, 'RC') || str_contains($version, 'rc') || str_contains($version, 'beta')) {
+			if (str_contains((string)$version, 'RC') || str_contains((string)$version, 'rc') || str_contains((string)$version, 'beta')) {
 				$url = $this->prereleasesDownloadURL . 'nextcloud-' . $version . '.zip';
-			} elseif (strpos($version, 'stable') !== false || strpos($version, 'master') !== false) {
+			} elseif (str_contains((string)$version, 'stable') || str_contains((string)$version, 'master')) {
 				$url = $this->dailyDownloadURL . $version . '.zip';
 			}
+
 			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_FILE, $fp);
 			curl_setopt($ch, CURLOPT_USERAGENT, 'Nextcloud Updater');
 			if (curl_exec($ch) === false) {
 				throw new \Exception('Curl error: ' . curl_error($ch));
 			}
+
 			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			if ($httpCode !== 200) {
 				throw new \Exception('Download failed for ' . $url . ' - HTTP code: ' . $httpCode);
 			}
+
 			curl_close($ch);
 			fclose($fp);
 		}
@@ -126,7 +145,7 @@ class FeatureContext implements SnippetAcceptingContext {
 		exec('./occ maintenance:install --admin-user=admin --admin-pass=admin 2>&1', $output, $returnCode);
 
 		if ($returnCode !== 0) {
-			throw new Exception('Install failed' . PHP_EOL . join(PHP_EOL, $output));
+			throw new Exception('Install failed' . PHP_EOL . implode(PHP_EOL, $output));
 		}
 	}
 
@@ -137,6 +156,7 @@ class FeatureContext implements SnippetAcceptingContext {
 		if ($this->skipIt) {
 			return;
 		}
+
 		$this->runUpdateServer();
 
 		$content = '';
@@ -150,6 +170,7 @@ class FeatureContext implements SnippetAcceptingContext {
 		if ($this->skipIt) {
 			return;
 		}
+
 		$this->autoupdater = '0';
 	}
 
@@ -160,10 +181,11 @@ class FeatureContext implements SnippetAcceptingContext {
 		if ($this->skipIt) {
 			return;
 		}
+
 		$this->theCliUpdaterIsRun();
 
 		if ($this->CLIReturnCode !== 0) {
-			throw new Exception('updater failed' . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
+			throw new Exception('updater failed' . PHP_EOL . implode(PHP_EOL, $this->CLIOutput));
 		}
 	}
 
@@ -174,9 +196,11 @@ class FeatureContext implements SnippetAcceptingContext {
 		if ($this->skipIt) {
 			return;
 		}
+
 		if (!file_exists($this->buildDir . 'updater.phar')) {
 			throw new Exception('updater.phar not available - please build it in advance via "box build -c box.json"');
 		}
+
 		copy($this->buildDir . 'updater.phar', $this->serverDir . 'nextcloud/updater/updater');
 		chdir($this->serverDir . 'nextcloud/updater');
 		chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
@@ -190,7 +214,6 @@ class FeatureContext implements SnippetAcceptingContext {
 
 	/**
 	 * @param $version
-	 * @return string
 	 */
 	public function getSignatureForVersion(string $version): string {
 		$signatures = [
@@ -233,9 +256,7 @@ R8zf/PC+Yj1vxFZ0hYAtweLgBxfwU5cNBYfH7M1I9FLlb88p/XDWx6XaBz4Ql6LK
 lbpDxNE9UiM09JG1dU7Ebg==',
 		];
 
-		return isset($signatures[$version])
-			? $signatures[$version]
-			: '';
+		return $signatures[$version] ?? '';
 	}
 
 	private function writeUpdaterIndex(
@@ -248,12 +269,12 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		$content = <<<XML
 			<?php header("Content-Type: application/xml"); ?>
 			<nextcloud>
-				<version>$version</version>
-				<versionstring>$name</versionstring>
-				<url>$url</url>
+				<version>{$version}</version>
+				<versionstring>{$name}</versionstring>
+				<url>{$url}</url>
 				<web>https://docs.nextcloud.org/server/10/admin_manual/maintenance/manual_upgrade.html</web>
-				<autoupdater>$autoupdater</autoupdater>
-				<signature>$signature</signature>
+				<autoupdater>{$autoupdater}</autoupdater>
+				<signature>{$signature}</signature>
 			</nextcloud>
 			XML;
 
@@ -268,6 +289,7 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		if ($this->skipIt) {
 			return;
 		}
+
 		$this->runUpdateServer();
 
 		$this->writeUpdaterIndex(
@@ -285,6 +307,7 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		if ($this->skipIt) {
 			return;
 		}
+
 		$this->runUpdateServer();
 		$this->writeUpdaterIndex(
 			str_replace(['9.1', '9.2'], ['10.0', '11.0'], $version),
@@ -301,6 +324,7 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		if ($this->skipIt) {
 			return;
 		}
+
 		$this->runUpdateServer();
 
 		$this->writeUpdaterIndex(
@@ -343,12 +367,13 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		if ($this->skipIt) {
 			return;
 		}
+
 		/** @var $OC_Version */
 		require $this->serverDir . 'nextcloud/version.php';
 
-		$installedVersion = join('.', $OC_Version);
+		$installedVersion = implode('.', $OC_Version);
 
-		if (strpos($installedVersion, $version) !== 0) {
+		if (!str_starts_with($installedVersion, (string)$version)) {
 			throw new Exception('Version mismatch - Installed: ' . $installedVersion . ' Wanted: ' . $version);
 		}
 	}
@@ -368,8 +393,8 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		$expectedOutput = 'Maintenance mode is currently '
 			. ($state === 'on' ? 'enabled' : 'disabled');
 
-		if ($returnCode !== 0 || strpos(join(PHP_EOL, $output), $expectedOutput) === false) {
-			throw new Exception('Maintenance mode does not match ' . PHP_EOL . join(PHP_EOL, $output));
+		if ($returnCode !== 0 || in_array(str_contains(implode(PHP_EOL, $output), $expectedOutput), [0, false], true)) {
+			throw new Exception('Maintenance mode does not match ' . PHP_EOL . implode(PHP_EOL, $output));
 		}
 	}
 
@@ -389,11 +414,9 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 
 	/**
 	 * @Given the config key :key is set to :value of type :type
-	 * @param string $key
-	 * @param mixed $value
 	 * @param string $type ('string', 'boolean', 'integer', 'double')
 	 */
-	public function theConfigKeyIsSetTo(string $key, $value, string $type = 'string') {
+	public function theConfigKeyIsSetTo(string $key, mixed $value, string $type = 'string') {
 		if ($this->skipIt) {
 			return;
 		}
@@ -404,12 +427,11 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 
 		chdir($this->serverDir . 'nextcloud');
 		shell_exec('chmod +x occ');
-		exec("./occ config:system:set $key --value '$value' --type '$type'");
+		exec(sprintf("./occ config:system:set %s --value '%s' --type '%s'", $key, $value, $type));
 	}
 
 	/**
 	 * @Then the user ini file contains :content
-	 * @param string $content
 	 */
 	public function theUserIniFileContains(string $content) {
 		if ($this->skipIt) {
@@ -441,19 +463,17 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 
 		$upgradeOutput = 'Nextcloud or one of the apps require upgrade';
 
-		$outputString = join(PHP_EOL, $output);
+		$outputString = implode(PHP_EOL, $output);
 		if ($returnCode !== 0) {
 			throw new Exception('Return code of status output does not match ' . PHP_EOL . $outputString);
 		}
 
 		if ($state === 'not required') {
-			if (strpos($outputString, $upgradeOutput) !== false) {
-				throw new Exception('Upgrade is required ' . PHP_EOL . join(PHP_EOL, $output));
+			if (str_contains($outputString, $upgradeOutput)) {
+				throw new Exception('Upgrade is required ' . PHP_EOL . implode(PHP_EOL, $output));
 			}
-		} else {
-			if (strpos($outputString, $upgradeOutput) === false) {
-				throw new Exception('Upgrade is not required ' . PHP_EOL . join(PHP_EOL, $output));
-			}
+		} elseif (in_array(str_contains($outputString, $upgradeOutput), [0, false], true)) {
+			throw new Exception('Upgrade is not required ' . PHP_EOL . implode(PHP_EOL, $output));
 		}
 	}
 
@@ -464,8 +484,9 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		if ($this->skipIt) {
 			return;
 		}
+
 		if ($this->CLIReturnCode === (int)$expectedReturnCode) {
-			throw new Exception('Return code does match but should not match: ' . $this->CLIReturnCode . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
+			throw new Exception('Return code does match but should not match: ' . $this->CLIReturnCode . PHP_EOL . implode(PHP_EOL, $this->CLIOutput));
 		}
 	}
 
@@ -476,8 +497,9 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		if ($this->skipIt) {
 			return;
 		}
-		if (strpos(join(PHP_EOL, $this->CLIOutput), $expectedOutput) === false) {
-			throw new Exception('Output does not match: ' . PHP_EOL . join(PHP_EOL, $this->CLIOutput));
+
+		if (in_array(str_contains(implode(PHP_EOL, $this->CLIOutput), (string)$expectedOutput), [0, false], true)) {
+			throw new Exception('Output does not match: ' . PHP_EOL . implode(PHP_EOL, $this->CLIOutput));
 		}
 	}
 
@@ -488,6 +510,7 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		if ($this->skipIt) {
 			return;
 		}
+
 		$configFile = $this->serverDir . 'nextcloud/config/config.php';
 		$content = file_get_contents($configFile);
 		$content = preg_replace("!'version'\s*=>\s*'(\d+\.\d+\.\d+)\.\d+!", "'version' => '$1", $content);
@@ -501,6 +524,7 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		if ($this->skipIt) {
 			return;
 		}
+
 		mkdir($this->serverDir . 'nextcloud/' . $name);
 	}
 
@@ -511,6 +535,7 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 		if ($this->skipIt) {
 			return;
 		}
+
 		$configFile = $this->serverDir . 'nextcloud/config/config.php';
 		$content = file_get_contents($configFile);
 		$appsPaths = <<<EOF
@@ -528,6 +553,7 @@ lbpDxNE9UiM09JG1dU7Ebg==',
 	],
 EOF;
 		$appsPaths = sprintf($appsPaths, $name, $name);
+
 		$content = preg_replace("!\);!", $appsPaths . ');', $content);
 		file_put_contents($configFile, $content);
 	}
@@ -536,6 +562,6 @@ EOF;
 	 * @Given /PHP is at least in version ([0-9.]+)/
 	 */
 	public function phpIsAtLeastInVersion($version) {
-		$this->skipIt = !version_compare($version, PHP_VERSION, '<');
+		$this->skipIt = in_array(version_compare($version, PHP_VERSION, '<'), [0, false], true);
 	}
 }
