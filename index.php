@@ -32,14 +32,22 @@ use CurlHandle;
 
 class Updater {
 	/** @var non-empty-string */
-	private string $nextcloudDir;
+	private readonly string $nextcloudDir;
+
 	private array $configValues = [];
+
 	private string $currentVersion = 'unknown';
-	private string $buildTime;
+
+	private readonly string $buildTime;
+
 	private bool $updateAvailable = false;
+
 	private ?string $requestID = null;
+
 	private bool $disabled = false;
+
 	private int $previousProgress = 0;
+
 	private ?Closure $downloadProgress = null;
 
 	/**
@@ -54,18 +62,19 @@ class Updater {
 		if ($nextcloudDir === false || $nextcloudDir === '') {
 			throw new \Exception('Invalid baseDir provided');
 		}
+
 		$this->nextcloudDir = $nextcloudDir;
 
 		[$this->configValues] = $this->readConfigFile();
 
-		if (php_sapi_name() !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false) !== true) {
+		if (PHP_SAPI !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false) !== true) {
 			// updater disabled
 			$this->disabled = true;
 			return;
 		}
 
 		$dataDir = $this->getUpdateDirectoryLocation();
-		if (empty($dataDir)) {
+		if ($dataDir === '' || $dataDir === '0') {
 			throw new \Exception('Could not read data directory from config.php.');
 		}
 
@@ -91,7 +100,7 @@ class Updater {
 
 		// normalize version to 3 digits
 		$splittedVersion = explode('.', $version);
-		if (sizeof($splittedVersion) >= 3) {
+		if (count($splittedVersion) >= 3) {
 			$splittedVersion = array_slice($splittedVersion, 0, 3);
 		}
 
@@ -111,13 +120,16 @@ class Updater {
 		} else {
 			$configFileName = $this->nextcloudDir . '/config/config.php';
 		}
+
 		if (!file_exists($configFileName)) {
 			throw new \Exception('Could not find config.php (' . $configFileName . '). Is this file in the "updater" subfolder of Nextcloud?');
 		}
+
 		$filePointer = @fopen($configFileName, 'r');
 		if ($filePointer === false) {
 			throw new \Exception('Could not open config.php (' . $configFileName . ').');
 		}
+
 		if (!flock($filePointer, LOCK_SH)) {
 			throw new \Exception('Could not acquire a shared lock on the config file (' . $configFileName . ')');
 		}
@@ -173,7 +185,7 @@ class Updater {
 			$updateText = 'Update to ' . htmlentities($versionString) . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $downloadUrl . '</code>';
 
 			// only show changelog link for stable releases (non-RC & non-beta)
-			if (!preg_match('!(rc|beta)!i', $versionString)) {
+			if (in_array(preg_match('!(rc|beta)!i', $versionString), [0, false], true)) {
 				$changelogURL = $this->getChangelogURL(substr($version, 0, strrpos($version, '.') ?: 0));
 				$updateText .= '<br /><a class="external_link" href="' . $changelogURL . '" target="_blank" rel="noreferrer noopener">Open changelog ↗</a>';
 			}
@@ -181,7 +193,7 @@ class Updater {
 			$updateText = 'No update available.';
 		}
 
-		if ($this->updateAvailable && isset($response['autoupdater']) && !($response['autoupdater'] === 1 || $response['autoupdater'] === '1')) {
+		if ($this->updateAvailable && isset($response['autoupdater']) && ($response['autoupdater'] !== 1 && $response['autoupdater'] !== '1')) {
 			$this->updateAvailable = false;
 
 			$updateText .= '<br />The updater is disabled for this update - please update manually.';
@@ -213,10 +225,11 @@ class Updater {
 			if (!is_string($this->configValues[$key])) {
 				$this->silentLog('[error] Config key ' . $key . ' should be a string, found ' . gettype($this->configValues[$key]));
 			}
+
 			return (string)$this->configValues[$key];
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
 	/**
@@ -227,10 +240,11 @@ class Updater {
 			if (!is_string($this->configValues[$key])) {
 				$this->silentLog('[error] Config key ' . $key . ' should be a string, found ' . gettype($this->configValues[$key]));
 			}
+
 			return (string)$this->configValues[$key];
-		} else {
-			throw new \Exception('Config key ' . $key . ' is missing');
 		}
+
+		throw new \Exception('Config key ' . $key . ' is missing');
 	}
 
 	/**
@@ -317,7 +331,8 @@ class Updater {
 				if (!is_array($appsPath) || !isset($appsPath['path']) || !is_string($appsPath['path'])) {
 					throw new \Exception('Invalid configuration in apps_paths configuration key');
 				}
-				if (strpos($appsPath['path'], $this->nextcloudDir . '/') === 0) {
+
+				if (str_starts_with($appsPath['path'], $this->nextcloudDir . '/')) {
 					$relativePath = substr($appsPath['path'], strlen($this->nextcloudDir . '/'));
 					if ($relativePath !== 'apps') {
 						$expected[] = $relativePath;
@@ -325,6 +340,7 @@ class Updater {
 				}
 			}
 		}
+
 		return $expected;
 	}
 
@@ -336,10 +352,11 @@ class Updater {
 	 */
 	private function getRecursiveDirectoryIterator(string $folder, array $excludedPaths): \Generator {
 		foreach ($excludedPaths as $element) {
-			if (strpos($element, '/') !== false) {
+			if (str_contains($element, '/')) {
 				throw new \Exception('Excluding subpaths is not supported yet');
 			}
 		}
+
 		$exclusions = array_flip($excludedPaths);
 
 		$handle = opendir($folder);
@@ -354,9 +371,11 @@ class Updater {
 			if (in_array($name, ['.', '..'])) {
 				continue;
 			}
+
 			if (isset($exclusions[$name])) {
 				continue;
 			}
+
 			$children[] = $name;
 		}
 
@@ -367,6 +386,7 @@ class Updater {
 			if (is_dir($path)) {
 				yield from $this->getRecursiveDirectoryIterator($path, []);
 			}
+
 			yield $path => new \SplFileInfo($path);
 		}
 	}
@@ -380,14 +400,15 @@ class Updater {
 		$expectedElements = $this->getExpectedElementsList();
 		$unexpectedElements = [];
 		foreach (new \DirectoryIterator($this->nextcloudDir) as $fileInfo) {
-			if (array_search($fileInfo->getFilename(), $expectedElements) === false) {
+			if (!in_array($fileInfo->getFilename(), $expectedElements)) {
 				$unexpectedElements[] = $fileInfo->getFilename();
 			}
 		}
 
-		if (count($unexpectedElements) !== 0) {
+		if ($unexpectedElements !== []) {
 			throw new UpdateException($unexpectedElements);
 		}
+
 		$this->silentLog('[info] end of checkForExpectedFilesAndFolders()');
 	}
 
@@ -410,18 +431,20 @@ class Updater {
 				$notWritablePaths[] = $fileInfo->getFilename();
 			}
 		}
+
 		// Special handling for included default theme
 		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir . '/themes/example', $excludedElements) as $fileInfo) {
 			if (!$fileInfo->isWritable()) {
 				$notWritablePaths[] = $fileInfo->getFilename();
 			}
 		}
+
 		$themesReadmeFileInfo = new \SplFileInfo($this->nextcloudDir . '/themes/README');
 		if (!$themesReadmeFileInfo->isWritable()) {
 			$notWritablePaths[] = $themesReadmeFileInfo->getFilename();
 		}
 
-		if (count($notWritablePaths) > 0) {
+		if ($notWritablePaths !== []) {
 			throw new UpdateException($notWritablePaths);
 		}
 
@@ -448,6 +471,7 @@ class Updater {
 		if ($writeSuccess === false) {
 			throw new \Exception('Could not write to config.php (' . $configFileName . ')');
 		}
+
 		$this->silentLog('[info] end of setMaintenanceMode()');
 	}
 
@@ -516,14 +540,14 @@ class Updater {
 				}
 			}
 		}
+
 		$this->silentLog('[info] end of createBackup()');
 	}
 
 	private function getChangelogURL(string $versionString): string {
 		$this->silentLog('[info] getChangelogURL()');
 		$changelogWebsite = 'https://nextcloud.com/changelog/';
-		$changelogURL = $changelogWebsite . '#' . str_replace('.', '-', $versionString);
-		return $changelogURL;
+		return $changelogWebsite . '#' . str_replace('.', '-', $versionString);
 	}
 
 	/**
@@ -537,6 +561,7 @@ class Updater {
 			// FIXME: used deployed URL
 			$updaterServer = 'https://updates.nextcloud.com/updater_server/';
 		}
+
 		$this->silentLog('[info] updaterServer: ' . $updaterServer);
 
 		$releaseChannel = $this->getCurrentReleaseChannel();
@@ -554,6 +579,7 @@ class Updater {
 		if ($response === false) {
 			throw new \Exception('Could not do request to updater server: ' . curl_error($curl));
 		}
+
 		curl_close($curl);
 
 		// Response can be empty when no update is available
@@ -568,6 +594,7 @@ class Updater {
 			$errors = implode("\n", array_map(fn ($error) => $error->message, libxml_get_errors()));
 			throw new \Exception('Could not parse updater server XML response: ' . $content . "\nErrors:\n" . $errors);
 		}
+
 		$response = get_object_vars($xml);
 		$this->silentLog('[info] getUpdateServerResponse response: ' . print_r($response, true));
 		return $response;
@@ -589,13 +616,7 @@ class Updater {
 		$this->silentLog('[info] downloadUpdate()');
 		$this->downloadProgress = $downloadProgress;
 
-		if ($url !== '') {
-			// If a URL is provided, use it directly
-			$downloadURLs = [$url];
-		} else {
-			// Otherwise, get the download URLs from the update server
-			$downloadURLs = $this->getDownloadURLs();
-		}
+		$downloadURLs = $url !== '' ? [$url] : $this->getDownloadURLs();
 
 		$this->silentLog('[info] will try to download archive from: ' . implode(', ', $downloadURLs));
 
@@ -606,6 +627,7 @@ class Updater {
 			if ($state === false) {
 				throw new \Exception('Could not mkdir storage location');
 			}
+
 			$this->silentLog('[info] storage location created');
 		} else {
 			$this->silentLog('[info] storage location already exists');
@@ -618,7 +640,7 @@ class Updater {
 
 		foreach ($downloadURLs as $url) {
 			$this->previousProgress = 0;
-			$saveLocation = $storageLocation . basename($url);
+			$saveLocation = $storageLocation . basename((string)$url);
 			if ($this->downloadArchive($url, $saveLocation)) {
 				return;
 			}
@@ -633,31 +655,31 @@ class Updater {
 
 		if (isset($response['downloads'])) {
 			$response['downloads'] = (array)$response['downloads'];
+		} elseif (isset($response['url']) && is_string($response['url'])) {
+			// Compatibility with previous verison of updater_server
+			$ext = pathinfo($response['url'], PATHINFO_EXTENSION);
+			$response['downloads'] = [
+				$ext => [$response['url']]
+			];
 		} else {
-			if (isset($response['url']) && is_string($response['url'])) {
-				// Compatibility with previous verison of updater_server
-				$ext = pathinfo($response['url'], PATHINFO_EXTENSION);
-				$response['downloads'] = [
-					$ext => [$response['url']]
-				];
-			} else {
-				throw new \Exception('Response from update server is missing download URLs');
-			}
+			throw new \Exception('Response from update server is missing download URLs');
 		}
 
 		foreach ($response['downloads'] as $format => $urls) {
 			if (!$this->isAbleToDecompress($format)) {
 				continue;
 			}
+
 			foreach ($urls as $url) {
 				if (!is_string($url)) {
 					continue;
 				}
+
 				$downloadURLs[] = $url;
 			}
 		}
 
-		if (empty($downloadURLs)) {
+		if ($downloadURLs === []) {
 			throw new \Exception('Your PHP install is not able to decompress any archive. Try to install modules like zip or bzip.');
 		}
 
@@ -724,6 +746,7 @@ class Updater {
 
 			return false;
 		}
+
 		// download succeeded
 		$info = curl_getinfo($ch);
 		$this->silentLog('[info] download stats: size=' . $this->formatBytes((int)$info['size_download']) . ' bytes; total_time=' . round($info['total_time'], 2) . ' secs; avg speed=' . $this->formatBytes((int)$info['speed_download']) . '/sec');
@@ -743,16 +766,16 @@ class Updater {
 		return $ext === 'zip' && extension_loaded($ext);
 	}
 
-	private function downloadProgressCallback(\CurlHandle $resource, int $download_size, int $downloaded): void {
+	private function downloadProgressCallback(CurlHandle $resource, int $download_size, int $downloaded): void {
 		if ($download_size !== 0) {
 			$progress = (int)round($downloaded * 100 / $download_size);
 			if ($progress > $this->previousProgress) {
 				$this->previousProgress = $progress;
 				// log every 2% increment for the first 10% then only log every 10% increment after that
 				if ($progress % 10 === 0 || ($progress < 10 && $progress % 2 === 0)) {
-					$this->silentLog("[info] download progress: $progress% (" . $this->formatBytes($downloaded) . ' of ' . $this->formatBytes($download_size) . ')');
+					$this->silentLog(sprintf('[info] download progress: %d%% (', $progress) . $this->formatBytes($downloaded) . ' of ' . $this->formatBytes($download_size) . ')');
 
-					if ($this->downloadProgress) {
+					if ($this->downloadProgress instanceof \Closure) {
 						($this->downloadProgress)($progress, $this->formatBytes($downloaded), $this->formatBytes($download_size));
 					}
 				}
@@ -768,7 +791,7 @@ class Updater {
 		$pow = min($pow, count($units) - 1);
 
 		// Uncomment one of the following alternatives
-		$bytes /= pow(1024, $pow);
+		$bytes /= 1024 ** $pow;
 		// $bytes /= (1 << (10 * $pow));
 
 		return round($bytes, $precision) . $units[(int)$pow];
@@ -782,14 +805,18 @@ class Updater {
 		$this->silentLog('[info] storage location: ' . $storageLocation);
 
 		$filesInStorageLocation = scandir($storageLocation);
-		$files = array_values(array_filter($filesInStorageLocation, function (string $path) {
-			// Match files with - in the name and extension (*-*.*)
-			return preg_match('/^.*-.*\..*$/i', $path);
-		}));
+		$files = array_values(
+			array_filter(
+				$filesInStorageLocation,
+				// Match files with - in the name and extension (*-*.*)
+				fn (string $path) => preg_match('/^.*-.*\..*$/i', $path),
+			)
+		);
 		// only the downloaded archive
 		if (count($files) !== 1) {
 			throw new \Exception('There are more files than the downloaded archive in the downloads/ folder.');
 		}
+
 		return $storageLocation . $files[0];
 	}
 
@@ -815,6 +842,7 @@ class Updater {
 		if (empty($response['signature'])) {
 			throw new \Exception('No signature specified for defined update');
 		}
+
 		if (!is_string($response['signature'])) {
 			throw new \Exception('Signature specified for defined update should be a string');
 		}
@@ -878,7 +906,7 @@ EOF;
 			return implode('.', $OC_Version);
 		}
 
-		throw new \Exception("OC_Version not found in $versionFile");
+		throw new \Exception('OC_Version not found in ' . $versionFile);
 	}
 
 	/**
@@ -904,6 +932,7 @@ EOF;
 			if ($extraction === false) {
 				throw new \Exception('Error during unpacking zipfile: ' . ($zip->getStatusString()));
 			}
+
 			$zip->close();
 			$state = unlink($downloadedFilePath);
 			if ($state === false) {
@@ -946,13 +975,14 @@ EOF;
 			$parentDir = dirname($this->nextcloudDir . '/' . $file);
 			if (!file_exists($parentDir)) {
 				$r = mkdir($parentDir);
-				if ($r !== true) {
-					throw new \Exception('Can\'t create parent directory for entry point: ' . $file);
+				if (!$r) {
+					throw new \Exception("Can't create parent directory for entry point: " . $file);
 				}
 			}
+
 			$state = file_put_contents($this->nextcloudDir . '/' . $file, $content);
 			if ($state === false) {
-				throw new \Exception('Can\'t replace entry point: ' . $file);
+				throw new \Exception("Can't replace entry point: " . $file);
 			}
 		}
 
@@ -972,12 +1002,10 @@ EOF;
 		foreach ($this->getRecursiveDirectoryIterator($folder, []) as $fileInfo) {
 			if ($fileInfo->isDir()) {
 				rmdir($fileInfo->getRealPath());
+			} elseif ($fileInfo->isLink()) {
+				unlink($fileInfo->getPathName());
 			} else {
-				if ($fileInfo->isLink()) {
-					unlink($fileInfo->getPathName());
-				} else {
-					unlink($fileInfo->getRealPath());
-				}
+				unlink($fileInfo->getRealPath());
 			}
 		}
 
@@ -1000,6 +1028,7 @@ EOF;
 		if ($shippedAppsFileContent === false) {
 			throw new \Exception('core/shipped.json is not available');
 		}
+
 		$shippedAppsFileContentDecoded = json_decode($shippedAppsFileContent, true);
 		if (!is_array($shippedAppsFileContentDecoded)
 			|| !is_array($shippedApps = $shippedAppsFileContentDecoded['shippedApps'] ?? [])) {
@@ -1011,6 +1040,7 @@ EOF;
 		if ($newShippedAppsFileContent === false) {
 			throw new \Exception('core/shipped.json is not available in the new release');
 		}
+
 		$newShippedAppsFileContentDecoded = json_decode($newShippedAppsFileContent, true);
 		if (!is_array($newShippedAppsFileContentDecoded)
 			|| !is_array($newShippedApps = $newShippedAppsFileContentDecoded['shippedApps'] ?? [])) {
@@ -1045,6 +1075,7 @@ EOF;
 				throw new \Exception('Could not delete themes README');
 			}
 		}
+
 		$this->recursiveDelete($this->nextcloudDir . '/themes/example/');
 
 		// Delete the rest
@@ -1091,6 +1122,7 @@ EOF;
 				throw new \Exception('Invalid dataLocation procided');
 
 			}
+
 			$fileName = explode($dataLocation, $path)[1];
 
 			if ($fileInfo->isFile()) {
@@ -1100,6 +1132,7 @@ EOF;
 						throw new \Exception('Could not mkdir ' . $this->nextcloudDir . '/' . dirname($fileName));
 					}
 				}
+
 				$state = @rename($path, $this->nextcloudDir . '/' . $fileName);
 				if ($state === false) {
 					throw new \Exception(
@@ -1111,6 +1144,7 @@ EOF;
 					);
 				}
 			}
+
 			if ($fileInfo->isDir()) {
 				$state = rmdir($path);
 				if ($state === false) {
@@ -1204,6 +1238,7 @@ EOF;
 					throw new \Exception('Could not create $updaterDir');
 				}
 			}
+
 			$result = touch($updaterDir . '/.step');
 			if ($result === false) {
 				throw new \Exception('Could not create .step');
@@ -1250,7 +1285,7 @@ EOF;
 
 		$jsonData = json_decode($state, true);
 		if (!is_array($jsonData)) {
-			throw new \Exception('Can\'t decode .step JSON data');
+			throw new \Exception("Can't decode .step JSON data");
 		}
 
 		return $jsonData;
@@ -1282,6 +1317,7 @@ EOF;
 			$this->silentLog('[info] rollbackChanges - step >= 7');
 			// TODO: If it fails after step 7: Rollback
 		}
+
 		$this->silentLog('[info] end of  rollbackChanges()');
 	}
 
@@ -1293,7 +1329,7 @@ EOF;
 	public function logException(\Exception $e): void {
 		$message = '[error] ';
 
-		$message .= 'Exception: ' . get_class($e) . PHP_EOL;
+		$message .= 'Exception: ' . $e::class . PHP_EOL;
 		$message .= 'Message: ' . $e->getMessage() . PHP_EOL;
 		$message .= 'Code:' . $e->getCode() . PHP_EOL;
 		$message .= 'Trace:' . PHP_EOL . $e->getTraceAsString() . PHP_EOL;
@@ -1302,6 +1338,7 @@ EOF;
 		if ($e instanceof UpdateException) {
 			$message .= 'Data:' . PHP_EOL . print_r($e->getData(), true) . PHP_EOL;
 		}
+
 		$this->log($message);
 	}
 
@@ -1323,8 +1360,9 @@ EOF;
 			$charactersLength = strlen($characters);
 			$randomString = '';
 			for ($i = 0; $i < 10; $i++) {
-				$randomString .= $characters[rand(0, $charactersLength - 1)];
+				$randomString .= $characters[random_int(0, $charactersLength - 1)];
 			}
+
 			$this->requestID = $randomString;
 		}
 
@@ -1345,7 +1383,7 @@ EOF;
 	public function silentLog(string $message): void {
 		try {
 			$this->log($message);
-		} catch (LogException $logE) {
+		} catch (LogException) {
 			/* ignore log exception here (already detected later anyways) */
 		}
 	}

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace NC\Updater;
 
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -40,7 +41,7 @@ class CommandApplication extends Application {
 	/**
 	 * Gets the default commands that should always be available.
 	 *
-	 * @return \Symfony\Component\Console\Command\Command[] An array of default Command instances
+	 * @return Command[] An array of default Command instances
 	 */
 	protected function getDefaultCommands(): array {
 		// Keep the core default commands to have the HelpCommand

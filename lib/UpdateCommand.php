@@ -19,9 +19,13 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class UpdateCommand extends Command {
 	protected ?Updater $updater = null;
+
 	protected bool $shouldStop = false;
+
 	protected bool $skipBackup = false;
+
 	protected bool $skipUpgrade = false;
+
 	protected string $urlOverride = '';
 
 	/** Strings of text for stages of updater */
@@ -53,12 +57,12 @@ class UpdateCommand extends Command {
 	}
 
 	public static function getUpdaterVersion(): string {
-		if (class_exists('NC\Updater\Version')) {
+		if (class_exists(Version::class)) {
 			$versionClass = new Version();
 			return $versionClass->get();
-		} else {
-			return 'git';
 		}
+
+		return 'git';
 	}
 
 	#[Override]
@@ -78,10 +82,11 @@ class UpdateCommand extends Command {
 			if ($pharPath !== '') {
 				$path = dirname($pharPath);
 			}
+
 			$this->updater = new Updater($path);
-		} catch (\Exception $e) {
+		} catch (\Exception $exception) {
 			// logging here is not possible because we don't know the data directory
-			$output->writeln($e->getMessage());
+			$output->writeln($exception->getMessage());
 			return -1;
 		}
 
@@ -100,6 +105,7 @@ class UpdateCommand extends Command {
 		if ($fileowner === false) {
 			throw new \Exception('Unable to read configuration file owner');
 		}
+
 		$configUser = posix_getpwuid($fileowner);
 		if ($user['name'] !== $configUser['name']) {
 			$output->writeln('Console has to be executed with the user that owns the file config/config.php');
@@ -112,9 +118,9 @@ class UpdateCommand extends Command {
 		// Check if the updater.log can be written to
 		try {
 			$this->updater->log('[info] updater cli is executed');
-		} catch (\Exception $e) {
+		} catch (\Exception $exception) {
 			// show logging error to user
-			$output->writeln($e->getMessage());
+			$output->writeln($exception->getMessage());
 			return -1;
 		}
 
@@ -143,7 +149,7 @@ class UpdateCommand extends Command {
 		$output->writeln('Current version is ' . $this->updater->getCurrentVersion() . '.');
 
 		// needs to be called that early because otherwise updateAvailable() returns false
-		if ($this->urlOverride) {
+		if ($this->urlOverride !== '') {
 			$this->updater->log('[info] Using URL override: ' . $this->urlOverride);
 			$updateString = 'Update check forced with URL override: ' . $this->urlOverride;
 		} else {
@@ -161,11 +167,9 @@ class UpdateCommand extends Command {
 
 		$output->writeln('');
 
-		if (!$this->urlOverride) {
-			if (!$this->updater->updateAvailable() && $stepNumber === 0) {
-				$output->writeln('Nothing to do.');
-				return 0;
-			}
+		if ($this->urlOverride === '' && !$this->updater->updateAvailable() && $stepNumber === 0) {
+			$output->writeln('Nothing to do.');
+			return 0;
 		}
 
 		$questionText = 'Start update';
@@ -193,14 +197,15 @@ class UpdateCommand extends Command {
 			$output->writeln('');
 			$output->writeln($questionText);
 		}
+
 		$this->updater->log('[info] updater started');
 
 		$output->writeln('');
 
 		if (function_exists('pcntl_signal')) {
 			// being able to handle stop/terminate command (Ctrl - C)
-			pcntl_signal(SIGTERM, [$this, 'stopCommand']);
-			pcntl_signal(SIGINT, [$this, 'stopCommand']);
+			pcntl_signal(SIGTERM, $this->stopCommand(...));
+			pcntl_signal(SIGINT, $this->stopCommand(...));
 
 			$output->writeln('Info: Pressing Ctrl-C will finish the currently running step and then stops the updater.');
 			$output->writeln('');
@@ -215,6 +220,7 @@ class UpdateCommand extends Command {
 				// no need to ask for maintenance mode on CLI - skip it
 				continue;
 			}
+
 			$output->writeln('<info>[✔] ' . $this->checkTexts[$i] . '</info>');
 		}
 
@@ -267,13 +273,12 @@ class UpdateCommand extends Command {
 							$output->writeln('<error>    ' . $file . '</error>');
 						}
 					}
+				} elseif (is_string($result['response'])) {
+					$output->writeln('<error>' . $result['response'] . '</error>');
 				} else {
-					if (is_string($result['response'])) {
-						$output->writeln('<error>' . $result['response'] . '</error>');
-					} else {
-						$output->writeln('<error>Something has gone wrong. Please check the log file in the data dir.</error>');
-					}
+					$output->writeln('<error>Something has gone wrong. Please check the log file in the data dir.</error>');
 				}
+
 				break;
 			}
 		}
@@ -319,9 +324,11 @@ class UpdateCommand extends Command {
 				$output->writeln('');
 				throw new \Exception('FATAL: "occ" is missing from: ' . $occPath);
 			}
+
 			if (chmod($occPath, 0755) === false) { # TODO do this in the updater
 				throw new \Exception('FATAL: Unable to make "occ" executable: ' . $occPath);
 			}
+
 			$occRunCommand = PHP_BINARY . ' ' . $occPath;
 
 			$this->updater->log('[info] Starting "occ upgrade"');
@@ -367,37 +374,41 @@ class UpdateCommand extends Command {
 				$output->writeln('');
 				$output->writeln('Maintenance mode is disabled');
 				return 0;
-			} else { // something went wrong
-				$this->updater->log('[info] Disabling maintenance mode failed - return code: ' . $returnValueMaintenanceMode);
-				$output->writeln('');
-				$output->writeln('Disabling Maintenance mode failed - return code:' . $returnValueMaintenanceMode);
-				if ($systemOutput === false) {
-					$this->updater->log('[info] System call failed');
-					$output->writeln('System call failed');
-				} else {
-					$this->updater->log('[info] occ output: ' . $systemOutput);
-					$output->writeln('occ output: ' . $systemOutput);
-				}
-				$this->updater->log('[info] updater finished - with errors');
-				return $returnValueMaintenanceMode;
 			}
-		} else {
-			if ($this->shouldStop) {
-				$output->writeln('<error>Update stopped. To resume or retry just execute the updater again.</error>');
+
+			// something went wrong
+			$this->updater->log('[info] Disabling maintenance mode failed - return code: ' . $returnValueMaintenanceMode);
+			$output->writeln('');
+			$output->writeln('Disabling Maintenance mode failed - return code:' . $returnValueMaintenanceMode);
+			if ($systemOutput === false) {
+				$this->updater->log('[info] System call failed');
+				$output->writeln('System call failed');
 			} else {
-				$output->writeln('<error>Update failed. To resume or retry just execute the updater again.</error>');
+				$this->updater->log('[info] occ output: ' . $systemOutput);
+				$output->writeln('occ output: ' . $systemOutput);
 			}
-			return -1;
+
+			$this->updater->log('[info] updater finished - with errors');
+			return $returnValueMaintenanceMode;
 		}
+
+		if ($this->shouldStop) {
+			$output->writeln('<error>Update stopped. To resume or retry just execute the updater again.</error>');
+		} else {
+			$output->writeln('<error>Update failed. To resume or retry just execute the updater again.</error>');
+		}
+
+		return -1;
 	}
 
 	/**
 	 * @return array{proceed:bool,response:string|list<string>} with options 'proceed' which is a boolean and defines if the step succeeded and an optional 'response' string or array
 	 */
 	protected function executeStep(int $step, OutputInterface $output): array {
-		if ($this->updater === null) {
+		if (!$this->updater instanceof Updater) {
 			return ['proceed' => false, 'response' => 'Initialization problem'];
 		}
+
 		$this->updater->log('[info] executeStep request for step "' . $step . '"');
 		try {
 			if ($step > 12 || $step < 1) {
@@ -416,6 +427,7 @@ class UpdateCommand extends Command {
 					if ($this->skipBackup === false) {
 						$this->updater->createBackup();
 					}
+
 					break;
 				case 4:
 					// Ensure that we have the same number of characters, that we want to override in the progress method
@@ -453,6 +465,7 @@ class UpdateCommand extends Command {
 					$this->updater->finalize();
 					break;
 			}
+
 			$this->updater->endStep($step);
 			return ['proceed' => true, 'response' => ''];
 		} catch (UpdateException $e) {
@@ -484,17 +497,20 @@ class UpdateCommand extends Command {
 
 	protected function showCurrentStatus(OutputInterface $output, int $stepNumber): void {
 		$output->writeln('Steps that will be executed:');
-		for ($i = 1; $i < sizeof($this->checkTexts); $i++) {
+		$counter = count($this->checkTexts);
+		for ($i = 1; $i < $counter; $i++) {
 			if ($i === 11) {
 				// no need to ask for maintenance mode on CLI - skip it
 				continue;
 			}
+
 			$statusBegin = '[ ] ';
 			$statusEnd = '';
 			if ($i <= $stepNumber) {
 				$statusBegin = '<info>[✔] ';
 				$statusEnd = '</info>';
 			}
+
 			$output->writeln($statusBegin . $this->checkTexts[$i] . $statusEnd);
 		}
 	}
