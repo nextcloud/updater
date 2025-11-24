@@ -50,3 +50,7 @@ jobs:
           make updater.phar
           ./vendor/bin/box info -lm flat updater.phar | LC_LOCALE=C sort | grep -Ev "^(Signature Hash|  Version.php |Contents: |    installed.php |Timestamp: )" > updater.txt
           diff --suppress-common-lines -t --tabsize=4 -d -y --color=always updater.txt updater.old.txt
+
+      - name: Check that updater.phar is not dirty
+        run: |
+          [ "$(php updater.phar --version | awk '{ print $3 }')" != "dirty" ]
