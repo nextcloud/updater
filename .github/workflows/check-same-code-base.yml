@@ -47,6 +47,7 @@ jobs:
         run: |
           composer -V --ansi
           ./vendor/bin/box info -lm flat updater.phar | LC_LOCALE=C sort | grep -Ev "^(Signature Hash|  Version.php |Contents: |    installed.php |Timestamp: )" > updater.old.txt
+          git status --porcelain
           make updater.phar
           ./vendor/bin/box info -lm flat updater.phar | LC_LOCALE=C sort | grep -Ev "^(Signature Hash|  Version.php |Contents: |    installed.php |Timestamp: )" > updater.txt
           diff --suppress-common-lines -t --tabsize=4 -d -y --color=always updater.txt updater.old.txt
