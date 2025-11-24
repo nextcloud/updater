@@ -13,6 +13,9 @@ use Closure;
 use CurlHandle;
 
 class Updater {
+	/** @var int */
+	public const LAST_STEP = 12;
+
 	/** @var non-empty-string */
 	private readonly string $nextcloudDir;
 
@@ -1211,6 +1214,7 @@ EOF;
 	}
 
 	/**
+	 * @param 'start'|'end' $state
 	 * @throws \Exception
 	 */
 	private function writeStep(string $state, int $step): void {
@@ -1252,6 +1256,7 @@ EOF;
 	}
 
 	/**
+	 * @return array{step?:int,state?:string}
 	 * @throws \Exception
 	 */
 	public function currentStep(): array {
@@ -1272,7 +1277,21 @@ EOF;
 			throw new \Exception("Can't decode .step JSON data");
 		}
 
-		return $jsonData;
+		$result = [];
+
+		if (isset($jsonData['step']) && $jsonData['step'] <= self::LAST_STEP && $jsonData['step'] > 0) {
+			$result['step'] = (int)$jsonData['step'];
+			if (isset($jsonData['state'])) {
+				$result['state'] = (string)$jsonData['state'];
+			} else {
+				$result['state'] = 'start';
+			}
+			if ($result['step'] === self::LAST_STEP && $result['state'] !== 'start') {
+				return [];
+			}
+		}
+
+		return $result;
 	}
 
 	public function getUpdateStepFileLocation(): string {

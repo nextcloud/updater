@@ -128,8 +128,8 @@ class UpdateCommand extends Command {
 		$currentStep = $this->updater->currentStep();
 		$stepNumber = 0;
 		if ($currentStep !== []) {
-			$stepState = (string)$currentStep['state'];
-			$stepNumber = (int)$currentStep['step'];
+			$stepState = $currentStep['state'] ?? '';
+			$stepNumber = $currentStep['step'] ?? 0;
 			$this->updater->log('[info] Step ' . $stepNumber . ' is in state "' . $stepState . '".');
 
 			if ($stepState === 'start') {
