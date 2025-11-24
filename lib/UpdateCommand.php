@@ -26,6 +26,8 @@ class UpdateCommand extends Command {
 
 	protected bool $skipUpgrade = false;
 
+	protected bool $ignoreState = false;
+
 	protected string $urlOverride = '';
 
 	/** Strings of text for stages of updater */
@@ -53,7 +55,9 @@ class UpdateCommand extends Command {
 			->setHelp('This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.')
 			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version')
 			->addOption('no-upgrade', null, InputOption::VALUE_NONE, "Don't automatically run occ upgrade")
-			->addOption('url', null, InputOption::VALUE_OPTIONAL, 'The URL of the Nextcloud release to download');
+			->addOption('url', null, InputOption::VALUE_OPTIONAL, 'The URL of the Nextcloud release to download')
+			->addOption('ignore-state', null, InputOption::VALUE_NONE, 'Ignore known state from .step file, do a complete update')
+		;
 	}
 
 	public static function getUpdaterVersion(): string {
@@ -70,6 +74,7 @@ class UpdateCommand extends Command {
 		$this->skipBackup = (bool)$input->getOption('no-backup');
 		$this->skipUpgrade = (bool)$input->getOption('no-upgrade');
 		$this->urlOverride = (string)$input->getOption('url');
+		$this->ignoreState = (bool)$input->getOption('ignore-state');
 
 		$version = static::getUpdaterVersion();
 		$output->writeln('Nextcloud Updater - version: ' . $version);
@@ -125,7 +130,11 @@ class UpdateCommand extends Command {
 		}
 
 		// Check if already a step is in process
-		$currentStep = $this->updater->currentStep();
+		if ($this->ignoreState) {
+			$currentStep = [];
+		} else {
+			$currentStep = $this->updater->currentStep();
+		}
 		$stepNumber = 0;
 		if ($currentStep !== []) {
 			$stepState = $currentStep['state'] ?? '';
