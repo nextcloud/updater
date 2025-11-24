@@ -103,6 +103,7 @@ class ComposerStaticInitcbbead1010db4afef500f7adc2b6cac3
         'NC\\Updater\\UpdateCommand' => __DIR__ . '/../..' . '/lib/UpdateCommand.php',
         'NC\\Updater\\UpdateException' => __DIR__ . '/../..' . '/lib/UpdateException.php',
         'NC\\Updater\\Updater' => __DIR__ . '/../..' . '/lib/Updater.php',
+        'NC\\Updater\\Version' => __DIR__ . '/../..' . '/lib/Version.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
         'Psr\\Container\\ContainerInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerInterface.php',
