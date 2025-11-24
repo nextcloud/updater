@@ -142,6 +142,7 @@ class UpdateCommand extends Command {
 				);
 				return -1;
 			}
+			$output->writeln('Found an ongoing update, continue from step ' . $stepNumber);
 		}
 
 		$this->updater->logVersion();
@@ -221,7 +222,7 @@ class UpdateCommand extends Command {
 				continue;
 			}
 
-			$output->writeln('<info>[✔] ' . $this->checkTexts[$i] . '</info>');
+			$output->writeln('<info>[SKIP] ' . $this->checkTexts[$i] . '</info>');
 		}
 
 		$i = $stepNumber;
