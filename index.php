@@ -619,6 +619,9 @@ class Updater {
 			if (!$this->isAbleToDecompress($format)) {
 				continue;
 			}
+
+			// If only one download URL exists, $urls is a string
+			$urls = (array)$urls;
 			foreach ($urls as $url) {
 				if (!is_string($url)) {
 					continue;
