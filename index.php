@@ -70,10 +70,12 @@ class Updater {
 
 		[$this->configValues] = $this->readConfigFile();
 
-		if (PHP_SAPI !== 'cli' && ($this->configValues['upgrade.disable-web'] ?? false) !== true) {
-			// updater disabled
-			$this->disabled = true;
-			return;
+		if (PHP_SAPI !== 'cli') {
+			$this->disabled = (bool)($this->configValues['upgrade.disable-web'] ?? false);
+			if ($this->disabled) {
+				// Updater disabled
+				return;
+			}
 		}
 
 		$dataDir = $this->getUpdateDirectoryLocation();
