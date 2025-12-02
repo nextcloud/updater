@@ -28,7 +28,6 @@ class LogException extends \Exception {
 
 
 use Closure;
-use CurlHandle;
 
 class Updater {
 	/** @var int */
@@ -694,7 +693,7 @@ class Updater {
 
 	}
 
-	private function getCurl(string $url): CurlHandle {
+	private function getCurl(string $url): \CurlHandle {
 		$ch = curl_init($url);
 		if ($ch === false) {
 			throw new \Exception('Fail to open cUrl handler');
@@ -773,7 +772,7 @@ class Updater {
 		return $ext === 'zip' && extension_loaded($ext);
 	}
 
-	private function downloadProgressCallback(CurlHandle $resource, int $download_size, int $downloaded): void {
+	private function downloadProgressCallback(\CurlHandle $resource, int $download_size, int $downloaded): void {
 		if ($download_size !== 0) {
 			$progress = (int)round($downloaded * 100 / $download_size);
 			if ($progress > $this->previousProgress) {
