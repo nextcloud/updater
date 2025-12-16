@@ -27,7 +27,6 @@ class LogException extends \Exception {
 }
 
 
-use CurlHandle;
 
 class Updater {
 	private string $nextcloudDir;
