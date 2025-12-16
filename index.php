@@ -27,8 +27,6 @@ class LogException extends \Exception {
 }
 
 
-use Closure;
-use CurlHandle;
 
 class Updater {
 	/** @var int */

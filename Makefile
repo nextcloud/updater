@@ -16,7 +16,7 @@ index.php: lib/UpdateException.php lib/LogException.php lib/Updater.php index.we
 	# First put openining php tag and license
 	awk '/^<\?php$$/,/\*\//' index.web.php > index.php
 	# Then concat all files while filtering php tag and license
-	cat lib/UpdateException.php lib/LogException.php lib/Updater.php index.web.php| grep -v "^namespace" | awk '/^<\?php$$/,/\*\//{next} 1' >> index.php
+	cat lib/UpdateException.php lib/LogException.php lib/Updater.php index.web.php| grep -Pv "^namespace|^use [^\\\\]+;" | awk '/^<\?php$$/,/\*\//{next} 1' >> index.php
 
 test/vendor:
 	composer bin tests install

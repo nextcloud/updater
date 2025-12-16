@@ -65,6 +65,7 @@ foreach ($iterator as $path => $fileInfo) {
 	$fileContent = file_get_contents($path);
 
 	$fileContent = explode("namespace NC\\Updater;\n", $fileContent, 2)[1];
+	$fileContent = preg_replace('/use [^\\\\]*;\n/', '', $fileContent);
 
 	$fileContent = trim($fileContent);
 
