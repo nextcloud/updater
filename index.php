@@ -2019,6 +2019,15 @@ $updater->logVersion();
 			return s.toString().split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split('\'').join('&#039;');
 		}
 
+		function errorResponse(response) {
+			var text = escapeHTML(response['response']);
+			if (response['detailedResponseText'] !== '') { // Include additional details (raw response) when available
+				text += '<br><details><summary>Show detailed response</summary><pre><code>' +
+					escapeHTML(response['detailedResponseText']) + '</code></pre></details>';
+			}
+			return text;
+		}
+
 		var done = false;
 		var started = false;
 		var updaterStepStart = parseInt(document.getElementById('updater-step-start').value);
@@ -2026,7 +2035,7 @@ $updater->logVersion();
 		function addStepText(id, text) {
 			var el = document.getElementById(id);
 			var output = el.getElementsByClassName('output')[0];
-			if(typeof text === 'object') {
+			if (typeof text === 'object') {
 				text = JSON.stringify(text);
 			}
 			output.innerHTML = output.innerHTML + text;
@@ -2081,32 +2090,47 @@ $updater->logVersion();
 
 		function performStep(number, callback) {
 			started = true;
-			var httpRequest = new XMLHttpRequest();
-			httpRequest.open('POST', window.location.href);
+			const url = window.location.href;
+			const httpRequest = new XMLHttpRequest();
+			httpRequest.open('POST', url);
 			httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			httpRequest.setRequestHeader('X-Updater-Auth', document.getElementById('updater-access-key').value);
+			httpRequest.onerror = function () {
+				const response = {
+					proceed: false,
+					response: 'Error accessing ' + url + ' (' + (httpRequest.statusText || 'Network error') + ')',
+					detailedResponseText: httpRequest.responseText, // Probably empty but won't hurt
+				};
+				callback(response);
+			};
 			httpRequest.onreadystatechange = function () {
-				if (httpRequest.readyState != 4) { // 4 - request done
+				if (httpRequest.readyState === 4) { // Request done
+					if (httpRequest.status === 200) { // Ensure step was successful
+						try { // Ensure response contains a valid JSON object
+							const data = JSON.parse(httpRequest.ResponseText);
+							if (typeof data.response === 'object') {
+								callback(data); // Valid
+							}
+						} catch (error) { // Invalid JSON
+							// probably SyntaxError; handled by next line
+						}
+						const response = { // SyntaxError / unexpected non-object response
+							proceed: false,
+							response: 'Syntax error or unexpected response from server. See details for clues.',
+							detailedResponseText: httpRequest.responseText,
+						};
+						callback(response);
+					} else { // Request not successful (i.e. got something other than HTTP 200 OK)
+						const response = {
+							proceed: false,
+							response: 'Invalid HTTP code received from server ( ' + httpRequest.status + ' ' + httpRequest.statusText + '.',
+							detailedResponseText: httpRequest.responseText,
+						};
+						callback(response);
+					}
+				} else { // Request not done
 					return;
 				}
-
-				if (httpRequest.status != 200) {
-					// failure
-				}
-
-				if(httpRequest.responseText.substr(0,1) !== '{') {
-					// it seems that this is not a JSON object
-					var response = {
-						processed: false,
-						response: 'Parsing response failed.',
-						detailedResponseText: httpRequest.responseText,
-					};
-					callback(response);
-				} else {
-					// parse JSON
-					callback(JSON.parse(httpRequest.responseText));
-				}
-
 			};
 			httpRequest.send("step="+number);
 		}
@@ -2118,7 +2142,7 @@ $updater->logVersion();
 				performStep(1, performStepCallbacks[1]);
 			},
 			1: function(response) {
-				if(response.proceed === true) {
+				if (response.proceed === true) {
 					successStep('step-check-files');
 					currentStep('step-check-permissions');
 					performStep(2, performStepCallbacks[2]);
@@ -2127,9 +2151,7 @@ $updater->logVersion();
 
 					var text = '';
 					if (typeof response['response'] === 'string') {
-						text = escapeHTML(response['response']);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response['detailedResponseText']) + '</code></pre></details>';
+						text = errorResponse(response);
 					} else {
 						text = 'Unknown files detected within the installation folder. This can be fixed by manually removing (or moving) these files. The following extra files have been found:<ul>';
 						response['response'].forEach(function(file) {
@@ -2141,7 +2163,7 @@ $updater->logVersion();
 				}
 			},
 			2: function(response) {
-				if(response.proceed === true) {
+				if (response.proceed === true) {
 					successStep('step-check-permissions');
 					currentStep('step-backup');
 					performStep(3, performStepCallbacks[3]);
@@ -2150,9 +2172,7 @@ $updater->logVersion();
 
 					var text = '';
 					if (typeof response['response'] === 'string') {
-						text = escapeHTML(response['response']);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response['detailedResponseText']) + '</code></pre></details>';
+						text = errorResponse(response);
 					} else {
 						text = 'The following places can not be written to:<ul>';
 						response['response'].forEach(function(file) {
@@ -2171,10 +2191,8 @@ $updater->logVersion();
 				} else {
 					errorStep('step-backup', 3);
 
-					if(response.response) {
-						var text = escapeHTML(response.response);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					if (response.response) {
+						var text = errorResponse(response);
 						addStepText('step-backup', text);
 					}
 				}
@@ -2187,10 +2205,8 @@ $updater->logVersion();
 				} else {
 					errorStep('step-download', 4);
 
-					if(response.response) {
-						var text = escapeHTML(response.response);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					if (response.response) {
+						var text = errorResponse(response);
 						addStepText('step-download', text);
 					}
 				}
@@ -2203,10 +2219,8 @@ $updater->logVersion();
 				} else {
 					errorStep('step-verify-integrity', 5);
 
-					if(response.response) {
-						var text = escapeHTML(response.response);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					if (response.response) {
+						var text = errorResponse(response);
 						addStepText('step-verify-integrity', text);
 					}
 				}
@@ -2219,10 +2233,8 @@ $updater->logVersion();
 				} else {
 					errorStep('step-extract', 6);
 
-					if(response.response) {
-						var text = escapeHTML(response.response);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					if (response.response) {
+						var text = errorResponse(response);
 						addStepText('step-extract', text);
 					}
 				}
@@ -2235,10 +2247,8 @@ $updater->logVersion();
 				} else {
 					errorStep('step-enable-maintenance', 7);
 
-					if(response.response) {
-						var text = escapeHTML(response.response);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					if (response.response) {
+						var text = errorResponse(response);
 						addStepText('step-enable-maintenance', text);
 					}
 				}
@@ -2251,10 +2261,8 @@ $updater->logVersion();
 				} else {
 					errorStep('step-entrypoints', 8);
 
-					if(response.response) {
-						var text = escapeHTML(response.response);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					if (response.response) {
+						var text = errorResponse(response);
 						addStepText('step-entrypoints', text);
 					}
 				}
@@ -2267,10 +2275,8 @@ $updater->logVersion();
 				} else {
 					errorStep('step-delete', 9);
 
-					if(response.response) {
-						var text = escapeHTML(response.response);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					if (response.response) {
+						var text = errorResponse(response);
 						addStepText('step-delete', text);
 					}
 				}
@@ -2287,10 +2293,8 @@ $updater->logVersion();
 				} else {
 					errorStep('step-move', 10);
 
-					if(response.response) {
-						var text = escapeHTML(response.response);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					if (response.response) {
+						var text = errorResponse(response);
 						addStepText('step-move', text);
 					}
 				}
@@ -2303,10 +2307,8 @@ $updater->logVersion();
 				} else {
 					errorStep('step-maintenance-mode', 11);
 
-					if(response.response) {
-						var text = escapeHTML(response.response);
-						text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-							escapeHTML(response.detailedResponseText) + '</code></pre></details>';
+					if (response.response) {
+						var text = errorResponse(response);
 						addStepText('step-maintenance-mode', text);
 					}
 				}
@@ -2326,10 +2328,11 @@ $updater->logVersion();
 					window.location.href = nextcloudUrl;
 				} else {
 					errorStep('step-done', 12);
-					var text = escapeHTML(response.response);
-					text += '<br><details><summary>Show detailed response</summary><pre><code>' +
-						escapeHTML(response.detailedResponseText) + '</code></pre></details>';
-					addStepText('step-done', text);
+					
+					if (response.response) {
+						var text = errorResponse(response);
+						addStepText('step-done', text);
+					}
 				}
 			},
 		};
@@ -2369,20 +2372,20 @@ $updater->logVersion();
 			performStep(11, performStepCallbacks[11]);
 		}
 
-		if(document.getElementById('startUpdateButton')) {
+		if (document.getElementById('startUpdateButton')) {
 			document.getElementById('startUpdateButton').onclick = function (e) {
 				e.preventDefault();
 				this.classList.add('hidden');
 				startUpdate();
 			};
 		}
-		if(document.getElementById('retryUpdateButton')) {
+		if (document.getElementById('retryUpdateButton')) {
 			document.getElementById('retryUpdateButton').onclick = function (e) {
 				e.preventDefault();
 				retryUpdate();
 			};
 		}
-		if(document.getElementById('maintenance-disable')) {
+		if (document.getElementById('maintenance-disable')) {
 			document.getElementById('maintenance-disable').onclick = function (e) {
 				e.preventDefault();
 				askForMaintenance();
