@@ -64,7 +64,7 @@ class Updater {
 			throw new \Exception('Invalid baseDir provided');
 		}
 
-		if ($nextcloudDir !== '/') {
+		if (!str_ends_with($nextcloudDir, '/')) {
 			$nextcloudDir .= '/';
 		}
 
