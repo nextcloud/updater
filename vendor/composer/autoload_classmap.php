@@ -25,7 +25,6 @@ return array(
     'NC\\Updater\\UpdateCommand' => $baseDir . '/lib/UpdateCommand.php',
     'NC\\Updater\\UpdateException' => $baseDir . '/lib/UpdateException.php',
     'NC\\Updater\\Updater' => $baseDir . '/lib/Updater.php',
-    'NC\\Updater\\Version' => $baseDir . '/lib/Version.php',
     'Normalizer' => $vendorDir . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
     'Psr\\Container\\ContainerExceptionInterface' => $vendorDir . '/psr/container/src/ContainerExceptionInterface.php',
     'Psr\\Container\\ContainerInterface' => $vendorDir . '/psr/container/src/ContainerInterface.php',

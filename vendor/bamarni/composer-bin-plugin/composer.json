@@ -17,11 +17,11 @@
     },
     "require-dev": {
         "ext-json": "*",
-        "composer/composer": "^2.0",
+        "composer/composer": "^2.2.26",
         "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan": "^1.8",
-        "phpstan/phpstan-phpunit": "^1.1",
-        "phpunit/phpunit": "^8.5 || ^9.5",
+        "phpstan/phpstan": "^1.8 || ^2.0",
+        "phpstan/phpstan-phpunit": "^1.1 || ^2.0",
+        "phpunit/phpunit": "^8.5 || ^9.6 || ^10.0",
         "symfony/console": "^2.8.52 || ^3.4.35 || ^4.4 || ^5.0 || ^6.0",
         "symfony/finder": "^2.8.52 || ^3.4.35 || ^4.4 || ^5.0 || ^6.0",
         "symfony/process": "^2.8.52 || ^3.4.35 || ^4.4 || ^5.0 || ^6.0"
@@ -38,9 +38,9 @@
     },
     "config": {
         "allow-plugins": {
-            "phpstan/extension-installer": true,
             "ergebnis/composer-normalize": true,
-            "infection/extension-installer": true
+            "infection/extension-installer": true,
+            "phpstan/extension-installer": true
         },
         "sort-packages": true
     },
