@@ -27,11 +27,11 @@ class UpdaterTest extends TestCase {
 		mkdir($this->configDir, 0755, true);
 
 		// Write a minimal config.php with required keys
-		file_put_contents($this->configDir . '/config.php', '<?php $CONFIG = [' .
-			'"datadirectory" => "' . $this->dataDir . '",' .
-			'"version" => "30.0.0.1",' .
-			'"instanceid" => "testid",' .
-		'];');
+		file_put_contents($this->configDir . '/config.php', '<?php $CONFIG = ['
+			. '"datadirectory" => "' . $this->dataDir . '",'
+			. '"version" => "30.0.0.1",'
+			. '"instanceid" => "testid",'
+		. '];');
 
 		putenv('NEXTCLOUD_CONFIG_DIR=' . $this->configDir);
 	}
