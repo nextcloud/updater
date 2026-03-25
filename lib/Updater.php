@@ -1123,7 +1123,7 @@ EOF;
 
 			}
 
-			$fileName = explode($dataLocation, $path)[1];
+			$fileName = substr($path, strlen($dataLocation));
 
 			if ($fileInfo->isFile()) {
 				if (!file_exists($this->buildPath(dirname($fileName)))) {
