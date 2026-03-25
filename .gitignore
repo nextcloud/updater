@@ -12,3 +12,4 @@
 /vendor/symfony/service-contracts/Test
 /vendor-bin/**/vendor
 .php-cs-fixer.cache
+.phpunit.result.cache
