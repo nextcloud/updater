@@ -1,6 +1,7 @@
 {
 	"require-dev": {
-		"behat/behat": "^3.19"
+		"behat/behat": "^3.19",
+		"phpunit/phpunit": "^11.0"
 	},
 	"config": {
 		"platform": {

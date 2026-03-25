@@ -81,7 +81,7 @@ class Updater {
 			throw new \Exception('Could not read data directory from config.php.');
 		}
 
-		$versionFileName = $this->nextcloudDir . '/version.php';
+		$versionFileName = $this->buildPath('version.php');
 		if (!file_exists($versionFileName)) {
 			// fallback to version in config.php
 			$version = $this->getConfigOptionString('version');
@@ -112,6 +112,17 @@ class Updater {
 	}
 
 	/**
+	 * Builds an absolute path by joining the Nextcloud root directory with the provided relative path.
+	 * Handles leading and trailing slashes to prevent double-slash issues.
+	 *
+	 * @param string $suffix Relative path to append (with or without leading slash)
+	 * @return string The absolute path
+	 */
+	public function buildPath(string $suffix): string {
+		return rtrim($this->nextcloudDir, '/') . '/' . ltrim($suffix, '/');
+	}
+
+	/**
 	 * @return array{array, string}
 	 */
 	private function readConfigFile(): array {
@@ -121,7 +132,7 @@ class Updater {
 				throw new \Exception('Configuration not found in ' . $dir);
 			}
 		} else {
-			$configFileName = $this->nextcloudDir . '/config/config.php';
+			$configFileName = $this->buildPath('config/config.php');
 		}
 
 		if (!file_exists($configFileName)) {
@@ -335,8 +346,8 @@ class Updater {
 					throw new \Exception('Invalid configuration in apps_paths configuration key');
 				}
 
-				if (str_starts_with($appsPath['path'], $this->nextcloudDir . '/')) {
-					$relativePath = substr($appsPath['path'], strlen($this->nextcloudDir . '/'));
+				if (str_starts_with($appsPath['path'], $this->buildPath(''))) {
+					$relativePath = substr($appsPath['path'], strlen($this->buildPath('')));
 					if ($relativePath !== 'apps') {
 						$expected[] = $relativePath;
 					}
@@ -436,13 +447,13 @@ class Updater {
 		}
 
 		// Special handling for included default theme
-		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir . '/themes/example', $excludedElements) as $fileInfo) {
+		foreach ($this->getRecursiveDirectoryIterator($this->buildPath('themes/example'), $excludedElements) as $fileInfo) {
 			if (!$fileInfo->isWritable()) {
 				$notWritablePaths[] = $fileInfo->getFilename();
 			}
 		}
 
-		$themesReadmeFileInfo = new \SplFileInfo($this->nextcloudDir . '/themes/README');
+		$themesReadmeFileInfo = new \SplFileInfo($this->buildPath('themes/README'));
 		if (!$themesReadmeFileInfo->isWritable()) {
 			$notWritablePaths[] = $themesReadmeFileInfo->getFilename();
 		}
@@ -502,14 +513,14 @@ class Updater {
 		}
 
 		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $absolutePath => $fileInfo) {
-			$relativePath = explode($this->nextcloudDir, $absolutePath)[1];
+			$relativePath = ltrim(substr($absolutePath, strlen($this->nextcloudDir)), '/');
 			$relativeDirectory = dirname($relativePath);
 
 			// Create folder if it doesn't exist
-			if (!file_exists($backupFolderLocation . '/' . $relativeDirectory)) {
-				$state = mkdir($backupFolderLocation . '/' . $relativeDirectory, 0750, true);
+			if (!file_exists($backupFolderLocation . $relativeDirectory)) {
+				$state = mkdir($backupFolderLocation . $relativeDirectory, 0750, true);
 				if ($state === false) {
-					throw new \Exception('Could not create folder: ' . $backupFolderLocation . '/' . $relativeDirectory);
+					throw new \Exception('Could not create folder: ' . $backupFolderLocation . $relativeDirectory);
 				}
 			}
 
@@ -949,7 +960,7 @@ EOF;
 
 		// Ensure that the downloaded version is not lower
 		$downloadedVersion = $this->getVersionByVersionFile(dirname($downloadedFilePath) . '/nextcloud/version.php');
-		$currentVersion = $this->getVersionByVersionFile($this->nextcloudDir . '/version.php');
+		$currentVersion = $this->getVersionByVersionFile($this->buildPath('version.php'));
 		if (version_compare($downloadedVersion, $currentVersion, '<')) {
 			throw new \Exception('Downloaded version is lower than installed version');
 		}
@@ -977,7 +988,7 @@ EOF;
 		$content = "<?php\nhttp_response_code(503);\ndie('Update in process.');";
 		foreach ($filesToReplace as $file) {
 			$this->silentLog('[info] replace ' . $file);
-			$parentDir = dirname($this->nextcloudDir . '/' . $file);
+			$parentDir = dirname($this->buildPath($file));
 			if (!file_exists($parentDir)) {
 				$r = mkdir($parentDir);
 				if (!$r) {
@@ -985,7 +996,7 @@ EOF;
 				}
 			}
 
-			$state = file_put_contents($this->nextcloudDir . '/' . $file, $content);
+			$state = file_put_contents($this->buildPath($file), $content);
 			if ($state === false) {
 				throw new \Exception("Can't replace entry point: " . $file);
 			}
@@ -1028,7 +1039,7 @@ EOF;
 	public function deleteOldFiles(): void {
 		$this->silentLog('[info] deleteOldFiles()');
 
-		$shippedAppsFile = $this->nextcloudDir . '/core/shipped.json';
+		$shippedAppsFile = $this->buildPath('core/shipped.json');
 		$shippedAppsFileContent = file_get_contents($shippedAppsFile);
 		if ($shippedAppsFileContent === false) {
 			throw new \Exception('core/shipped.json is not available');
@@ -1056,10 +1067,10 @@ EOF;
 		$shippedApps = array_merge($shippedApps, $newShippedApps);
 		/** @var string $app */
 		foreach ($shippedApps as $app) {
-			$this->recursiveDelete($this->nextcloudDir . '/apps/' . $app);
+			$this->recursiveDelete($this->buildPath('apps/' . $app));
 		}
 
-		$configSampleFile = $this->nextcloudDir . '/config/config.sample.php';
+		$configSampleFile = $this->buildPath('config/config.sample.php');
 		if (file_exists($configSampleFile)) {
 			$this->silentLog('[info] config sample exists');
 
@@ -1070,7 +1081,7 @@ EOF;
 			}
 		}
 
-		$themesReadme = $this->nextcloudDir . '/themes/README';
+		$themesReadme = $this->buildPath('themes/README');
 		if (file_exists($themesReadme)) {
 			$this->silentLog('[info] themes README exists');
 
@@ -1081,7 +1092,7 @@ EOF;
 			}
 		}
 
-		$this->recursiveDelete($this->nextcloudDir . '/themes/example/');
+		$this->recursiveDelete($this->buildPath('themes/example/'));
 
 		// Delete the rest
 		$excludedElements = [
@@ -1131,20 +1142,20 @@ EOF;
 			$fileName = explode($dataLocation, $path)[1];
 
 			if ($fileInfo->isFile()) {
-				if (!file_exists($this->nextcloudDir . '/' . dirname($fileName))) {
-					$state = mkdir($this->nextcloudDir . '/' . dirname($fileName), 0755, true);
+				if (!file_exists($this->buildPath(dirname($fileName)))) {
+					$state = mkdir($this->buildPath(dirname($fileName)), 0755, true);
 					if ($state === false) {
-						throw new \Exception('Could not mkdir ' . $this->nextcloudDir . '/' . dirname($fileName));
+						throw new \Exception('Could not mkdir ' . $this->buildPath(dirname($fileName)));
 					}
 				}
 
-				$state = @rename($path, $this->nextcloudDir . '/' . $fileName);
+				$state = @rename($path, $this->buildPath($fileName));
 				if ($state === false) {
 					throw new \Exception(
 						sprintf(
 							'Could not rename %s to %s',
 							$path,
-							$this->nextcloudDir . '/' . $fileName
+							$this->buildPath($fileName)
 						)
 					);
 				}
@@ -1217,7 +1228,7 @@ EOF;
 				$user_ini_additional_lines = implode(PHP_EOL, $user_ini_additional_lines);
 			}
 
-			$result = file_put_contents($this->nextcloudDir . '/.user.ini', PHP_EOL . '; Additional settings from config.php:' . PHP_EOL . $user_ini_additional_lines . PHP_EOL, FILE_APPEND);
+			$result = file_put_contents($this->buildPath('.user.ini'), PHP_EOL . '; Additional settings from config.php:' . PHP_EOL . $user_ini_additional_lines . PHP_EOL, FILE_APPEND);
 			if ($result === false) {
 				throw new \Exception('Could not append to .user.ini');
 			}

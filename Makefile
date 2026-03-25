@@ -24,6 +24,9 @@ test/vendor:
 test: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat
 
+test-unit: test/vendor
+	vendor-bin/tests/vendor/bin/phpunit
+
 test-cli: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat features/cli.feature
 
