@@ -6,6 +6,7 @@ namespace Bamarni\Composer\Bin\Input;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\StringInput;
+
 use function array_filter;
 use function array_map;
 use function implode;
@@ -61,7 +62,7 @@ final class BinInputFactory
     public static function createNamespaceInput(InputInterface $previousInput): InputInterface
     {
         $matchResult = preg_match(
-            '/^(.+?\s?)(--(?: .+)?)?$/',
+            '/^([^\s]+)(.*?\s?)(--(?: .+)?)?$/',
             $previousInput->__toString(),
             $matches
         );
@@ -74,9 +75,10 @@ final class BinInputFactory
             array_map(
                 'trim',
                 [
-                    $matches[1],
                     '--working-dir=.',
-                    $matches[2] ?? '',
+                    $matches[1],
+                    $matches[2],
+                    $matches[3] ?? '',
                 ]
             )
         );

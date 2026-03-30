@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => '0deb35c1f4fd23fea55c03db40f07c72603adc43',
+        'pretty_version' => 'dev-copilot/add-string-concat-method',
+        'version' => 'dev-copilot/add-string-concat-method',
+        'reference' => 'dc688b2b097ffaa4f596e943d3626d5b65e6016a',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,18 +11,18 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '0deb35c1f4fd23fea55c03db40f07c72603adc43',
+            'pretty_version' => 'dev-copilot/add-string-concat-method',
+            'version' => 'dev-copilot/add-string-concat-method',
+            'reference' => 'dc688b2b097ffaa4f596e943d3626d5b65e6016a',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
         'bamarni/composer-bin-plugin' => array(
-            'pretty_version' => '1.8.2',
-            'version' => '1.8.2.0',
-            'reference' => '92fd7b1e6e9cdae19b0d57369d8ad31a37b6a880',
+            'pretty_version' => '1.9.1',
+            'version' => '1.9.1.0',
+            'reference' => '641d0663f5ac270b1aeec4337b7856f76204df47',
             'type' => 'composer-plugin',
             'install_path' => __DIR__ . '/../bamarni/composer-bin-plugin',
             'aliases' => array(),

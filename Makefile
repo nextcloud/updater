@@ -21,8 +21,14 @@ index.php: lib/UpdateException.php lib/LogException.php lib/Updater.php index.we
 test/vendor:
 	composer bin tests install
 
+vendor/bin/phpunit:
+	composer bin phpunit install
+
 test: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat
+
+test-unit: vendor/bin/phpunit
+	composer run test:unit
 
 test-cli: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat features/cli.feature
