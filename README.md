@@ -239,7 +239,7 @@ Keep in mind that for the update/upgrade process there are some additional compo
 	- Handles database upgrade migrations
 	- Handles app updates (i.e. for compatibility with a new major version of Server)
 
-### Dependences needed for building
+### Dependencies needed for building
 
 #### box
 
