@@ -21,6 +21,7 @@ class UpdateCommand extends Command {
 	protected bool $shouldStop = false;
 	protected bool $skipBackup = false;
 	protected bool $skipUpgrade = false;
+	protected bool $skipIntegrityCheck = false;
 	protected string $urlOverride = '';
 
 	/** @var list<string> strings of text for stages of updater */
@@ -47,7 +48,8 @@ class UpdateCommand extends Command {
 			->setHelp("This command fetches the latest code that is announced via the updater server and safely replaces the existing code with the new one.")
 			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version')
 			->addOption('no-upgrade', null, InputOption::VALUE_NONE, "Don't automatically run occ upgrade")
-			->addOption('url', null, InputOption::VALUE_OPTIONAL, 'The URL of the Nextcloud release to download');
+			->addOption('url', null, InputOption::VALUE_OPTIONAL, 'The URL of the Nextcloud release to download')
+			->addOption('no-verify', null, InputOption::VALUE_OPTIONAL, 'Skip integrity verification of the downloaded file');
 	}
 
 	public static function getUpdaterVersion(): string {
@@ -62,6 +64,7 @@ class UpdateCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->skipBackup = (bool)$input->getOption('no-backup');
 		$this->skipUpgrade = (bool)$input->getOption('no-upgrade');
+		$this->skipIntegrityCheck = (bool)$input->getOption('no-verify');
 		$this->urlOverride = (string)$input->getOption('url');
 
 		$version = static::getUpdaterVersion();
@@ -141,6 +144,11 @@ class UpdateCommand extends Command {
 			$updateString = 'Update check forced with URL override: ' . $this->urlOverride;
 		} else {
 			$updateString = $this->updater->checkForUpdate();
+		}
+
+		if ($this->skipIntegrityCheck) {
+			$this->updater->log('[warn] Integrity check of the downloaded file will be skipped');
+			$output->writeln('Integrity check of the downloaded file will be skipped.');
 		}
 
 		$output->writeln('');
@@ -373,7 +381,11 @@ class UpdateCommand extends Command {
 					$this->updater->downloadUpdate($this->urlOverride);
 					break;
 				case 5:
-					$this->updater->verifyIntegrity($this->urlOverride);
+					if ($this->skipIntegrityCheck) {
+						$this->updater->silentLog('[info] Skipping integrity check as requested');
+						break;
+					}
+					$this->updater->verifyIntegrity();
 					break;
 				case 6:
 					$this->updater->extractDownload();
