@@ -602,7 +602,7 @@ class Updater {
 		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		curl_close($curl);
 
-		if ($httpCode !== 200 || $httpCode !== 204) {
+		if ($httpCode !== 200 && $httpCode !== 204) {
 			$this->silentLog('[warn] update server returned HTTP ' . $httpCode);
 			throw new \Exception('Update server returned unexpected HTTP status ' . $httpCode);
 		}
