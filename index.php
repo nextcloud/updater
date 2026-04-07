@@ -82,6 +82,11 @@ class Updater {
 		}
 
 		$versionFileName = $this->nextcloudDir . '/version.php';
+		// Invalidate version.php OPcache entry to assure file_exists() returns
+		// false after files were removed while opcache.enable_file_override is set.
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($versionFileName, true);
+		}
 		if (!file_exists($versionFileName)) {
 			// fallback to version in config.php
 			$version = $this->getConfigOptionString('version');
