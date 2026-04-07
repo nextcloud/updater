@@ -192,29 +192,47 @@ Described here are both relevant aspects of the Updater itself as well as surrou
 
 ### Updater components
 
-For each mode the Updater supports - Web and command line - a dedicated artifact is generated. However, all common operations are located in shared code. Since the code is not shared in all cases at runtime, it's important to understand where various changes should go during development so that they end up in the appropriate places at build or check-in time.
+For each mode the Updater supports - Web and command line - a dedicated artifact is generated. However, all common operations are located
+in shared code. Since the code is not shared in all cases at runtime, it's important to understand where various changes should go during
+development so that they end up in the appropriate places at build or check-in time.
 
 Changes should be made to the following places in the `updater` repo:
 
 * Shared aspects of the Updater:
-	- `/Makefile`
-		- `make updater.phar`
-		- `make index.php`
 	- `/lib/LogException.php`
-	- `/lib/RecursiveDirectoryIteratorWithoutDate.php`
 	- `/lib/UpdateException.php`
 	- `/lib/Updater.php`	<-- core of the Updater functionality for both Web and CLI modes is implemented here
 * Aspects specific to the Web Updater:
 	- `/index.web.php`
-	- `/Makefile`
-		- `make index.php`
 * Aspects specific to the CLI Updater:
 	- `/updater.php`
 	- `/buildVersionFile.php`
 	- `/lib/CommandApplication.php`
 	- `/lib/UpdateCommand.php`
-	- `/Makefile`
-	  - `make updater.phar`
+
+#### Build system (`/Makefile`)
+
+The Makefile contains targets for both modes. The relevant targets are:
+
+* `make updater.phar` — builds the CLI Updater artifact
+* `make index.php` — builds the Web Updater artifact
+* `make check-same-code-base` — verifies that `index.php` contains the same shared library code as the individual files in `/lib/` <-- checked by CI
+
+**How `index.php` is built:** The Web Updater runs as a single self-contained PHP file. `make index.php` produces it by *concatenating* `index.web.php`
+with the shared library files (`UpdateException.php`, `LogException.php`, `Updater.php`), stripping `namespace`/`use` statements and duplicate PHP
+opening tags via `awk`/`grep`. This means that after changing any shared `/lib/*.php` file or `index.web.php`, you must re-run `make index.php` and
+check in the resulting `/index.php`.
+
+**How `updater.phar` is built:** `make updater.phar` generates a transient `/lib/Version.php` (via `buildVersionFile.php`), runs `composer dump-autoload`,
+then uses [box](https://github.com/box-project/box) (configured in `/box.json`) to package `/updater.php`, `/lib/*.php`, and `/vendor/*.php` into the
+phar. The transient `Version.php` is deleted after the build. After changing any CLI-specific or shared file, you must re-run `make updater.phar` and
+check in the resulting `/updater.phar`.
+
+#### Build configuration files
+
+* `/box.json` — Configures which files are packaged into `updater.phar` (the `lib/` directory, vendor PHP files, with `updater.php` as the main entry point)
+* `/composer.json` / `/composer.lock` — Manage PHP dependencies; the CLI Updater bootstraps via `vendor/autoload.php`
+* `/vendor/` — Checked in to the repo (used at runtime by the CLI Updater and during the phar build)
 
 #### Server components
 
@@ -245,9 +263,29 @@ Keep in mind that for the update/upgrade process there are some additional compo
 
 Install box: https://github.com/box-project/box/blob/main/doc/installation.md#composer
 
+#### Composer
+
+A working `composer` install is required both for dependency management and for building. See "Testing" below for version requirements.
+
 #### Tests
 
-If you want to run the tests locally, you'll need to run them in an environment that has Nextcloud's required PHP modules installed. The various test scenarios are all available via the `make test*` (see Makefile for specifics).
+If you want to run the tests locally, you'll need to run them in an environment that has Nextcloud's required PHP modules installed.
+Tests use [Behat](https://docs.behat.org/) (a BDD framework); feature files live under `tests/features/`. Test data (gitignored) is
+generated under `tests/data/`.
+
+The available test targets are:
+
+| Target | Description |
+|---|---|
+| `make test` | Runs all Behat feature tests |
+| `make test-cli` | Runs only the CLI updater tests (`features/cli.feature`) |
+| `make test-stable26` | Tests update path for stable26 |
+| `make test-stable27` | Tests update path for stable27 |
+| `make test-stable28` | Tests update path for stable28 |
+| `make test-master` | Tests update path for master |
+| `make test-user.ini` | Tests `.user.ini` handling (`features/user.ini.feature`) |
+| `make check-same-code-base` | Verifies `/index.php` is in sync with `/lib/*.php` + `/index.web.php` |
+| `make build-and-local-test` | Builds the phar then runs a local updater smoke test |
 
 ### Build artifacts / What to check in
 
@@ -269,16 +307,23 @@ Plus whatever has been changed in the implementation in:
 
 #### Transient
 
-Used during the build process but not checked in:
+Used during the build process but not checked in (gitignored):
 
 * Specific to the CLI Updater:
-  - `/lib/Version.php`
+  - `/lib/Version.php` — auto-generated by `buildVersionFile.php`, deleted after `make updater.phar` completes
 
 ### Testing
 
-#### Check same code base test keeps failing
+#### `check-same-code-base` test keeps failing
 
-If it keeps failing on your PR, confirm your local version of `composer` is the same version in-use in the workflow runner. You can check the details of the test run and find the version currently being used (and therefore required locally) under "Setup Tools". (Hint: distro versions are typically too outdated. Remove that version and see https://getcomposer.org/download/ to install your own version).
+This test (`make check-same-code-base`) runs `tests/checkSameCodeBase.php`, which verifies that the contents of each shared library file in `/lib/`
+(excluding CLI-only files `CommandApplication.php` and `UpdateCommand.php`) are present verbatim inside the built `/index.php`. If it fails, it
+usually means:
+
+1. **You changed a file in `/lib/` but didn't rebuild `index.php`.** Run `make index.php` and commit the result.
+2. **Your local `composer` version differs from CI.** Confirm your local version of `composer` is the same version in-use in the workflow runner.
+   You can check the details of the test run and find the version currently being used (and therefore required locally) under "Setup Tools". (Hint:
+   distro versions are typically too outdated. Remove that version and see https://getcomposer.org/download/ to install your own version).
 
 #### CI
 
