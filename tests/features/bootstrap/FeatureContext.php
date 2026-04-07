@@ -204,7 +204,7 @@ class FeatureContext implements SnippetAcceptingContext {
 		copy($this->buildDir . 'updater.phar', $this->serverDir . 'nextcloud/updater/updater');
 		chdir($this->serverDir . 'nextcloud/updater');
 		chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
-		exec('./updater -n', $output, $returnCode);
+		exec('./updater -n 2>&1', $output, $returnCode);
 
 		// sleep to let the opcache do it's work and invalidate the status.php
 		sleep(5);
@@ -564,4 +564,54 @@ EOF;
 	public function phpIsAtLeastInVersion($version) {
 		$this->skipIt = in_array(version_compare($version, PHP_VERSION, '<'), [0, false], true);
 	}
+
+	/**
+	 * @Given the update server returns HTTP status :statusCode
+	 */
+	public function theUpdateServerReturnsHttpStatus(int $statusCode) {
+		if ($this->skipIt) {
+			return;
+		}
+
+		$this->runUpdateServer();
+
+		$content = '<?php http_response_code(' . $statusCode . '); echo "Server Error";';
+		file_put_contents($this->updateServerDir . 'index.php', $content);
+	}
+
+	/**
+	 * @Given the update server returns invalid XML
+	 */
+	public function theUpdateServerReturnsInvalidXml() {
+		if ($this->skipIt) {
+			return;
+		}
+
+		$this->runUpdateServer();
+
+		$content = '<?php header("Content-Type: application/xml"); echo "this is not valid xml <><><";';
+		file_put_contents($this->updateServerDir . 'index.php', $content);
+	}
+
+	/**
+	 * @Given the update server is unreachable
+	 */
+	public function theUpdateServerIsUnreachable() {
+		if ($this->skipIt) {
+			return;
+		}
+
+		// Point updater.server.url at a port with nothing listening
+		$configFile = $this->serverDir . 'nextcloud/config/config.php';
+		$content = file_get_contents($configFile);
+		$content = preg_replace(
+			'!\$CONFIG\s*=\s*array\s*\(!',
+			"\$CONFIG = array(\n 'updater.server.url' => 'http://localhost:8871/',",
+			$content
+		);
+		file_put_contents($configFile, $content);
+
+		// Intentionally do NOT start any server on port 8871
+	}
 }
+
