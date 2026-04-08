@@ -563,16 +563,49 @@ class Updater {
 		$updateURL = $updaterServer . '?version=' . str_replace('.', 'x', $this->getConfigOptionMandatoryString('version')) . 'xxx' . $releaseChannel . 'xx' . urlencode($this->buildTime) . 'x' . PHP_MAJOR_VERSION . 'x' . PHP_MINOR_VERSION . 'x' . PHP_RELEASE_VERSION;
 		$this->silentLog('[info] updateURL: ' . $updateURL);
 
+		$maxRetries = 2;
+		$lastException = null;
+
+		for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+			try {
+				return $this->fetchUpdateServerResponse($updateURL);
+			} catch (\Exception $e) {
+				$lastException = $e;
+				$this->silentLog('[warn] attempt ' . $attempt . '/' . $maxRetries . ' failed: ' . $e->getMessage());
+				if ($attempt < $maxRetries) {
+					sleep(1);
+				}
+			}
+		}
+
+		throw $lastException;
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	private function fetchUpdateServerResponse(string $updateURL): array {
 		// Download update response
 		$curl = $this->getCurl($updateURL);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 30);
 
 		/** @var false|string $response */
 		$response = curl_exec($curl);
+
 		if ($response === false) {
-			throw new \Exception('Could not do request to updater server: ' . curl_error($curl));
+			$curlError = curl_error($curl);
+			curl_close($curl);
+			throw new \Exception('Could not do request to updater server: ' . $curlError);
 		}
 
+		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		curl_close($curl);
+
+		if ($httpCode !== 200 && $httpCode !== 204) {
+			$this->silentLog('[warn] update server returned HTTP ' . $httpCode);
+			throw new \Exception('Update server returned unexpected HTTP status ' . $httpCode);
+		}
 
 		// Response can be empty when no update is available
 		if ($response === '') {
@@ -580,11 +613,15 @@ class Updater {
 		}
 
 		libxml_use_internal_errors(true);
-		$xml = simplexml_load_string($response);
-		if ($xml === false) {
-			$content = strlen($response) > 200 ? substr($response, 0, 200) . '…' : $response;
-			$errors = implode("\n", array_map(fn ($error) => $error->message, libxml_get_errors()));
-			throw new \Exception('Could not parse updater server XML response: ' . $content . "\nErrors:\n" . $errors);
+		try {
+			$xml = simplexml_load_string($response);
+			if ($xml === false) {
+				$content = strlen($response) > 200 ? substr($response, 0, 200) . '…' : $response;
+				$errors = implode("\n", array_map(fn ($error) => $error->message, libxml_get_errors()));
+				throw new \Exception('Could not parse updater server XML response: ' . $content . "\nErrors:\n" . $errors);
+			}
+		} finally {
+			libxml_clear_errors();
 		}
 
 		$response = get_object_vars($xml);

@@ -84,3 +84,33 @@ Feature: CLI updater
     And the installed version should be 26.0.0
     And maintenance mode should be off
     And upgrade is not required
+
+  Scenario: Update server returns HTTP 500 - 26.0.0
+    Given the current installed version is 26.0.0
+    And the update server returns HTTP status 500
+    When the CLI updater is run
+    Then the return code should not be 0
+    And the output should contain "Update server returned unexpected HTTP status 500"
+    And the installed version should be 26.0.0
+    And maintenance mode should be off
+    And upgrade is not required
+
+  Scenario: Update server returns invalid XML - 26.0.0
+    Given the current installed version is 26.0.0
+    And the update server returns invalid XML
+    When the CLI updater is run
+    Then the return code should not be 0
+    And the output should contain "Could not parse updater server XML response"
+    And the installed version should be 26.0.0
+    And maintenance mode should be off
+    And upgrade is not required
+
+  Scenario: Update server is unreachable - 26.0.0
+    Given the current installed version is 26.0.0
+    And the update server is unreachable
+    When the CLI updater is run
+    Then the return code should not be 0
+    And the output should contain "Could not do request to updater server"
+    And the installed version should be 26.0.0
+    And maintenance mode should be off
+    And upgrade is not required
