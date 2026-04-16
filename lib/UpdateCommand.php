@@ -463,7 +463,7 @@ class UpdateCommand extends Command {
 						$this->updater->silentLog('[info] Skipping integrity check as requested');
 						break;
 					}
-					$this->updater->verifyIntegrity();
+					$this->updater->verifyIntegrity($this->urlOverride);
 					break;
 				case 6:
 					$this->updater->extractDownload();
