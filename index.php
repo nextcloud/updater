@@ -580,7 +580,6 @@ class Updater {
 		$this->silentLog('[info] updateURL: ' . $updateURL);
 
 		$maxRetries = 2;
-		$lastException = null;
 
 		for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
 			try {
