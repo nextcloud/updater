@@ -580,7 +580,6 @@ class Updater {
 		$this->silentLog('[info] updateURL: ' . $updateURL);
 
 		$maxRetries = 2;
-		$lastException = null;
 
 		for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
 			try {
@@ -872,11 +871,16 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function verifyIntegrity(): void {
+	public function verifyIntegrity(string $urlOverride = ''): void {
 		$this->silentLog('[info] verifyIntegrity()');
 
 		if ($this->getCurrentReleaseChannel() === 'daily') {
 			$this->silentLog('[info] current channel is "daily" which is not signed. Skipping verification.');
+			return;
+		}
+
+		if ($urlOverride !== '') {
+			$this->silentLog('[info] custom download url provided, cannot verify signature');
 			return;
 		}
 
