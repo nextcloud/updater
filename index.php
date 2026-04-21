@@ -656,11 +656,11 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function downloadUpdate(string $url = '', ?Closure $downloadProgress = null): void {
+	public function downloadUpdate(string $urlOverride = '', ?Closure $downloadProgress = null): void {
 		$this->silentLog('[info] downloadUpdate()');
 		$this->downloadProgress = $downloadProgress;
 
-		$downloadURLs = $url !== '' ? [$url] : $this->getDownloadURLs();
+		$downloadURLs = $urlOverride !== '' ? [$urlOverride] : $this->getDownloadURLs();
 
 		$this->silentLog('[info] will try to download archive from: ' . implode(', ', $downloadURLs));
 
@@ -682,10 +682,10 @@ class Updater {
 			}
 		}
 
-		foreach ($downloadURLs as $url) {
+		foreach ($downloadURLs as $urlOverride) {
 			$this->previousProgress = 0;
-			$saveLocation = $storageLocation . basename((string)$url);
-			if ($this->downloadArchive($url, $saveLocation)) {
+			$saveLocation = $storageLocation . basename((string)$urlOverride);
+			if ($this->downloadArchive($urlOverride, $saveLocation)) {
 				return;
 			}
 		}
@@ -871,7 +871,7 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function verifyIntegrity(string $urlOverride = ''): void {
+	public function verifyIntegrity(string $urlOverride = '', string $signature = ''): void {
 		$this->silentLog('[info] verifyIntegrity()');
 
 		if ($this->getCurrentReleaseChannel() === 'daily') {
@@ -879,18 +879,13 @@ class Updater {
 			return;
 		}
 
-		if ($urlOverride !== '') {
-			$this->silentLog('[info] custom download url provided, cannot verify signature');
-			return;
-		}
-
-		$response = $this->getUpdateServerResponse();
-		if (empty($response['signature'])) {
-			throw new \Exception('No signature specified for defined update');
-		}
-
-		if (!is_string($response['signature'])) {
-			throw new \Exception('Signature specified for defined update should be a string');
+		if ($signature === '') {
+			if ($urlOverride !== '') {
+				throw new \Exception(
+					'Custom download url provided. You need to provide a signature with --signature or skip integrity check with --no-verify.'
+				);
+			}
+			$signature = $this->getSignatureFromUpdater();
 		}
 
 		$certificate = <<<EOF
@@ -925,7 +920,7 @@ EOF;
 
 		$validSignature = openssl_verify(
 			file_get_contents($this->getDownloadedFilePath()),
-			base64_decode($response['signature']),
+			base64_decode($signature),
 			$certificate,
 			OPENSSL_ALGO_SHA512
 		) === 1;
@@ -935,6 +930,19 @@ EOF;
 		}
 
 		$this->silentLog('[info] end of verifyIntegrity()');
+	}
+
+	private function getSignatureFromUpdater(): string {
+		$response = $this->getUpdateServerResponse();
+		if (empty($response['signature'])) {
+			throw new \Exception('No signature specified for defined update');
+		}
+
+		if (!is_string($response['signature'])) {
+			throw new \Exception('Signature specified for defined update should be a string');
+		}
+
+		return $response['signature'];
 	}
 
 	/**
