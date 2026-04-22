@@ -23,6 +23,7 @@ class UpdateCommand extends Command {
 	protected bool $skipUpgrade = false;
 	protected bool $skipIntegrityCheck = false;
 	protected string $urlOverride = '';
+	protected string $signature = '';
 
 	/** @var list<string> strings of text for stages of updater */
 	protected array $checkTexts = [
@@ -49,7 +50,8 @@ class UpdateCommand extends Command {
 			->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip backup of current Nextcloud version')
 			->addOption('no-upgrade', null, InputOption::VALUE_NONE, "Don't automatically run occ upgrade")
 			->addOption('url', null, InputOption::VALUE_OPTIONAL, 'The URL of the Nextcloud release to download')
-			->addOption('no-verify', null, InputOption::VALUE_OPTIONAL, 'Skip integrity verification of the downloaded file');
+			->addOption('no-verify', null, InputOption::VALUE_NONE, 'Skip integrity verification of the downloaded file')
+			->addOption('signature', null, InputOption::VALUE_OPTIONAL, 'Base64 signature of the archive (use it in combination with --url option)');
 	}
 
 	public static function getUpdaterVersion(): string {
@@ -66,6 +68,7 @@ class UpdateCommand extends Command {
 		$this->skipUpgrade = (bool)$input->getOption('no-upgrade');
 		$this->skipIntegrityCheck = (bool)$input->getOption('no-verify');
 		$this->urlOverride = (string)$input->getOption('url');
+		$this->signature = (string)$input->getOption('signature');
 
 		$version = static::getUpdaterVersion();
 		$output->writeln('Nextcloud Updater - version: ' . $version);
@@ -385,7 +388,7 @@ class UpdateCommand extends Command {
 						$this->updater->silentLog('[info] Skipping integrity check as requested');
 						break;
 					}
-					$this->updater->verifyIntegrity($this->urlOverride);
+					$this->updater->verifyIntegrity($this->urlOverride, $this->signature);
 					break;
 				case 6:
 					$this->updater->extractDownload();
