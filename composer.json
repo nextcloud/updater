@@ -16,7 +16,7 @@
 		"sort-packages": true
 	},
 	"require": {
-		"symfony/console": "^6.4"
+		"symfony/console": "^7.3"
 	},
 	"scripts": {
 		"box": "box compile -c box.json",
