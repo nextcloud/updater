@@ -64,6 +64,10 @@ class Updater {
 			throw new \Exception('Invalid baseDir provided');
 		}
 
+		if (!str_ends_with($nextcloudDir, '/')) {
+			$nextcloudDir .= '/';
+		}
+
 		$this->nextcloudDir = $nextcloudDir;
 
 		[$this->configValues] = $this->readConfigFile();
