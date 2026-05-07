@@ -134,36 +134,6 @@ class UpdaterTest extends TestCase {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Pure logic regression: shows exactly why explode() was wrong and that
-	 * the substr() replacement is correct.
-	 */
-	public function testRelativePathExtractionForIssue711(): void {
-		// Simulate Nextcloud installed at /nextcloud (as in the bug report)
-		$installDir = '/nextcloud';
-		// File deep inside core/doc with the same name as the install dir
-		$filePath = '/nextcloud/core/doc/admin/configuration_files/external_storage/nextcloud.html';
-
-		// Old (buggy) approach: explode splits on ALL occurrences of $installDir.
-		// '/nextcloud' appears at the start AND inside '.../external_storage/nextcloud.html'
-		// (because '/nextcloud.html' begins with '/nextcloud').
-		$oldRelativePath = explode($installDir, $filePath)[1];
-		$this->assertSame(
-			'/core/doc/admin/configuration_files/external_storage',
-			$oldRelativePath,
-			'The old explode() approach incorrectly returns a directory path'
-		);
-		$this->assertStringNotContainsString('nextcloud.html', $oldRelativePath);
-
-		// New (fixed) approach: substr() always takes exactly the right suffix.
-		$newRelativePath = ltrim(substr($filePath, strlen($installDir)), '/');
-		$this->assertSame(
-			'core/doc/admin/configuration_files/external_storage/nextcloud.html',
-			$newRelativePath,
-			'The substr() approach correctly returns the full relative file path'
-		);
-	}
-
-	/**
 	 * Integration regression: createBackup() must copy a deeply nested file
 	 * that has the install-directory name as part of its own name, without
 	 * throwing and without producing a double-slash in the destination path.

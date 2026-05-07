@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-copilot/add-string-concat-method',
         'version' => 'dev-copilot/add-string-concat-method',
-        'reference' => 'dc688b2b097ffaa4f596e943d3626d5b65e6016a',
+        'reference' => '851f344fad579276efb35eef23b70f76d7ce71e9',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-copilot/add-string-concat-method',
             'version' => 'dev-copilot/add-string-concat-method',
-            'reference' => 'dc688b2b097ffaa4f596e943d3626d5b65e6016a',
+            'reference' => '851f344fad579276efb35eef23b70f76d7ce71e9',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
