@@ -66,6 +66,11 @@ class Updater {
 		}
 
 		$versionFileName = $this->buildPath('version.php');
+		// Invalidate version.php OPcache entry to assure file_exists() returns
+		// false after files were removed while opcache.enable_file_override is set.
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($versionFileName, true);
+		}
 		if (!file_exists($versionFileName)) {
 			// fallback to version in config.php
 			$version = $this->getConfigOptionString('version');
@@ -569,16 +574,48 @@ class Updater {
 		$updateURL = $updaterServer . '?version=' . str_replace('.', 'x', $this->getConfigOptionMandatoryString('version')) . 'xxx' . $releaseChannel . 'xx' . urlencode($this->buildTime) . 'x' . PHP_MAJOR_VERSION . 'x' . PHP_MINOR_VERSION . 'x' . PHP_RELEASE_VERSION;
 		$this->silentLog('[info] updateURL: ' . $updateURL);
 
+		$maxRetries = 2;
+
+		for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+			try {
+				return $this->fetchUpdateServerResponse($updateURL);
+			} catch (\Exception $e) {
+				$lastException = $e;
+				$this->silentLog('[warn] attempt ' . $attempt . '/' . $maxRetries . ' failed: ' . $e->getMessage());
+				if ($attempt < $maxRetries) {
+					sleep(1);
+				}
+			}
+		}
+
+		throw $lastException;
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	private function fetchUpdateServerResponse(string $updateURL): array {
 		// Download update response
 		$curl = $this->getCurl($updateURL);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 30);
 
 		/** @var false|string $response */
 		$response = curl_exec($curl);
+
 		if ($response === false) {
-			throw new \Exception('Could not do request to updater server: ' . curl_error($curl));
+			$curlError = curl_error($curl);
+			curl_close($curl);
+			throw new \Exception('Could not do request to updater server: ' . $curlError);
 		}
 
+		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		curl_close($curl);
+
+		if ($httpCode !== 200 && $httpCode !== 204) {
+			$this->silentLog('[warn] update server returned HTTP ' . $httpCode);
+			throw new \Exception('Update server returned unexpected HTTP status ' . $httpCode);
+		}
 
 		// Response can be empty when no update is available
 		if ($response === '') {
@@ -586,11 +623,15 @@ class Updater {
 		}
 
 		libxml_use_internal_errors(true);
-		$xml = simplexml_load_string($response);
-		if ($xml === false) {
-			$content = strlen($response) > 200 ? substr($response, 0, 200) . '…' : $response;
-			$errors = implode("\n", array_map(fn ($error) => $error->message, libxml_get_errors()));
-			throw new \Exception('Could not parse updater server XML response: ' . $content . "\nErrors:\n" . $errors);
+		try {
+			$xml = simplexml_load_string($response);
+			if ($xml === false) {
+				$content = strlen($response) > 200 ? substr($response, 0, 200) . '…' : $response;
+				$errors = implode("\n", array_map(fn ($error) => $error->message, libxml_get_errors()));
+				throw new \Exception('Could not parse updater server XML response: ' . $content . "\nErrors:\n" . $errors);
+			}
+		} finally {
+			libxml_clear_errors();
 		}
 
 		$response = get_object_vars($xml);
@@ -610,11 +651,11 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function downloadUpdate(string $url = '', ?Closure $downloadProgress = null): void {
+	public function downloadUpdate(string $urlOverride = '', ?Closure $downloadProgress = null): void {
 		$this->silentLog('[info] downloadUpdate()');
 		$this->downloadProgress = $downloadProgress;
 
-		$downloadURLs = $url !== '' ? [$url] : $this->getDownloadURLs();
+		$downloadURLs = $urlOverride !== '' ? [$urlOverride] : $this->getDownloadURLs();
 
 		$this->silentLog('[info] will try to download archive from: ' . implode(', ', $downloadURLs));
 
@@ -636,10 +677,10 @@ class Updater {
 			}
 		}
 
-		foreach ($downloadURLs as $url) {
+		foreach ($downloadURLs as $urlOverride) {
 			$this->previousProgress = 0;
-			$saveLocation = $storageLocation . basename((string)$url);
-			if ($this->downloadArchive($url, $saveLocation)) {
+			$saveLocation = $storageLocation . basename((string)$urlOverride);
+			if ($this->downloadArchive($urlOverride, $saveLocation)) {
 				return;
 			}
 		}
@@ -825,7 +866,7 @@ class Updater {
 	 *
 	 * @throws \Exception
 	 */
-	public function verifyIntegrity(string $urlOverride = ''): void {
+	public function verifyIntegrity(string $urlOverride = '', string $signature = ''): void {
 		$this->silentLog('[info] verifyIntegrity()');
 
 		if ($this->getCurrentReleaseChannel() === 'daily') {
@@ -833,18 +874,13 @@ class Updater {
 			return;
 		}
 
-		if ($urlOverride !== '') {
-			$this->silentLog('[info] custom download url provided, cannot verify signature');
-			return;
-		}
-
-		$response = $this->getUpdateServerResponse();
-		if (empty($response['signature'])) {
-			throw new \Exception('No signature specified for defined update');
-		}
-
-		if (!is_string($response['signature'])) {
-			throw new \Exception('Signature specified for defined update should be a string');
+		if ($signature === '') {
+			if ($urlOverride !== '') {
+				throw new \Exception(
+					'Custom download url provided. You need to provide a signature with --signature or skip integrity check with --no-verify.'
+				);
+			}
+			$signature = $this->getSignatureFromUpdater();
 		}
 
 		$certificate = <<<EOF
@@ -879,7 +915,7 @@ EOF;
 
 		$validSignature = openssl_verify(
 			file_get_contents($this->getDownloadedFilePath()),
-			base64_decode($response['signature']),
+			base64_decode($signature),
 			$certificate,
 			OPENSSL_ALGO_SHA512
 		) === 1;
@@ -889,6 +925,19 @@ EOF;
 		}
 
 		$this->silentLog('[info] end of verifyIntegrity()');
+	}
+
+	private function getSignatureFromUpdater(): string {
+		$response = $this->getUpdateServerResponse();
+		if (empty($response['signature'])) {
+			throw new \Exception('No signature specified for defined update');
+		}
+
+		if (!is_string($response['signature'])) {
+			throw new \Exception('Signature specified for defined update should be a string');
+		}
+
+		return $response['signature'];
 	}
 
 	/**
