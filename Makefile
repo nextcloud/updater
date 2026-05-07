@@ -33,8 +33,8 @@ test-stable26: updater.phar test/vendor
 test-stable27: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat features/stable27.feature
 
-test-stable28: updater.phar test/vendor
-	cd tests && ../vendor/bin/behat features/stable28.feature
+test-stable31: updater.phar test/vendor
+	cd tests && ../vendor/bin/behat features/stable31.feature
 
 test-master: updater.phar test/vendor
 	cd tests && ../vendor/bin/behat features/master.feature

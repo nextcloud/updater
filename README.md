@@ -15,7 +15,7 @@ The Updater can be accessed via the Web UI as well as the command line. It may b
 
 ## Known issues
 
-* The `createBackup` step, which is **not** intended to backup user data, currently can slow down the larger the `datadirectory` gets (nextcloud/updater#507) 
+* The `createBackup` step, which is **not** intended to backup user data, currently can slow down the larger the `datadirectory` gets (nextcloud/updater#507)
 * The `deleteOldFiles` step, which does not actually touch user data, currently can slow down the larger the `datadirectory` gets (nextcloud/updater#397)
 * Multiple `*.config.php` files are currently not supported / ignored (nextcloud/updater#384)
 * In some environments, the current iterator implementation may fail (nextcloud/updater#519)
@@ -236,7 +236,7 @@ check in the resulting `/updater.phar`.
 
 #### Server components
 
-Keep in mind that for the update/upgrade process there are some additional components that aren't part of the Updater app (nor necessarily part of 
+Keep in mind that for the update/upgrade process there are some additional components that aren't part of the Updater app (nor necessarily part of
 `occ upgrade` itself):
 
 * The Web-based update overview/notification page:
@@ -281,7 +281,7 @@ The available test targets are:
 | `make test-cli` | Runs only the CLI updater tests (`features/cli.feature`) |
 | `make test-stable26` | Tests update path for stable26 |
 | `make test-stable27` | Tests update path for stable27 |
-| `make test-stable28` | Tests update path for stable28 |
+| `make test-stable31` | Tests update path for stable31 |
 | `make test-master` | Tests update path for master |
 | `make test-user.ini` | Tests `.user.ini` handling (`features/user.ini.feature`) |
 | `make check-same-code-base` | Verifies `/index.php` is in sync with `/lib/*.php` + `/index.web.php` |
@@ -352,14 +352,14 @@ usually means:
 ### Unable to use the built-in Updater
 
 If the built-in Updater does not function reliably for your environment, the old reliable (albeit admittedly tedious) [manual update](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/manual_upgrade.html) process may be your best alternative.
-This was the primary way of keeping Nextcloud Server up-to-date before the automated Updater was developed. In addition, if Updater does not work in your environment, report the details of your situation to https://github.com/nextcloud/updater/issues so that 
+This was the primary way of keeping Nextcloud Server up-to-date before the automated Updater was developed. In addition, if Updater does not work in your environment, report the details of your situation to https://github.com/nextcloud/updater/issues so that
 consideration can be given to adapting Updater to a wider variety of environments.
 
 ### Updater != `occ upgrade`
 
 The `occ upgrade` command runs the database migrations which adapt your existing database to the updated version Nextcloud Server that is deployed by the Updater (or via a manual update).
 
-Despite the confusing naming - which makes sense technically, but in hindsight may not have been the best to avoid confusion - the Updater *must* run (and completely successfully) before `occ upgrade` will have anything to do. 
+Despite the confusing naming - which makes sense technically, but in hindsight may not have been the best to avoid confusion - the Updater *must* run (and completely successfully) before `occ upgrade` will have anything to do.
 
 ## Help & Contributing
 

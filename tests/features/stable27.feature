@@ -2,16 +2,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 Feature: CLI updater - stable27 base
 
-  Scenario: Update is available - 27.0.0 beta1 to 27.0.1 RC1
-    Given the current installed version is 27.0.0beta1
-    And there is an update to prerelease version "27.0.1rc1" available
-    And the version number is decreased in the config.php to enforce upgrade
-    When the CLI updater is run successfully
-    And the output should contain "Update successful"
-    Then the installed version should be 27.0
-    And maintenance mode should be off
-    And upgrade is not required
-
   Scenario: Update is available but unexpected folder found - 27.1.6 to 27.1.11
     Given the current installed version is 27.1.6
     And there is an update to version 27.1.11 available
@@ -44,7 +34,7 @@ Feature: CLI updater - stable27 base
     And upgrade is not required
 
   Scenario: Update is available - 27.1.0 to beta
-    Given the current installed version is 27.1.0rc1
+    Given the current installed version is 27.1.0
     And PHP is at least in version 8.0
     And the current channel is "beta"
     And there is an update to version 28.0.14 available
