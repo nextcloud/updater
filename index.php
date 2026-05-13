@@ -784,7 +784,7 @@ class Updater {
 		}
 
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		$isFileUrl = str_starts_with($fromUrl, 'file://');
+		$isFileUrl = parse_url($fromUrl, PHP_URL_SCHEME) === 'file';
 		if (!$isFileUrl && $httpCode !== 200 && $httpCode !== 206) {
 			fclose($fp);
 			unlink($toLocation);
