@@ -213,6 +213,84 @@ class FeatureContext implements SnippetAcceptingContext {
 	}
 
 	/**
+	 * @Given the archive for version :version is available locally
+	 */
+	public function theArchiveForVersionIsAvailableLocally(string $version): void {
+		if ($this->skipIt) {
+			return;
+		}
+
+		$filename = 'nextcloud-' . $version . '.zip';
+		if (!file_exists($this->tmpDownloadDir . $filename)) {
+			$fp = fopen($this->tmpDownloadDir . $filename, 'w+');
+			$url = $this->downloadURL . $filename;
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_FILE, $fp);
+			curl_setopt($ch, CURLOPT_USERAGENT, 'Nextcloud Updater');
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+			if (curl_exec($ch) === false) {
+				throw new \Exception('Curl error: ' . curl_error($ch));
+			}
+			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			if ($httpCode !== 200) {
+				throw new \Exception('Download failed for ' . $url . ' - HTTP code: ' . $httpCode);
+			}
+			curl_close($ch);
+			fclose($fp);
+		}
+	}
+
+	/**
+	 * @When the CLI updater is run with local file URL for version :version and --no-verify successfully
+	 */
+	public function theCliUpdaterIsRunWithLocalFileUrlAndNoVerifySuccessfully(string $version): void {
+		if ($this->skipIt) {
+			return;
+		}
+
+		$this->runUpdaterWithLocalFileUrl($version, noVerify: true);
+
+		if ($this->CLIReturnCode !== 0) {
+			throw new Exception('updater failed' . PHP_EOL . implode(PHP_EOL, $this->CLIOutput));
+		}
+	}
+
+	/**
+	 * @When the CLI updater is run with local file URL for version :version
+	 */
+	public function theCliUpdaterIsRunWithLocalFileUrl(string $version): void {
+		if ($this->skipIt) {
+			return;
+		}
+
+		$this->runUpdaterWithLocalFileUrl($version, noVerify: false);
+	}
+
+	private function runUpdaterWithLocalFileUrl(string $version, bool $noVerify): void {
+		$filename = 'nextcloud-' . $version . '.zip';
+		$fileUrl = 'file://' . $this->tmpDownloadDir . $filename;
+
+		if (!file_exists($this->buildDir . 'updater.phar')) {
+			throw new Exception('updater.phar not available - please build it in advance via "box build -c box.json"');
+		}
+
+		copy($this->buildDir . 'updater.phar', $this->serverDir . 'nextcloud/updater/updater');
+		chdir($this->serverDir . 'nextcloud/updater');
+		chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
+
+		$args = '-n --url ' . escapeshellarg($fileUrl);
+		if ($noVerify) {
+			$args .= ' --no-verify';
+		}
+		exec('./updater ' . $args . ' 2>&1', $output, $returnCode);
+
+		// sleep to let the opcache do it's work and invalidate the status.php
+		sleep(5);
+		$this->CLIOutput = $output;
+		$this->CLIReturnCode = $returnCode;
+	}
+
+	/**
 	 * @param $version
 	 */
 	public function getSignatureForVersion(string $version): string {

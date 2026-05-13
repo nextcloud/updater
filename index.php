@@ -784,7 +784,8 @@ class Updater {
 		}
 
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($httpCode !== 200 && $httpCode !== 206) {
+		$isFileUrl = parse_url($fromUrl, PHP_URL_SCHEME) === 'file';
+		if (!$isFileUrl && $httpCode !== 200 && $httpCode !== 206) {
 			fclose($fp);
 			unlink($toLocation);
 			$this->silentLog('[warn] fail to download archive from ' . $fromUrl . '. Error: ' . $httpCode . ' ' . curl_error($ch));

@@ -19,6 +19,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+
 use function chdir;
 use function count;
 use function file_exists;
@@ -30,6 +31,7 @@ use function min;
 use function mkdir;
 use function putenv;
 use function sprintf;
+
 use const GLOB_ONLYDIR;
 
 /**
@@ -96,6 +98,7 @@ class BinCommand extends BaseCommand
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         // Switch to requireComposer() once Composer 2.3 is set as the minimum
+        // @phpstan-ignore function.alreadyNarrowedType
         $composer = method_exists($this, 'requireComposer')
             ? $this->requireComposer()
             : $this->getComposer();

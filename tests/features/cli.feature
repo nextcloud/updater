@@ -114,3 +114,21 @@ Feature: CLI updater
     And the installed version should be 26.0.0
     And maintenance mode should be off
     And upgrade is not required
+
+  Scenario: Update via local file URL with --no-verify - 26.0.0 to 26.0.13
+    Given the current installed version is 26.0.0
+    And the archive for version 26.0.13 is available locally
+    When the CLI updater is run with local file URL for version 26.0.13 and --no-verify successfully
+    Then the installed version should be 26.0.1
+    And maintenance mode should be off
+    And upgrade is not required
+
+  Scenario: Update via local file URL without --no-verify fails - 26.0.0 to 26.0.13
+    Given the current installed version is 26.0.0
+    And the archive for version 26.0.13 is available locally
+    When the CLI updater is run with local file URL for version 26.0.13
+    Then the return code should not be 0
+    And the output should contain "You need to provide a signature with --signature or skip integrity check with --no-verify."
+    And the installed version should be 26.0.0
+    And maintenance mode should be off
+    And upgrade is not required
