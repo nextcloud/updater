@@ -1,16 +1,14 @@
 {
-	"directories": [
-		"lib"
+	"alias": "nextcloud-updater",
+	"banner": [
+		"Nextcloud Server Updater",
+		"",
+		"SPDX-FileCopyrightText: 2016 Nextcloud GmbH and Nextcloud contributors",
+		"SPDX-License-Identifier: AGPL-3.0-or-later"
 	],
-	"finder": [
-		{
-			"name": "*.php",
-			"exclude": [
-				"Tests"
-			],
-			"in": "vendor"
-		}
-	],
+	"compactors": ["KevinGH\\Box\\Compactor\\Php"],
+	"directories": ["lib"],
+	"force-autodiscovery": true,
 	"main": "updater.php",
-	"force-autodiscovery": true
+	"timestamp": "@timestamp@"
 }
