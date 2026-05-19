@@ -58,7 +58,7 @@ $iterator = new \RecursiveDirectoryIterator(
 foreach ($iterator as $path => $fileInfo) {
 	$fileName = explode($libDir, $path)[1];
 
-	if (in_array($fileName, $excludedFiles)) {
+	if (in_array($fileName, $excludedFiles, true)) {
 		continue;
 	}
 
@@ -67,7 +67,7 @@ foreach ($iterator as $path => $fileInfo) {
 	$fileContent = explode("namespace NC\\Updater;\n", $fileContent, 2)[1];
 	$fileContent = preg_replace('/^use [^\\\\]*;\n/m', '', $fileContent);
 
-	$fileContent = trim($fileContent);
+	$fileContent = trim((string)$fileContent);
 
 	if (in_array(str_contains($indexPhpContent, $fileContent), [0, false], true)) {
 		$failedFiles[] = $fileName;

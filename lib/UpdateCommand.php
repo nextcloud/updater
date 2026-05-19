@@ -31,6 +31,7 @@ class UpdateCommand extends Command {
 	protected bool $skipIntegrityCheck = false;
 
 	protected string $urlOverride = '';
+
 	protected string $signature = '';
 
 	/** Strings of text for stages of updater */
@@ -137,11 +138,8 @@ class UpdateCommand extends Command {
 		}
 
 		// Check if already a step is in process
-		if ($this->ignoreState) {
-			$currentStep = [];
-		} else {
-			$currentStep = $this->updater->currentStep();
-		}
+		$currentStep = $this->ignoreState ? [] : $this->updater->currentStep();
+
 		$stepNumber = 0;
 		if ($currentStep !== []) {
 			$stepState = $currentStep['state'] ?? '';
@@ -158,6 +156,7 @@ class UpdateCommand extends Command {
 				);
 				return -1;
 			}
+
 			$output->writeln('Found an ongoing update, continue from step ' . $stepNumber);
 		}
 
@@ -466,6 +465,7 @@ class UpdateCommand extends Command {
 						$this->updater->silentLog('[info] Skipping integrity check as requested');
 						break;
 					}
+
 					$this->updater->verifyIntegrity($this->urlOverride, $this->signature);
 					break;
 				case 6:

@@ -7,6 +7,7 @@ declare(strict_types=1);
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+use Nextcloud\Rector\Set\NextcloudSets;
 use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
@@ -14,7 +15,8 @@ return RectorConfig::configure()
 		__DIR__ . '/lib',
 		__DIR__ . '/tests',
 	])
-	->withImportNames(importShortClasses:false)
+	->withSkipPath(__DIR__ . '/tests/data')
+	->withImportNames(importShortClasses: false)
 	->withPreparedSets(
 		codeQuality: true,
 		codingStyle: true,
@@ -22,6 +24,9 @@ return RectorConfig::configure()
 		earlyReturn: true,
 		instanceOf: true,
 		privatization: true,
-		strictBooleans: true,
 	)
-	->withPhpSets(php82: true);
+	->withPhpSets(php82: true)
+	->withSets([
+		NextcloudSets::NEXTCLOUD_34,
+	]);
+;

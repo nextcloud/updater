@@ -58,8 +58,5 @@
     <RiskyTruthyFalsyComparison>
       <code><![CDATA[strrpos($version, '.')]]></code>
     </RiskyTruthyFalsyComparison>
-    <UnusedMethod>
-      <code><![CDATA[downloadProgressCallback]]></code>
-    </UnusedMethod>
   </file>
 </files>

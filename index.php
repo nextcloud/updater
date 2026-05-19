@@ -87,6 +87,7 @@ class Updater {
 		if (function_exists('opcache_invalidate')) {
 			opcache_invalidate($versionFileName, true);
 		}
+
 		if (!file_exists($versionFileName)) {
 			// fallback to version in config.php
 			$version = $this->getConfigOptionString('version');
@@ -376,7 +377,7 @@ class Updater {
 		/* Store first level children in an array to avoid trouble if changes happen while iterating */
 		$children = [];
 		while ($name = readdir($handle)) {
-			if (in_array($name, ['.', '..'])) {
+			if (in_array($name, ['.', '..'], true)) {
 				continue;
 			}
 
@@ -775,7 +776,7 @@ class Updater {
 
 		curl_setopt_array($ch, [
 			CURLOPT_NOPROGRESS => false,
-			CURLOPT_PROGRESSFUNCTION => [$this, 'downloadProgressCallback'],
+			CURLOPT_PROGRESSFUNCTION => $this->downloadProgressCallback(...),
 			CURLOPT_FILE => $fp,
 		]);
 
@@ -886,6 +887,7 @@ class Updater {
 					'Custom download url provided. You need to provide a signature with --signature or skip integrity check with --no-verify.'
 				);
 			}
+
 			$signature = $this->getSignatureFromUpdater();
 		}
 
@@ -1349,11 +1351,8 @@ EOF;
 
 		if (isset($jsonData['step']) && $jsonData['step'] <= self::LAST_STEP && $jsonData['step'] > 0) {
 			$result['step'] = (int)$jsonData['step'];
-			if (isset($jsonData['state'])) {
-				$result['state'] = (string)$jsonData['state'];
-			} else {
-				$result['state'] = 'start';
-			}
+			$result['state'] = isset($jsonData['state']) ? (string)$jsonData['state'] : 'start';
+
 			if ($result['step'] === self::LAST_STEP && $result['state'] !== 'start') {
 				return [];
 			}
