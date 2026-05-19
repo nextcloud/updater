@@ -231,10 +231,12 @@ class FeatureContext implements SnippetAcceptingContext {
 			if (curl_exec($ch) === false) {
 				throw new \Exception('Curl error: ' . curl_error($ch));
 			}
+
 			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			if ($httpCode !== 200) {
 				throw new \Exception('Download failed for ' . $url . ' - HTTP code: ' . $httpCode);
 			}
+
 			curl_close($ch);
 			fclose($fp);
 		}
@@ -282,6 +284,7 @@ class FeatureContext implements SnippetAcceptingContext {
 		if ($noVerify) {
 			$args .= ' --no-verify';
 		}
+
 		exec('./updater ' . $args . ' 2>&1', $output, $returnCode);
 
 		// sleep to let the opcache do it's work and invalidate the status.php
@@ -505,7 +508,7 @@ ZwCpfYewGDvrElT50aJYkA==',
 			return;
 		}
 
-		if (!in_array($type, ['string', 'boolean', 'integer', 'double'])) {
+		if (!in_array($type, ['string', 'boolean', 'integer', 'double'], true)) {
 			throw new Exception('Invalid type given: ' . $type);
 		}
 
