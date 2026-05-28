@@ -431,7 +431,10 @@ class Updater {
 		}
 
 		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $absolutePath => $fileInfo) {
-			$relativePath = explode($this->nextcloudDir, $absolutePath)[1];
+			$relativePath = explode($this->nextcloudDir, $absolutePath, 2)[1] ?? null;
+			if ($relativePath === null) {
+				throw new \Exception($absolutePath . ' is not in ' . $this->nextcloudDir);
+			}
 			$relativeDirectory = dirname($relativePath);
 
 			// Create folder if it doesn't exist
