@@ -55,7 +55,7 @@ $iterator = new \RecursiveDirectoryIterator(
  * @var SplFileInfo $fileInfo
  */
 foreach ($iterator as $path => $fileInfo) {
-	$fileName = explode($libDir, $path)[1];
+	$fileName = explode($libDir, $path, 2)[1];
 
 	if (array_search($fileName, $excludedFiles) !== false) {
 		continue;
