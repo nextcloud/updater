@@ -718,7 +718,6 @@ class Updater {
 		}
 
 		return array_unique($downloadURLs);
-
 	}
 
 	private function getCurl(string $url): CurlHandle {
@@ -1164,7 +1163,6 @@ EOF;
 		foreach ($this->getRecursiveDirectoryIterator($dataLocation, $excludedElements) as $path => $fileInfo) {
 			if ($dataLocation === '') {
 				throw new \Exception('Invalid dataLocation procided');
-
 			}
 
 			$fileName = explode($dataLocation, $path, 2)[1] ?? null;
@@ -1436,7 +1434,6 @@ EOF;
 		fclose($fh);
 	}
 
-
 	/**
 	 * Logs a message with current datetime prepended to updater.log but drops possible LogException
 	 */
@@ -1447,7 +1444,6 @@ EOF;
 			/* ignore log exception here (already detected later anyways) */
 		}
 	}
-
 
 	/**
 	 * Logs current version
