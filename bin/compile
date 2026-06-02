@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+set -Eeuo pipefail
+
+declare -r ROOT_DIRECTORY="$(readlink -f "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
+declare -r COMPOSER_BIN="${COMPOSER_BIN:-$(which composer)}"
+declare -r BOX_BIN="${ROOT_DIRECTORY}/vendor/bin/box"
+declare -ri DEBUG="${DEBUG:-0}"
+declare -ri ALLOW_DIRTY="${ALLOW_DIRTY:-0}"
+
+if [[ ${DEBUG} -gt 1 ]]; then
+	set -x
+fi
+
+function debug() {
+	if [[ ${DEBUG} -lt 1 ]]; then
+		return
+	fi
+	printf "%s\n" "${*}"
+}
+
+# Ignore changes on updater.phar
+git restore updater.phar
+
+# Build information
+declare -i BUILD_TIMESTAMP
+BUILD_TIMESTAMP=$(git rev-list --no-commit-header -n1 --format=%ct HEAD)
+declare BUILD_VERSION
+BUILD_VERSION=$(git describe --tags)
+declare -i DIRTY_BUILD
+if [[ -z "$(git status --porcelain)" ]]; then
+	DIRTY_BUILD=0
+else
+	DIRTY_BUILD=1
+	BUILD_VERSION="${BUILD_VERSION} dirty"
+fi
+
+debug "Build version ${BUILD_VERSION} with timestamp ${BUILD_TIMESTAMP}"
+
+# Create version file
+cat >lib/Version.php <<EOF
+<?php
+
+declare(strict_types=1);
+
+namespace NC\Updater;
+
+class Version {
+	function get(): string {
+		return '${BUILD_VERSION}';
+	}
+}
+EOF
+
+# Checks
+if [[ ${BUILD_TIMESTAMP} -lt 1 ]]; then
+	echo 'Could not retrieve timestamp from latest git commit'
+	exit 1
+fi
+if [[ ${DIRTY_BUILD} -gt 0 ]]; then
+	if [[ ${ALLOW_DIRTY} -lt 1 ]]; then
+		echo 'Version name contains "dirty" suffix. Clean your repository or use ALLOW_DIRTY=1 to bypass.'
+		exit 2
+	fi
+	echo '⚠️ Dirty build'
+fi
+
+# Force Composer suffix
+debug "Use ComposerPhar_${BUILD_TIMESTAMP} suffix in composer"
+"${COMPOSER_BIN}" config autoloader-suffix "ComposerPhar_${BUILD_TIMESTAMP}"
+# Set build timestamp
+sed -i "s/@timestamp@/$(date '+%Y-%m-%d %H:%I:%S %Z' -d "@${BUILD_TIMESTAMP}")/" "${ROOT_DIRECTORY}/box.json"
+
+# Build
+debug "Start build"
+"${BOX_BIN}" -n compile --sort-compiled-files --composer-bin="${COMPOSER_BIN}"
+
+# Reset composer.json and version file
+debug "Reset changes"
+"${COMPOSER_BIN}" config autoloader-suffix --unset
+git restore box.json
+rm lib/Version.php
