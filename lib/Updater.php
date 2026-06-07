@@ -60,9 +60,10 @@ class Updater {
 			}
 		}
 
+		//check for update or data directories
 		$dataDir = $this->getUpdateDirectoryLocation();
 		if ($dataDir === '' || $dataDir === '0') {
-			throw new \Exception('Could not read data directory from config.php.');
+			throw new \Exception('Could not read update or data directory from config.php.');
 		}
 
 		$versionFileName = $this->nextcloudDir . '/version.php';
