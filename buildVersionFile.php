@@ -7,12 +7,10 @@ declare(strict_types=1);
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-
 $currentTag = trim(shell_exec('git describe --tags') ?? '');
 exec('git diff-files --quiet', $output, $returnValue);
 
 $dirty = $returnValue === 0 ? '' : ' dirty';
-
 
 $content = '<?php
 
