@@ -7,7 +7,6 @@ declare(strict_types=1);
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-
 class UpdateException extends \Exception {
 
 	/** @param list<string> $data */
@@ -22,11 +21,8 @@ class UpdateException extends \Exception {
 	}
 }
 
-
 class LogException extends \Exception {
 }
-
-
 
 class Updater {
 	/** @var int */
