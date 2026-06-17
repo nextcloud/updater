@@ -134,7 +134,7 @@ Some historical more in-depth context can be found in nextcloud/updater#1 and ne
 
 - `occ upgrade` (Database Upgrader)
 - Web `occ upgrade` trigger/monitor
-- `updatenotification` app which provides the *Update* overvew under *Administration settings* and handles notifying admins of the availability of updates
+- `updatenotification` app which provides the *Update* overview under *Administration settings* and handles notifying admins of the availability of updates
 - The legacy update availability notifier (only activated if the `updatenotification` is disabled and does not provide an Overview screen; currently generates an indefinite "nag")
 
 ### Update methods
