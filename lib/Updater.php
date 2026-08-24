@@ -808,6 +808,7 @@ EOF;
 		) === 1;
 
 		if ($validSignature === false) {
+			$this->silentLog('[error] verify signature resulted in an openssl error: ' . openssl_error_string());
 			throw new \Exception('Signature of update is not valid');
 		}
 
