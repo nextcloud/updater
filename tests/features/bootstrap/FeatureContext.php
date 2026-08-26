@@ -122,7 +122,6 @@ class FeatureContext implements SnippetAcceptingContext {
 				throw new \Exception('Download failed for ' . $url . ' - HTTP code: ' . $httpCode);
 			}
 
-			curl_close($ch);
 			fclose($fp);
 		}
 
@@ -237,7 +236,6 @@ class FeatureContext implements SnippetAcceptingContext {
 				throw new \Exception('Download failed for ' . $url . ' - HTTP code: ' . $httpCode);
 			}
 
-			curl_close($ch);
 			fclose($fp);
 		}
 	}
