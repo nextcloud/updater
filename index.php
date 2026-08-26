@@ -309,6 +309,7 @@ class Updater {
 			'robots.txt',
 			'.htaccess',
 			'AUTHORS',
+			'Caddyfile',
 			'CHANGELOG.md',
 			'COPYING',
 			'COPYING-AGPL',
