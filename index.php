@@ -611,12 +611,10 @@ class Updater {
 
 		if ($response === false) {
 			$curlError = curl_error($curl);
-			curl_close($curl);
 			throw new \Exception('Could not do request to updater server: ' . $curlError);
 		}
 
 		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-		curl_close($curl);
 
 		if ($httpCode !== 200 && $httpCode !== 204) {
 			$this->silentLog('[warn] update server returned HTTP ' . $httpCode);
@@ -789,7 +787,6 @@ class Updater {
 			fclose($fp);
 			unlink($toLocation);
 			$this->silentLog('[warn] fail to download archive from ' . $fromUrl . '. Error: ' . $httpCode . ' ' . curl_error($ch));
-			curl_close($ch);
 
 			return false;
 		}
@@ -798,7 +795,6 @@ class Updater {
 		$info = curl_getinfo($ch);
 		$this->silentLog('[info] download stats: size=' . $this->formatBytes((int)$info['size_download']) . ' bytes; total_time=' . round($info['total_time'], 2) . ' secs; avg speed=' . $this->formatBytes((int)$info['speed_download']) . '/sec');
 
-		curl_close($ch);
 		fclose($fp);
 
 		$this->silentLog('[info] end of downloadUpdate()');
