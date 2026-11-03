@@ -189,9 +189,24 @@ class FeatureContext implements SnippetAcceptingContext {
 	}
 
 	/**
+	 * @When the CLI updater is run with :arguments successfully
+	 */
+	public function theCliUpdaterIsRunWithArgumentsSuccessfully(string $arguments): void {
+		if ($this->skipIt) {
+			return;
+		}
+
+		$this->theCliUpdaterIsRun($arguments);
+
+		if ($this->CLIReturnCode !== 0) {
+			throw new Exception('updater failed' . PHP_EOL . implode(PHP_EOL, $this->CLIOutput));
+		}
+	}
+
+	/**
 	 * @When the CLI updater is run
 	 */
-	public function theCliUpdaterIsRun() {
+	public function theCliUpdaterIsRun(string $arguments = '') {
 		if ($this->skipIt) {
 			return;
 		}
@@ -203,7 +218,7 @@ class FeatureContext implements SnippetAcceptingContext {
 		copy($this->buildDir . 'updater.phar', $this->serverDir . 'nextcloud/updater/updater');
 		chdir($this->serverDir . 'nextcloud/updater');
 		chmod($this->serverDir . 'nextcloud/updater/updater', 0755);
-		exec('./updater -n 2>&1', $output, $returnCode);
+		exec('./updater -n ' . $arguments . ' 2>&1', $output, $returnCode);
 
 		// sleep to let the opcache do it's work and invalidate the status.php
 		sleep(5);

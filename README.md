@@ -100,7 +100,19 @@ Parameters:
 ```
 --no-backup              Don't create a backup of the application code (note: the Updater's backup *never* backs up data or databases contents)
 --no-upgrade             Don't automatically run `occ upgrade` when the Updater finishes (note: `occ upgrade` is required after Updater updates the application code in order to push out any database changes in the newly deployed version of Nextcloud)
+--check                  Only check for an available update and print the current and available version, without updating
 ```
+
+`--check` prints a stable, script friendly output, e.g. to only apply updates within the current major version:
+
+```
+Current version: 31.0.5
+Available version: 31.0.14.1
+Available version name: Nextcloud 31.0.14
+Updater can apply update: yes
+```
+
+If no update is available, `Available version: none` is printed and the last two lines are omitted.
 
 ## How it works
 
