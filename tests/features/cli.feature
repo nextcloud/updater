@@ -15,6 +15,26 @@ Feature: CLI updater
     And maintenance mode should be off
     And upgrade is not required
 
+  Scenario: Check only, no update is available - 26.0.0
+    Given the current installed version is 26.0.0
+    And there is no update available
+    When the CLI updater is run with "--check" successfully
+    Then the output should contain "Current version: 26.0.0"
+    And the output should contain "Available version: none"
+    And the installed version should be 26.0.0
+    And maintenance mode should be off
+
+  Scenario: Check only, update is available - 26.0.0 to 26.0.13
+    Given the current installed version is 26.0.0
+    And there is an update to version 26.0.13 available
+    When the CLI updater is run with "--check" successfully
+    Then the output should contain "Current version: 26.0.0"
+    And the output should contain "Available version: 26.0.13"
+    And the output should contain "Updater can apply update: yes"
+    And the installed version should be 26.0.0
+    And maintenance mode should be off
+    And upgrade is not required
+
   Scenario: Update is available - 26.0.0 to 26.0.13
     Given the current installed version is 26.0.0
     And there is an update to version 26.0.13 available

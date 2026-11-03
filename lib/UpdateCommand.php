@@ -34,6 +34,8 @@ class UpdateCommand extends Command {
 
 	protected string $signature = '';
 
+	protected bool $checkOnly = false;
+
 	/** Strings of text for stages of updater */
 	protected array $checkTexts = [
 		0 => '',
@@ -63,6 +65,7 @@ class UpdateCommand extends Command {
 			->addOption('ignore-state', null, InputOption::VALUE_NONE, 'Ignore known state from .step file, do a complete update')
 			->addOption('no-verify', null, InputOption::VALUE_NONE, 'Skip integrity verification of the downloaded file')
 			->addOption('signature', null, InputOption::VALUE_OPTIONAL, 'Base64 signature of the archive (use it in combination with --url option)')
+			->addOption('check', null, InputOption::VALUE_NONE, 'Only check for an available update and print the current and available version, without updating')
 		;
 	}
 
@@ -83,6 +86,7 @@ class UpdateCommand extends Command {
 		$this->urlOverride = (string)$input->getOption('url');
 		$this->signature = (string)$input->getOption('signature');
 		$this->ignoreState = (bool)$input->getOption('ignore-state');
+		$this->checkOnly = (bool)$input->getOption('check');
 
 		$version = static::getUpdaterVersion();
 		$output->writeln('Nextcloud Updater - version: ' . $version);
@@ -135,6 +139,10 @@ class UpdateCommand extends Command {
 			// show logging error to user
 			$output->writeln($exception->getMessage());
 			return -1;
+		}
+
+		if ($this->checkOnly) {
+			return $this->checkForUpdate($output);
 		}
 
 		// Check if already a step is in process
@@ -546,5 +554,26 @@ class UpdateCommand extends Command {
 	 */
 	public function stopCommand(): void {
 		$this->shouldStop = true;
+	}
+
+	/**
+	 * Prints the current and available version in a stable, script friendly format
+	 */
+	protected function checkForUpdate(OutputInterface $output): int {
+		$this->updater->log('[info] updater run in check mode');
+		$this->updater->logVersion();
+
+		$this->updater->checkForUpdate();
+
+		$availableVersion = $this->updater->getAvailableVersion();
+
+		$output->writeln('Current version: ' . $this->updater->getCurrentVersion());
+		$output->writeln('Available version: ' . ($availableVersion !== '' ? $availableVersion : 'none'));
+		if ($availableVersion !== '') {
+			$output->writeln('Available version name: ' . $this->updater->getAvailableVersionString());
+			$output->writeln('Updater can apply update: ' . ($this->updater->updateAvailable() ? 'yes' : 'no'));
+		}
+
+		return 0;
 	}
 }

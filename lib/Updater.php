@@ -27,6 +27,10 @@ class Updater {
 
 	private bool $updateAvailable = false;
 
+	private string $availableVersion = '';
+
+	private string $availableVersionString = '';
+
 	private ?string $requestID = null;
 
 	private bool $disabled = false;
@@ -173,6 +177,8 @@ class Updater {
 
 		if ($version !== '' && $version !== $this->currentVersion) {
 			$this->updateAvailable = true;
+			$this->availableVersion = $version;
+			$this->availableVersionString = $versionString;
 			$releaseChannel = $this->getCurrentReleaseChannel();
 			$downloadUrl = current($this->getDownloadURLs());
 			$updateText = 'Update to ' . htmlentities($versionString) . ' available. (channel: "' . htmlentities($releaseChannel) . '")<br /><span class="light">Following file will be downloaded automatically:</span> <code class="light">' . $downloadUrl . '</code>';
@@ -201,6 +207,23 @@ class Updater {
 	 */
 	public function updateAvailable(): bool {
 		return $this->updateAvailable;
+	}
+
+	/**
+	 * Returns the version offered by the update server, or an empty string if
+	 * none was offered. Only set after checkForUpdate() was called.
+	 */
+	public function getAvailableVersion(): string {
+		return $this->availableVersion;
+	}
+
+	/**
+	 * Returns the human readable version offered by the update server
+	 * (e.g. "Nextcloud 31.0.14"), or an empty string if none was offered.
+	 * Only set after checkForUpdate() was called.
+	 */
+	public function getAvailableVersionString(): string {
+		return $this->availableVersionString;
 	}
 
 	/**
