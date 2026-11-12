@@ -198,6 +198,7 @@ class Updater {
 			'.',
 			'..',
 			// Folders
+			'.reuse',
 			'.well-known',
 			'3rdparty',
 			'apps',
