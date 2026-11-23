@@ -407,7 +407,7 @@ class Updater {
 		$unexpectedElements = [];
 		foreach (new \DirectoryIterator($this->nextcloudDir) as $fileInfo) {
 			if (!in_array($fileInfo->getFilename(), $expectedElements)) {
-				$unexpectedElements[] = $fileInfo->getFilename();
+				$unexpectedElements[] = $fileInfo->getPathname();
 			}
 		}
 
@@ -434,20 +434,20 @@ class Updater {
 		$notWritablePaths = [];
 		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir, $excludedElements) as $fileInfo) {
 			if (!$fileInfo->isWritable()) {
-				$notWritablePaths[] = $fileInfo->getFilename();
+				$notWritablePaths[] = $fileInfo->getPathname();
 			}
 		}
 
 		// Special handling for included default theme
 		foreach ($this->getRecursiveDirectoryIterator($this->nextcloudDir . '/themes/example', $excludedElements) as $fileInfo) {
 			if (!$fileInfo->isWritable()) {
-				$notWritablePaths[] = $fileInfo->getFilename();
+				$notWritablePaths[] = $fileInfo->getPathname();
 			}
 		}
 
 		$themesReadmeFileInfo = new \SplFileInfo($this->nextcloudDir . '/themes/README');
 		if (!$themesReadmeFileInfo->isWritable()) {
-			$notWritablePaths[] = $themesReadmeFileInfo->getFilename();
+			$notWritablePaths[] = $themesReadmeFileInfo->getPathname();
 		}
 
 		if ($notWritablePaths !== []) {
