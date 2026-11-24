@@ -80,7 +80,23 @@ Feature: CLI updater
     When the CLI updater is run
     Then the return code should not be 0
     And the output should contain "The following extra files have been found"
-    And the output should contain "apps2"
+    And the output should contain the installation path "apps2"
+    And the installed version should be 26.0.0
+    And maintenance mode should be off
+    And upgrade is not required
+
+  Scenario: Non-writable files are reported with full paths
+    Given the current installed version is 26.0.0
+    And there is an update to version 26.0.13 available
+    And the file "core/path-test/duplicate" is not writable
+    And the file "themes/example/path-test/duplicate" is not writable
+    And the file "themes/README" is not writable
+    When the CLI updater is run
+    Then the return code should not be 0
+    And the output should contain "The following places can not be written to"
+    And the output should contain the installation path "core/path-test/duplicate"
+    And the output should contain the installation path "themes/example/path-test/duplicate"
+    And the output should contain the installation path "themes/README"
     And the installed version should be 26.0.0
     And maintenance mode should be off
     And upgrade is not required

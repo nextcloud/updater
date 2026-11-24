@@ -589,6 +589,47 @@ ZwCpfYewGDvrElT50aJYkA==',
 	}
 
 	/**
+	 * @Then the output should contain the installation path :path
+	 */
+	public function theOutputShouldContainTheInstallationPath(string $path): void {
+		if ($this->skipIt) {
+			return;
+		}
+
+		$root = realpath($this->serverDir . 'nextcloud');
+		if ($root === false) {
+			throw new RuntimeException('Could not resolve the installation directory');
+		}
+
+		$this->theOutputShouldBe($root . '/' . $path);
+	}
+
+	/**
+	 * @Given the file :path is not writable
+	 */
+	public function theFileIsNotWritable(string $path): void {
+		if ($this->skipIt) {
+			return;
+		}
+
+		$file = $this->serverDir . 'nextcloud/' . $path;
+		$directory = dirname($file);
+		if (!is_dir($directory) && !mkdir($directory, 0755, true)) {
+			throw new RuntimeException('Could not create ' . $directory);
+		}
+		if (!file_exists($file) && file_put_contents($file, '') === false) {
+			throw new RuntimeException('Could not create ' . $file);
+		}
+		if (!chmod($file, 0444)) {
+			throw new RuntimeException('Could not change permissions of ' . $file);
+		}
+		clearstatcache(true, $file);
+		if (is_writable($file)) {
+			throw new RuntimeException('File is still writable: ' . $file . '. Run this test as a non-root user.');
+		}
+	}
+
+	/**
 	 * @Given /the version number is decreased in the config.php to enforce upgrade/
 	 */
 	public function theVersionNumberIsDecreasedInTheConfigPHPToEnforceUpgrade() {
